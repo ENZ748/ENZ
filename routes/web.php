@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\UserController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -20,6 +21,16 @@ Route::put('Inventory/update/{id}', [InventoryController::class, 'update'])->nam
 
 //Delete    
 Route::delete('/equipment/{id}', [InventoryController::class, 'destroy'])->name('equipment.destroy');
+
+
+//USERSSSS
+Route::get('/user', [UserController::class, 'index'])->name('user');
+Route::POST('employee', [UserController::class, 'store'])->name('employee.store');
+Route::get('employee/create', [UserController::class, 'create'])->name('employee.create');
+Route::get('employee/edit/{id}', [UserController::class, 'edit'])->name('employee.edit');
+Route::put('employee/update/{id}', [UserController::class, 'update'])->name('employee.update');
+
+
 
 
 Route::get('/dashboard', function () {
