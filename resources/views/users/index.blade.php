@@ -8,7 +8,7 @@
 <body>
     <h1>Users</h1>
 
-    <a href="{{ route('employee.create') }}">Add Equipment</a>
+    <a href="{{ route('employee.create') }}">Add Employee</a>
     <table border="1">
         <thead>
             <tr>
