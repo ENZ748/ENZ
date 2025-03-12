@@ -8,7 +8,6 @@
 <body>
 <h1>Users</h1>
 
-                    <th>Status</th>
 <table border="1">
     <thead>
         <tr>
