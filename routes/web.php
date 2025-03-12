@@ -32,10 +32,11 @@ Route::get('employee/edit/{id}', [UserController::class, 'edit'])->name('employe
 Route::put('employee/update/{id}', [UserController::class, 'update'])->name('employee.update');
 
 //Assignnnnn
-Route::get('assign/add/{id}', [AssignController::class, 'add'])->name('assign.add');
-Route::put('assign/add/{id}', [AssignController::class, 'assign'])->name('equipment.assign');
+Route::get('accountability/add', [AssignController::class, 'create'])->name('accountability.create');
+Route::post('accountability/store', [AssignController::class, 'store'])->name('accountability.store');
+Route::get('accountability', [AssignController::class, 'index'])->name('accountability');
 
-
+    
 
 Route::get('/dashboard', function () {
     return view('dashboard');

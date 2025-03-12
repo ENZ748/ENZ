@@ -21,6 +21,6 @@ class Employees extends Model
 
     public function assigned()
     {
-        return $this->hasMany(Assigned::class);
+        return $this->hasMany(Accountability::class);
     }
 }

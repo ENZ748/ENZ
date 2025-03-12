@@ -40,10 +40,6 @@
                    </form>
                 </td>
 
-                <td>
-                    <a href="{{ route('assign.add',$equipment->id)}}">Assign</a>
-                </td>
-
                 </td>
             </tr>
             @endforeach
