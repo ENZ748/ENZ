@@ -3,23 +3,77 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Assigned;
+use App\Models\Accountability;
 use App\Models\Employees;
 use App\Models\Equipments;
 
 class AssignController extends Controller
 {
-    public function add()
+    
+    public function index()
+    {
+        // Retrieve all accountability records (or use a specific query)
+        $accountabilities = Accountability::all();  // This retrieves all accountability records
+    
+        // Initialize an empty collection to hold the data for the view
+        $assigned_items = collect();
+    
+        // Loop through each accountability record
+        foreach ($accountabilities as $accountability) {
+            // Retrieve employee and equipment details using their IDs
+            $employee = Employees::where('id', $accountability->employee_id)->first();
+            $equipment = Equipments::where('id', $accountability->equipment_id)->first();
+    
+            // Add the data for each row to the assigned_items collection
+            $assigned_items->push([
+                'first_name' => $employee->first_name,
+                'last_name' => $employee->last_name,
+                'employee_number' => $employee->employee_number,
+                'equipment_name' => $equipment->equipment_name,
+            ]);
+        }
+    
+        // Pass the combined data to the view
+        return view('assign.index', compact('assigned_items'));
+    }
+    
+    
+
+    public function create()
     {
         $employees = Employees::all();
         $equipments = Equipments::all();
 
           return view('assign.add',compact('employees', 'equipments'));
     }
-    public function assign()
+    public function store(Request $request)
     {
-        Assigned::create([
-
+        $request->validate([
+            'employee_number' => 'required|string|max:255',
+            'equipment_name' => 'required|string|max:255',
+            'assigned_date' => 'required|date',
+            'return_date' => 'required|date',
+            'notes' => 'required|string|max:255',
+            'assigned_by' => 'required|in:IT,HR',
         ]);
+    
+        // Get employee ID by employee number
+        $employee_id = Employees::where('employee_number', $request->employee_number)->first()->id;
+    
+        // Get equipment ID by equipment name
+        $equipment_id = Equipments::where('equipment_name', $request->equipment_name)->first()->id;
+    
+        // Create accountability record
+        Accountability::create([
+            'employee_id' => $employee_id,
+            'equipment_id' => $equipment_id,
+            'assigned_date' => $request->assigned_date,
+            'return_date' => $request->return_date,
+            'notes' => $request->notes,
+            'assigned_by' => $request->assigned_by, // Make sure to add the 'assigned_by' field to the create method
+        ]);
+    
+        return redirect()->route('accountability')->with('success', 'Successfully assigned');
     }
+    
 }

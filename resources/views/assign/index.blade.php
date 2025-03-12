@@ -6,6 +6,26 @@
     <title>Assign</title>
 </head>
 <body>
-    
+    <h1>Assigned Items</h1>
+    <a href="{{ route('accountability.create')}}">Add</a>
+    <table border="1">
+
+        <thead>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Employee Number</th>
+            <th>Equipment Name</th>
+        </thead>
+        <tbody>
+            @foreach($assigned_items as $item)
+                <tr>
+                    <td>{{ $item['first_name'] }}</td>
+                    <td>{{ $item['last_name'] }}</td>
+                    <td>{{ $item['employee_number'] }}</td>
+                    <td>{{ $item['equipment_name'] }}</td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
 </body>
 </html>
