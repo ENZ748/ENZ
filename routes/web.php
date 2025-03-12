@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AssignController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -30,6 +31,9 @@ Route::get('employee/create', [UserController::class, 'create'])->name('employee
 Route::get('employee/edit/{id}', [UserController::class, 'edit'])->name('employee.edit');
 Route::put('employee/update/{id}', [UserController::class, 'update'])->name('employee.update');
 
+//Assignnnnn
+Route::get('assign/add/{id}', [AssignController::class, 'add'])->name('assign.add');
+Route::put('assign/add/{id}', [AssignController::class, 'assign'])->name('equipment.assign');
 
 
 
