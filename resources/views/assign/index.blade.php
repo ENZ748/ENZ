@@ -15,6 +15,7 @@
             <th>Last Name</th>
             <th>Employee Number</th>
             <th>Equipment Name</th>
+            <th>Action</th>
         </thead>
         <tbody>
             @foreach($assigned_items as $item)
@@ -23,6 +24,9 @@
                     <td>{{ $item['last_name'] }}</td>
                     <td>{{ $item['employee_number'] }}</td>
                     <td>{{ $item['equipment_name'] }}</td>
+                    <td>
+                        <a href="{{route('accountability.edit',$item['id'])}}">Edit</a>
+                    </td>   
                 </tr>
             @endforeach
         </tbody>
