@@ -25,6 +25,7 @@ Route::delete('/equipment/{id}', [InventoryController::class, 'destroy'])->name(
 
 
 //USERSSSS
+//add
 Route::get('/user', [UserController::class, 'index'])->name('user');
 Route::POST('employee', [UserController::class, 'store'])->name('employee.store');
 Route::get('employee/create', [UserController::class, 'create'])->name('employee.create');
@@ -32,9 +33,14 @@ Route::get('employee/edit/{id}', [UserController::class, 'edit'])->name('employe
 Route::put('employee/update/{id}', [UserController::class, 'update'])->name('employee.update');
 
 //Assignnnnn
+//Displayy
+Route::get('accountability', [AssignController::class, 'index'])->name('accountability');
+//Add
 Route::get('accountability/add', [AssignController::class, 'create'])->name('accountability.create');
 Route::post('accountability/store', [AssignController::class, 'store'])->name('accountability.store');
-Route::get('accountability', [AssignController::class, 'index'])->name('accountability');
+//Update
+Route::get('employee/edit/{id}', [UserController::class, 'edit'])->name('employee.edit');
+ 
 
     
 
