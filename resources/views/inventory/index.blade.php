@@ -14,37 +14,25 @@
             <a href="{{ route('equipment.create') }}" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Add Equipment</a>
         </div>
 
-        <table class="w-full border-collapse border border-gray-300">
-            <thead>
-                <tr class="bg-gray-200">
-                    <th class="border p-2">Equipment Name</th>
-                    <th class="border p-2">Serial Number</th>
-                    <th class="border p-2">Equipment Details</th>
-                    <th class="border p-2">Date Purchased</th>
-                    <th class="border p-2">Date Acquired</th>
-                    <th class="border p-2">Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($equipments as $equipment)
-                <tr class="bg-white border">
-                    <td class="border p-2">{{ $equipment->equipment_name }}</td>
-                    <td class="border p-2">{{ $equipment->serial_number }}</td>
-                    <td class="border p-2">{{ $equipment->equipment_details }}</td>
-                    <td class="border p-2">{{ $equipment->date_purchased }}</td>
-                    <td class="border p-2">{{ $equipment->date_acquired }}</td>
-                    <td class="border p-2 flex space-x-2">
-                        <a href="{{ route('equipment.edit', $equipment->id) }}" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">Edit</a>
-                        <form action="{{ route('equipment.destroy', $equipment->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this equipment?');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">DELETE</button>
-                        </form>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            @foreach ($equipments as $equipment)
+            <div class="bg-white p-6 rounded-lg shadow border">
+                <h2 class="text-lg font-semibold text-gray-800">{{ $equipment->equipment_name }}</h2>
+                <p class="text-gray-600">Serial: {{ $equipment->serial_number }}</p>
+                <p class="text-gray-600">Details: {{ $equipment->equipment_details }}</p>
+                <p class="text-gray-600">Purchased: {{ $equipment->date_purchased }}</p>
+                <p class="text-gray-600">Acquired: {{ $equipment->date_acquired }}</p>
+                <div class="mt-4 flex space-x-2">
+                    <a href="{{ route('equipment.edit', $equipment->id) }}" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">Edit</a>
+                    <form action="{{ route('equipment.destroy', $equipment->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this equipment?');">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">DELETE</button>
+                    </form>
+                </div>
+            </div>
+            @endforeach
+        </div>
     </div>
 </body>
 </html>

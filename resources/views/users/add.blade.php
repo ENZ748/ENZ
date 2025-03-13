@@ -6,9 +6,10 @@
     <title>Add Employee</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
+<div class = "background"></class>
 <body class="bg-gray-100 p-6 flex justify-center items-center h-screen">
     <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg">
-        <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">Add Employee</h1>
+        <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">ADD EMPLOYEE</h1>
 
         <form action="{{ route('employee.store') }}" method="POST" class="space-y-4">
             @csrf
@@ -41,5 +42,9 @@
             <button type="submit" class="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600">Add Employee</button>
         </form>
     </div>
+    <style>
+        .background
+    
+        </style>
 </body>
 </html>
