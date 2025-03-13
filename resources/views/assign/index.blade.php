@@ -24,7 +24,9 @@
                     <td>{{ $item['last_name'] }}</td>
                     <td>{{ $item['employee_number'] }}</td>
                     <td>{{ $item['equipment_name'] }}</td>
-                    <td><a href="{{route('accountability.edit}}">Edit</a></td> 
+                    <td>
+                        <a href="{{route('accountability.edit',$item['id'])}}">Edit</a>
+                    </td>   
                 </tr>
             @endforeach
         </tbody>

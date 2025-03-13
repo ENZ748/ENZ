@@ -39,8 +39,9 @@ Route::get('accountability', [AssignController::class, 'index'])->name('accounta
 Route::get('accountability/add', [AssignController::class, 'create'])->name('accountability.create');
 Route::post('accountability/store', [AssignController::class, 'store'])->name('accountability.store');
 //Update
-Route::get('employee/edit/{id}', [UserController::class, 'edit'])->name('employee.edit');
- 
+Route::get('accountability/edit/{id}', [AssignController::class, 'edit'])->name('accountability.edit');
+Route::put('accountability/update/{id}', [AssignController::class, 'update'])->name('accountability.update');
+
 
     
 
