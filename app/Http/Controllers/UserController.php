@@ -80,4 +80,18 @@ class UserController extends Controller
         return redirect()-> route('Employees')->with('success', 'Equipment deleted successfully');  
     }
 
+    public function toggleStatus($id)
+    {
+        // Find the employee by ID
+        $employee = Employees::findOrFail($id);
+
+        // Toggle the 'active' status
+        $employee->active = !$employee->active;
+
+        // Save the updated employee record
+        $employee->save();
+
+        // Redirect back to the employee list page with a success message
+        return redirect()->route('user')->with('success', 'Employee status updated successfully.');
+    }
 }
