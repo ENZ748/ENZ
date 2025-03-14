@@ -6,7 +6,7 @@
     <title>Add Equipment</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 p-6 flex justify-center items-center min-h-screen">
+<body class="background flex justify-center  items-center min-h-screen">
     <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg">
         <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">Add Equipment</h1>
 
@@ -43,5 +43,23 @@
             </div>
         </form>
     </div>
+
+    <style>
+           .background {
+            margin: 0;
+            padding: 160px;
+            font-family: sans-serif;
+            background: linear-gradient(#30142b, #2772a1);
+        }
+        .table {
+            width: 100%;
+            height: 20vh;
+            grid-template-columns: 1fr 1fr;
+            border: 3px solid #00ffff;
+            box-shadow: 0 0 50px 0 #00a6bc;
+        }
+
+    </style>
+
 </body>
 </html>

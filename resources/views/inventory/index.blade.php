@@ -6,9 +6,10 @@
     <title>Inventory Management</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 p-6 flex justify-center items-center min-h-screen">
-    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-5xl">
-        <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">Inventory Management</h1>
+<body class="background flex justify-center">
+    <div class="p-8 rounded-lg shadow-lg w-full max-w-5xl">
+        <table class="table">
+        <h1 class="text-2xl font-bold text-blue-800 mb-6 text-center">INVENTORY MANAGEMENT</h1>
 
         <div class="flex justify-end mb-4">
             <a href="{{ route('equipment.create') }}" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Add Equipment</a>
@@ -33,6 +34,24 @@
             </div>
             @endforeach
         </div>
+        </table>
     </div>
+
+    <style>
+         .background {
+            margin: 0;
+            padding: 150px;
+            font-family: sans-serif;
+            background: linear-gradient(#30142b, #2772a1);
+        }
+        .table {
+            width: 100%;
+            height: 20vh;
+            grid-template-columns: 1fr 1fr;
+            border: 3px solid #00ffff;
+            box-shadow: 0 0 50px 0 #00a6bc;
+        }
+
+    </style>
 </body>
 </html>
