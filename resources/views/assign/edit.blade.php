@@ -44,7 +44,7 @@
         <input type="date" name="assigned_date" id="assigned_date" value="{{ $accountability->assigned_date }}">
 
         <!-- Return Date -->
-        <label for="return_date">Return Date</label>
+        <label for="return_date">Return Data</label>
         <input type="date" name="return_date" id="return_date" value="{{ $accountability->return_date }}">
 
         <!-- Notes -->
