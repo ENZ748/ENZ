@@ -1,13 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employee List</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="{{ asset('userEmployee/index.css')}}" />
-</head>
-<body class="background">
+@extends('layouts.app') <!-- Extend the master layout -->
+
+@section('content')
     <div class="max-w-6xl mx-auto p-6 rounded-lg shadow-md">
         <h1 class="text-3xl font-bold text-blue-800 mb-6">EMPLOYEE</h1>
         <a href="{{ route('employee.create') }}" class="button">Add Employee</a>
@@ -43,7 +36,7 @@
                         </td>
 
                         <td class="py-3 px-4">
-                            <a href="{{ route('employee.edit', $employee->id) }}" class="text-blue-500 hover:underline">Edit</a>
+                            <a href="{{ route('employee.edit', $employee->id) }}"  class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">Edit</a>
                         </td>
                         <td class="py-3 px-4">
                             <!-- Toggle Status Button -->
@@ -97,6 +90,7 @@
                         0 0 20px #00a6bc;
         }
     </style>
-</body>
-</html>
+        <script src="https://cdn.tailwindcss.com"></script>
+
+@endsection
         
