@@ -31,6 +31,7 @@ Route::POST('employee', [UserController::class, 'store'])->name('employee.store'
 Route::get('employee/create', [UserController::class, 'create'])->name('employee.create');
 Route::get('employee/edit/{id}', [UserController::class, 'edit'])->name('employee.edit');
 Route::put('employee/update/{id}', [UserController::class, 'update'])->name('employee.update');
+Route::patch('/employee/{id}/toggleStatus', [UserController::class, 'toggleStatus'])->name('employee.toggleStatus');
 
 //Assignnnnn
 //Displayy
