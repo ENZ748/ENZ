@@ -1,12 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventory Management</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 p-6 flex justify-center items-center min-h-screen">
+@extends('layouts.app') <!-- Extend the master layout -->
+
+@section('content')
     <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-5xl">
         <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">Inventory Management</h1>
 
@@ -34,5 +28,5 @@
             @endforeach
         </div>
     </div>
-</body>
-</html>
+    <script src="https://cdn.tailwindcss.com"></script>
+    @endsection
