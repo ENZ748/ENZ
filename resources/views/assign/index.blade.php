@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Assign</title>
+    <title>Assign
+        
+    </title>
 </head>
 <body>
     <h1>Assigned Items</h1>
@@ -15,6 +17,7 @@
             <th>Last Name</th>
             <th>Employee Number</th>
             <th>Equipment Name</th>
+            <th>Action</th>
         </thead>
         <tbody>
             @foreach($assigned_items as $item)
@@ -23,6 +26,9 @@
                     <td>{{ $item['last_name'] }}</td>
                     <td>{{ $item['employee_number'] }}</td>
                     <td>{{ $item['equipment_name'] }}</td>
+                    <td>
+                        <a href="{{route('accountability.edit',$item['id'])}}">Edit</a>
+                    </td>   
                 </tr>
             @endforeach
         </tbody>

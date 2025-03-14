@@ -30,12 +30,15 @@ class AssignController extends Controller
                 'last_name' => $employee->last_name,
                 'employee_number' => $employee->employee_number,
                 'equipment_name' => $equipment->equipment_name,
+                'id' => $accountability->id,
             ]);
         }
     
         // Pass the combined data to the view
+        foreach ($accountabilities as $accountability) {
         return view('assign.index', compact('assigned_items'));
     }
+}
     
     
 
@@ -62,7 +65,7 @@ class AssignController extends Controller
     
         // Get equipment ID by equipment name
         $equipment_id = Equipments::where('equipment_name', $request->equipment_name)->first()->id;
-    
+        
         // Create accountability record
         Accountability::create([
             'employee_id' => $employee_id,
@@ -72,8 +75,63 @@ class AssignController extends Controller
             'notes' => $request->notes,
             'assigned_by' => $request->assigned_by, // Make sure to add the 'assigned_by' field to the create method
         ]);
+
     
         return redirect()->route('accountability')->with('success', 'Successfully assigned');
     }
+
+    public function edit($id)
+    {
+        // Find the accountability record by ID
+        $accountability = Accountability::findOrFail($id);
+        $employees = Employees::all();
+        $equipments = Equipments::all();
+
+        // Return the edit view with the data
+        return view('assign.edit', compact('employees', 'equipments','accountability'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        // Validate the incoming data
+        $request->validate([
+            'employee_number' => 'required|string|max:255',
+            'equipment_name' => 'required|string|max:255',
+            'assigned_date' => 'required|date',
+            'return_date' => 'required|date',
+            'notes' => 'required|string|max:255',
+            'assigned_by' => 'required|in:IT,HR', // Can be IT or HR
+        ]);
     
+        // Get the accountability record by ID
+        $accountability = Accountability::findOrFail($id);
+    
+        // Get the employee ID by employee number
+        $employee = Employees::where('employee_number', $request->employee_number)->first();
+        if (!$employee) {
+            return back()->withErrors(['employee_number' => 'Employee not found.'])->withInput();
+        }
+    
+        // Get the equipment ID by equipment name
+        $equipment = Equipments::where('equipment_name', $request->equipment_name)->first();
+        if (!$equipment) {
+            return back()->withErrors(['equipment_name' => 'Equipment not found.'])->withInput();
+        }
+    
+        // Update the accountability record
+        $accountability->update([
+            'employee_id' => $employee->id,
+            'equipment_id' => $equipment->id,
+            'assigned_date' => $request->assigned_date,
+            'return_date' => $request->return_date,
+            'notes' => $request->notes,
+            'assigned_by' => $request->assigned_by,
+        ]);
+    
+        // Redirect back with a success message
+        return redirect()->route('accountability')->with('success', 'Successfully updated');
+    }
+
+ 
+     
 }

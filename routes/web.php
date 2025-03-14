@@ -25,16 +25,24 @@ Route::delete('/equipment/{id}', [InventoryController::class, 'destroy'])->name(
 
 
 //USERSSSS
+//add
 Route::get('/user', [UserController::class, 'index'])->name('user');
 Route::POST('employee', [UserController::class, 'store'])->name('employee.store');
 Route::get('employee/create', [UserController::class, 'create'])->name('employee.create');
 Route::get('employee/edit/{id}', [UserController::class, 'edit'])->name('employee.edit');
 Route::put('employee/update/{id}', [UserController::class, 'update'])->name('employee.update');
+Route::patch('/employee/{id}/toggleStatus', [UserController::class, 'toggleStatus'])->name('employee.toggleStatus');
 
 //Assignnnnn
+//Displayy
+Route::get('accountability', [AssignController::class, 'index'])->name('accountability');
+//Add
 Route::get('accountability/add', [AssignController::class, 'create'])->name('accountability.create');
 Route::post('accountability/store', [AssignController::class, 'store'])->name('accountability.store');
-Route::get('accountability', [AssignController::class, 'index'])->name('accountability');
+//Update
+Route::get('accountability/edit/{id}', [AssignController::class, 'edit'])->name('accountability.edit');
+Route::put('accountability/update/{id}', [AssignController::class, 'update'])->name('accountability.update');
+
 
     
 
