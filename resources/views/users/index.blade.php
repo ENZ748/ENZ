@@ -1,12 +1,49 @@
-@extends('layouts.app') <!-- Extend the master layout -->
+@extends('layouts.app')
 
 @section('content')
-    <div class="max-w-6xl mx-auto p-6 rounded-lg shadow-md">
+    <div class="max-w-6xl mx-auto p-6 rounded-lg shadow-md" x-data="{ openAdd: false, openEdit: null }">
         <h1 class="text-3xl font-bold text-blue-800 mb-6">EMPLOYEE</h1>
-        <a href="{{ route('employee.create') }}" class="button">Add Employee</a>
+
+        <!-- Button to open "Add Employee" modal -->
+        <button @click="openAdd = true" class="button">Add Employee</button>
+
+        <!-- ADD EMPLOYEE MODAL -->
+        <div x-show="openAdd" x-cloak x-transition class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+            <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg relative">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">Add Employee</h2>
+                <form action="{{ route('employee.store') }}" method="POST" class="space-y-4">
+                    @csrf
+                    <div>
+                        <label class="block text-gray-700">First Name</label>
+                        <input type="text" name="first_name" required class="w-full p-2 border border-gray-300 rounded">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700">Last Name</label>
+                        <input type="text" name="last_name" required class="w-full p-2 border border-gray-300 rounded">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700">Employee Number</label>
+                        <input type="text" name="employee_number" required class="w-full p-2 border border-gray-300 rounded">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700">Department</label>
+                        <input type="text" name="department" required class="w-full p-2 border border-gray-300 rounded">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700">Hire Date</label>
+                        <input type="date" name="hire_date" required class="w-full p-2 border border-gray-300 rounded">
+                    </div>
+
+                    <div class="flex justify-end space-x-2">
+                        <button type="button" @click="openAdd = false" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Cancel</button>
+                        <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">Add</button>
+                    </div>
+                </form>
+            </div>
+        </div>
 
         @if($employees->isEmpty())
-            <p class="text-center text-gray-600 mt-6">No employees found.</p> <!-- No data message -->
+            <p class="text-center text-gray-600 mt-6">No employees found.</p>
         @else
             <table class="table w-full mt-6">
                 <thead class="bg-blue-800 text-white">
@@ -38,56 +75,66 @@
                                 </form>
                             </td>
                             <td class="py-3 px-4">
-                                <a href="{{ route('employee.edit', $employee->id) }}" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">Edit</a>
+                                <button @click="openEdit = {{ $employee->id }}" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">Edit</button>
                             </td>
                         </tr>
+
+                        <!-- EDIT EMPLOYEE MODAL -->
+                        <div x-show="openEdit === {{ $employee->id }}" x-cloak x-transition class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                            <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg relative">
+                                <h2 class="text-xl font-bold text-gray-800 mb-4">Edit Employee</h2>
+                                <form action="{{ route('employee.update', $employee->id) }}" method="POST" class="space-y-4">
+                                    @csrf
+                                    @method('PUT')
+
+                                    <div>
+                                        <label class="block text-gray-700">First Name</label>
+                                        <input type="text" name="first_name" value="{{ $employee->first_name }}" required class="w-full p-2 border border-gray-300 rounded">
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700">Last Name</label>
+                                        <input type="text" name="last_name" value="{{ $employee->last_name }}" required class="w-full p-2 border border-gray-300 rounded">
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700">Employee Number</label>
+                                        <input type="text" name="employee_number" value="{{ $employee->employee_number }}" required class="w-full p-2 border border-gray-300 rounded">
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700">Department</label>
+                                        <input type="text" name="department" value="{{ $employee->department }}" required class="w-full p-2 border border-gray-300 rounded">
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700">Hire Date</label>
+                                        <input type="date" name="hire_date" value="{{ $employee->hire_date }}" required class="w-full p-2 border border-gray-300 rounded">
+                                    </div>
+
+                                    <div class="flex justify-end space-x-2">
+                                        <button type="button" @click="openEdit = null" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Cancel</button>
+                                        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Update</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                     @endforeach
                 </tbody>
             </table>
         @endif
     </div>
 
+    <!-- Tailwind & Alpine.js -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.10.3/cdn.min.js" defer></script>
+
     <style>
-        .background {
-            margin: 0;
-            padding: 160px;
-            font-family: sans-serif;
-            background: linear-gradient(#30142b, #2772a1);
-        }
-
-        .table {
-            width: 100%;
-            height: 20vh;
-            grid-template-columns: 1fr 1fr;
-            border: 3px solid #00ffff;
-            box-shadow: 0 0 50px 0 #00a6bc;
-        }
-
-        .button {
-            position: relative;
-            display: inline-block;
-            padding: 10px 20px;
-            color: #b79726;
-            font-size: 16px;
-            text-decoration: none;
-            text-transform: uppercase;
-            overflow: hidden;
-            transition: .5s;
-            margin-top: 5px;
-            letter-spacing: 4px;
-        }
-
+        [x-cloak] { display: none !important; }
         .button {
             background: #2772a1;
-            font: 6px;
             color: #fff;
-            border-radius: 0px;
-            box-shadow: 0 0 5px #00a6bc,
-                        0 0 10px #00a6bc,
-                        0 0 10px #00a6bc,
-                        0 0 20px #00a6bc;
+            padding: 10px 20px;
+            border-radius: 5px;
+        }
+        .button:hover {
+            background: #005f87;
         }
     </style>
-    <script src="https://cdn.tailwindcss.com"></script>
-
 @endsection
