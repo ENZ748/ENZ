@@ -1,17 +1,17 @@
 @extends('layouts.app') <!-- Extend the master layout -->
 
 @section('content')
-    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-5xl">
-        <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">Inventory Management</h1>
-
+    <div>
+        <h1 class="text-2xl font-bold text-blue -800 mb-6 text-center">INVENTORY MANAGEMENT</h1>
+        <table class="table">
         <div class="flex justify-end mb-4">
-            <a href="{{ route('equipment.create') }}" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Add Equipment</a>
+            <a href="{{ route('equipment.create') }}" class="button">ADD EQUIPMENTS</a>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach ($equipments as $equipment)
-            <div class="bg-white p-6 rounded-lg shadow border">
-                <h2 class="text-lg font-semibold text-gray-800">{{ $equipment->equipment_name }}</h2>
+            <div class="table">
+                <h2 class="bg-blue-700 text-white 50 font-family: sans-serif ">{{ $equipment->equipment_name }}</h2>
                 <p class="text-gray-600">Serial: {{ $equipment->serial_number }}</p>
                 <p class="text-gray-600">Details: {{ $equipment->equipment_details }}</p>
                 <p class="text-gray-600">Purchased: {{ $equipment->date_purchased }}</p>
@@ -27,6 +27,50 @@
             </div>
             @endforeach
         </div>
+        </table>
     </div>
+
+    <style>
+         .table {
+            flex: text center;
+            flex: table center;
+            width: 100%;
+            height: 20vh;
+            border: 4px solid #00ffff;
+            box-shadow: 0 0 20px 0 #00a6bc;
+        }
+
+       
+        .button {
+            position: relative;
+            display: inline-block;
+            padding: 10px 20px;
+            color: #b79726;
+            font-size: 16px;
+            text-decoration: none;
+            text-transform: uppercase;
+            overflow: hidden;
+            transition: .5s;
+            margin-top: 5px;
+            letter-spacing: 4px;
+        }
+
+        .button {
+            background: #2772a1;
+            font: 6px;
+            color: #fff;
+            border-radius: 0px;
+            box-shadow: 0 0 5px #00a6bc,
+                        0 0 10px #00a6bc,
+                        0 0 10px #00a6bc,
+                        0 0 20px #00a6bc;
+        }
+
+
+
+        
+
+
+    </style>
     <script src="https://cdn.tailwindcss.com"></script>
     @endsection
