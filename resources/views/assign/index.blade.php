@@ -1,12 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Assign</title>
-</head>
-<body>
-    <h1>Assigned Items</h1>
+@extends('layouts.app')
+
+@section('content')
+    <h1>Accountability</h1>
     <a href="{{ route('accountability.create')}}">Add</a>
     <table border="1">
 
@@ -31,5 +26,4 @@
             @endforeach
         </tbody>
     </table>
-</body>
-</html>
+    @endsection

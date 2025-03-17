@@ -41,8 +41,6 @@ Route::post('accountability/store', [AssignController::class, 'store'])->name('a
 //Update
 Route::get('accountability/edit/{id}', [AssignController::class, 'edit'])->name('accountability.edit');
 Route::put('accountability/update/{id}', [AssignController::class, 'update'])->name('accountability.update');
-
-
     
 
 Route::get('/dashboard', function () {
