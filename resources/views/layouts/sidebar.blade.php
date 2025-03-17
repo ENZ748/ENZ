@@ -51,8 +51,6 @@
         </ul>
     </div>
 
-    <div class="content">
-        @yield('content')
-    </div>
+
 </body>
 </html>
