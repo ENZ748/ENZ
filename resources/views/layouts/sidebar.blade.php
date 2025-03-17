@@ -54,7 +54,7 @@
         <img src="EnzLogo.png" alt="Enz Logo">
         <ul class="nav flex-column">
             <li class="nav-item">
-                <a class="nav-link" href="{{route('dashboard')}}">
+                <a class="nav-link" href="{{route('chart')}}">
                     <i class="fas fa-tachometer-alt"></i> Dashboard
                 </a>
             </li>
@@ -71,6 +71,11 @@
             <li class="nav-item">
                 <a class="nav-link" href="accountability">
                     <i class="fas fa-file-invoice"></i> Accountability
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="history">
+                    <i class="fas fa-file-invoice"></i> History
                 </a>
             </li>
         </ul>
