@@ -69,7 +69,6 @@ Route::middleware('auth')->group(function () {
 });
 
 
-
 Route::get('/chart', [ChartController::class, 'showChart'])->name('chart');
 
 
