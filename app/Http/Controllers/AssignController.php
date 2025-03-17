@@ -30,6 +30,7 @@ class AssignController extends Controller
                 'last_name' => $employee->last_name,
                 'employee_number' => $employee->employee_number,
                 'equipment_name' => $equipment->equipment_name,
+                'equipment_detail' => $equipment->equipment_details,
                 'id' => $accountability->id,
             ]);
         }
@@ -45,7 +46,7 @@ class AssignController extends Controller
     public function create()
     {
         $employees = Employees::all();
-        $equipments = Equipments::all();
+        $equipments = Equipments::where('equipment_status', 0)->get();
 
           return view('assign.add',compact('employees', 'equipments'));
     }
@@ -66,6 +67,12 @@ class AssignController extends Controller
         // Get equipment ID by equipment name
         $equipment_id = Equipments::where('equipment_name', $request->equipment_name)->first()->id;
         
+
+        Equipments::where('id', $equipment_id)->update([
+            'equipment_status' => 1
+        ]);
+
+
         // Create accountability record
         Accountability::create([
             'employee_id' => $employee_id,

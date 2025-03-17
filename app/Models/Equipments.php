@@ -17,7 +17,8 @@ class Equipments extends Model
         'serial_number',
         'equipment_details',
         'date_purchased', 
-        'date_acquired'
+        'date_acquired',
+        'equipment_status'
     ];
 
     public function assigned()
