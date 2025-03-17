@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Accountability;
 use App\Models\Employees;
 use App\Models\Equipments;
+use App\Models\ReturnItem;
 
 class AssignController extends Controller
 {
@@ -137,6 +138,34 @@ class AssignController extends Controller
     
         // Redirect back with a success message
         return redirect()->route('accountability')->with('success', 'Successfully updated');
+    }
+
+
+    public function destroy($id)
+    {
+        // Fetch the Accountability record
+        $return_item = Accountability::findOrFail($id);
+
+        // Store the item in the ReturnItem table
+        ReturnItem::create([
+            'employee_id' => $return_item->employee_id,
+            'equipment_id' => $return_item->equipment_id, // Fixed the typo here
+            'assigned_date' => $return_item->assigned_date,
+            'return_date' => $return_item->return_date,
+            'notes' => $return_item->notes,
+            'assigned_by' => $return_item->assigned_by,
+        ]);
+
+
+        Equipments::where('id', $return_item->equipment_id)->update([
+            'equipment_status' => 0
+        ]);
+
+        // Delete the Accountability record
+        $return_item->delete();
+
+        // Redirect with success message
+        return redirect()->route('accountability')->with('success', 'Successfully returned');
     }
 
  

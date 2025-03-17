@@ -20,6 +20,7 @@
                         </tr>
                     </thead>
                     <tbody>
+
                         @foreach($assigned_items as $item)
                             <tr>
                                 <td>{{ $item['first_name'] }}</td>
@@ -28,12 +29,23 @@
                                 <td>{{ $item['equipment_name'] }}</td>
                                 <td>
                                     <a href="{{route('accountability.edit', $item['id'])}}" class="btn btn-sm btn-primary">Edit</a>
-                                </td>   
+                                </td> 
+
+                                <td>
+                                <form action="{{ route('accountability.destroy', $item['id']) }}" method="POST" onsubmit="return confirm('Are you sure?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">Returned</button>
+                                </form>  
+                                </td>
                             </tr>
                         @endforeach
+
                     </tbody>
                 </table>
             </div>
         @endif
     </div>
+    <script src="https://cdn.tailwindcss.com"></script>
+
 @endsection
