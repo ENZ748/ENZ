@@ -6,6 +6,7 @@ use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AssignController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\HistoryController;
 use App\Http\Middleware\Admin;
 
 use Illuminate\Support\Facades\Route;
@@ -47,14 +48,14 @@ Route::get('accountability/edit/{id}', [AssignController::class, 'edit'])->name(
 Route::put('accountability/update/{id}', [AssignController::class, 'update'])->name('accountability.update');
 Route::delete('/accountability/{id}', [AssignController::class, 'destroy'])->name('accountability.destroy');
 
-    
+
 
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
- 
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -66,6 +67,9 @@ Route::middleware('auth')->group(function () {
     Route::middleware([Admin::class])->get('/accountability', [AssignController::class, 'index'])->name('accountability');
     Route::middleware([Admin::class])->get('/user', [UserController::class, 'index'])->name('user');
     Route::middleware([Admin::class])->get('/Inventory', [InventoryController::class, 'index'])->name('inventory');
+
+    //Historyyyyy
+    Route::middleware([Admin::class])->get('/history', [HistoryController::class, 'index'])->name('history');
 
 });
 

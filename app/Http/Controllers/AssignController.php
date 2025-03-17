@@ -40,7 +40,7 @@ class AssignController extends Controller
         foreach ($accountabilities as $accountability) {
         return view('assign.index', compact('assigned_items'));
     }
-}
+    }
     
     
 
@@ -84,7 +84,7 @@ class AssignController extends Controller
             'assigned_by' => $request->assigned_by, // Make sure to add the 'assigned_by' field to the create method
         ]);
 
-    
+        
         return redirect()->route('accountability')->with('success', 'Successfully assigned');
     }
 
@@ -110,7 +110,7 @@ class AssignController extends Controller
             'notes' => 'required|string|max:255',
             'assigned_by' => 'required|in:IT,HR', // Can be IT or HR
         ]);
-    
+        
         // Get the accountability record by ID
         $accountability = Accountability::findOrFail($id);
     
@@ -119,13 +119,13 @@ class AssignController extends Controller
         if (!$employee) {
             return back()->withErrors(['employee_number' => 'Employee not found.'])->withInput();
         }
-    
+        
         // Get the equipment ID by equipment name
         $equipment = Equipments::where('equipment_name', $request->equipment_name)->first();
         if (!$equipment) {
             return back()->withErrors(['equipment_name' => 'Equipment not found.'])->withInput();
         }
-    
+        
         // Update the accountability record
         $accountability->update([
             'employee_id' => $employee->id,
@@ -135,12 +135,12 @@ class AssignController extends Controller
             'notes' => $request->notes,
             'assigned_by' => $request->assigned_by,
         ]);
-    
+        
         // Redirect back with a success message
         return redirect()->route('accountability')->with('success', 'Successfully updated');
     }
 
-
+ 
     public function destroy($id)
     {
         // Fetch the Accountability record

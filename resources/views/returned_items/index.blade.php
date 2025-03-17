@@ -2,10 +2,10 @@
 
 @section('content')
     <div class="container">
-        <h1 class="text-primary">Assigned Items</h1>
-        <a href="{{ route('accountability.create')}}" class="btn btn-primary mb-3">Add Item</a>
+        <h1 class="text-primary">History</h1>
+     
         
-        @if($assigned_items->isEmpty())
+        @if($returned_items->isEmpty())
             <p>No data found</p> <!-- Display this message when no data is available -->
         @else
             <div class="table-responsive">
@@ -16,30 +16,21 @@
                             <th>Last Name</th>
                             <th>Employee Number</th>
                             <th>Equipment Name</th>
-                            <th>Equipment Deatail</th>
-                            <th>Action</th>
+                            <th>Equipment Detail</th>
+                            <th>Date</th>
+                           
                         </tr>
                     </thead>
                     <tbody>
 
-                        @foreach($assigned_items as $item)
+                        @foreach($returned_items as $item)
                             <tr>
                                 <td>{{ $item['first_name'] }}</td>
                                 <td>{{ $item['last_name'] }}</td>
                                 <td>{{ $item['employee_number'] }}</td>
                                 <td>{{ $item['equipment_name'] }}</td>
                                 <td>{{ $item['equipment_detail'] }}</td>
-                                <td>
-                                    <a href="{{route('accountability.edit', $item['id'])}}" class="btn btn-sm btn-primary">Edit</a>
-                                </td> 
-
-                                <td>
-                                <form action="{{ route('accountability.destroy', $item['id']) }}" method="POST" onsubmit="return confirm('Are you sure?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">Returned</button>
-                                </form>  
-                                </td>
+                                <td>{{$item['created_at']}}</td>
                             </tr>
                         @endforeach
 
