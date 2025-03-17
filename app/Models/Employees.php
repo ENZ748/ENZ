@@ -23,4 +23,9 @@ class Employees extends Model
     {
         return $this->hasMany(Accountability::class);
     }
+
+    public function return_item()
+    {
+        return $this->hasMany(ReturnItem::class);
+    }
 }
