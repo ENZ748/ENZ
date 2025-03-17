@@ -73,6 +73,11 @@
                     <i class="fas fa-file-invoice"></i> Accountability
                 </a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" href="history">
+                    <i class="fas fa-file-invoice"></i> History
+                </a>
+            </li>
         </ul>
     </div>
 
