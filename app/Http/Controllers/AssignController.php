@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Accountability;
 use App\Models\Employees;
 use App\Models\Equipments;
+use App\Models\ReturnItem;
 
 class AssignController extends Controller
 {
@@ -30,6 +31,7 @@ class AssignController extends Controller
                 'last_name' => $employee->last_name,
                 'employee_number' => $employee->employee_number,
                 'equipment_name' => $equipment->equipment_name,
+                'equipment_detail' => $equipment->equipment_details,
                 'id' => $accountability->id,
             ]);
         }
@@ -45,7 +47,7 @@ class AssignController extends Controller
     public function create()
     {
         $employees = Employees::all();
-        $equipments = Equipments::all();
+        $equipments = Equipments::where('equipment_status', 0)->get();
 
           return view('assign.add',compact('employees', 'equipments'));
     }
@@ -66,6 +68,12 @@ class AssignController extends Controller
         // Get equipment ID by equipment name
         $equipment_id = Equipments::where('equipment_name', $request->equipment_name)->first()->id;
         
+
+        Equipments::where('id', $equipment_id)->update([
+            'equipment_status' => 1
+        ]);
+
+
         // Create accountability record
         Accountability::create([
             'employee_id' => $employee_id,
@@ -132,6 +140,34 @@ class AssignController extends Controller
         return redirect()->route('accountability')->with('success', 'Successfully updated');
     }
 
-    
+
+    public function destroy($id)
+    {
+        // Fetch the Accountability record
+        $return_item = Accountability::findOrFail($id);
+
+        // Store the item in the ReturnItem table
+        ReturnItem::create([
+            'employee_id' => $return_item->employee_id,
+            'equipment_id' => $return_item->equipment_id, // Fixed the typo here
+            'assigned_date' => $return_item->assigned_date,
+            'return_date' => $return_item->return_date,
+            'notes' => $return_item->notes,
+            'assigned_by' => $return_item->assigned_by,
+        ]);
+
+
+        Equipments::where('id', $return_item->equipment_id)->update([
+            'equipment_status' => 0
+        ]);
+
+        // Delete the Accountability record
+        $return_item->delete();
+
+        // Redirect with success message
+        return redirect()->route('accountability')->with('success', 'Successfully returned');
+    }
+
+ 
      
 }
