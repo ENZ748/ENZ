@@ -13,18 +13,35 @@
             top: 0;
             left: 0;
             height: 100%;
-            width: 250px;
-            background-color:rgb(0, 116, 232);
+            width: 180px;
+            background-color: rgb(0, 116, 232);
             padding-top: 20px;
+            text-align: center;
+        }
+        .sidebar img {
+            width: 120px;
+            height: 120px;
+            background-color: white;
+            padding: 10px;
+            border-radius: 50%; /* Makes the image circular */
+            display: block;
+            margin: 0 auto; /* Centers the image */
+            margin-bottom: 20px;
+
         }
         .sidebar a {
             color: white;
             padding: 10px 15px;
             text-decoration: none;
-            display: block;
+            display: flex;
+            align-items: center;
+
+        }
+        .sidebar a i {
+            margin-right: 10px;
         }
         .sidebar a:hover {
-            background-color:rgb(0, 116, 232);
+            background-color: rgb(0, 116, 232);
         }
         .content {
             margin-left: 260px;
@@ -34,19 +51,27 @@
 </head>
 <body>
     <div class="sidebar">
-        <h4 class="text-white text-center">ENZ</h4>
+        <img src="EnzLogo.png" alt="Enz Logo">
         <ul class="nav flex-column">
             <li class="nav-item">
-                <a class="nav-link" href="{{route('dashboard')}}">Dashboard</a>
+                <a class="nav-link" href="{{route('dashboard')}}">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{route('inventory')}}">Inventory</a>
+                <a class="nav-link" href="{{route('inventory')}}">
+                    <i class="fas fa-box"></i> Inventory
+                </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{route('user')}}">Users</a>
+                <a class="nav-link" href="{{route('user')}}">
+                    <i class="fas fa-users"></i> Users
+                </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="accountability">Accountability</a>
+                <a class="nav-link" href="accountability">
+                    <i class="fas fa-file-invoice"></i> Accountability
+                </a>
             </li>
         </ul>
     </div>

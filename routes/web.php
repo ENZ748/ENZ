@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ChartController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\UserController;
@@ -66,5 +67,10 @@ Route::middleware('auth')->group(function () {
     Route::middleware([Admin::class])->get('/Inventory', [InventoryController::class, 'index'])->name('inventory');
 
 });
+
+
+
+Route::get('/chart', [ChartController::class, 'showChart']);
+
 
 require __DIR__.'/auth.php';
