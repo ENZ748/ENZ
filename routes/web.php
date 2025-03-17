@@ -74,8 +74,7 @@ Route::middleware('auth')->group(function () {
 });
 
 
-
-Route::get('/chart', [ChartController::class, 'showChart']);
+Route::get('/chart', [ChartController::class, 'showChart'])->name('chart');
 
 
 require __DIR__.'/auth.php';
