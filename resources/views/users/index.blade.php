@@ -5,9 +5,10 @@
 
     <div class="container mt-4">
         <h1 class="text-primary">Employees</h1>
-        <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addEmployeeModal">
+        <!-- <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addEmployeeModal">
             Add Employee
-        </button>
+        </button> -->
+        <a href="{{ route('register') }}" class="button">Add Employee</a>
 
         @if($employees->isEmpty())
             <div class="alert alert-warning">No employees found.</div>

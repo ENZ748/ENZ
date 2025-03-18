@@ -27,6 +27,7 @@ class AssignController extends Controller
             // Retrieve employee and equipment details
             $employee = Employees::find($accountability->employee_id);
             $equipment = Equipments::find($accountability->equipment_id);
+            $available_items = Equipments::where('equipment_status', 0)->get();
 
             if ($employee && $equipment) {
                 $assigned_items->push([
@@ -41,7 +42,7 @@ class AssignController extends Controller
         }
 
         // Return the view with all required data
-        return view('assign.index', compact('assigned_items', 'employees', 'equipments'));
+        return view('assign.index', compact('assigned_items', 'employees', 'equipments','available_items'));
     }
 
     public function create()
@@ -62,7 +63,7 @@ class AssignController extends Controller
             'notes' => 'required|string|max:255',
             'assigned_by' => 'required|in:IT,HR',
         ]);
-
+    
         // Get employee ID by employee number
         $employee = Employees::where('employee_number', $request->employee_number)->first();
         if (!$employee) {

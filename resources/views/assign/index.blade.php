@@ -92,8 +92,8 @@
                     <label for="equipment_name">Equipment</label>
                     <select name="equipment_name" class="form-control">
                         <option value="">Select Equipment</option>
-                        @foreach($equipments as $equipment)
-                            <option value="{{ $equipment->equipment_name }}">{{ $equipment->equipment_name }}</option>
+                        @foreach($available_items as $available_item)
+                            <option value="{{ $available_item->equipment_name }}">{{ $available_item->equipment_name }}</option>
                         @endforeach
                     </select>
                     <label for="assigned_date">Assigned Date</label>
