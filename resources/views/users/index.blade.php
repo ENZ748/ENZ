@@ -1,12 +1,12 @@
-@extends('layouts.app') <!-- Extend the master layout -->
+@extends('layouts.app')
 
 @section('content')
     <div class="max-w-6xl mx-auto p-6 rounded-lg shadow-md">
         <h1 class="text-3xl font-bold text-blue-800 mb-6">EMPLOYEE</h1>
-        <a href="{{ route('employee.create') }}" class="button">Add Employee</a>
+        <button onclick="openModal('addEmployeeModal')" class="button">Add Employee</button>
 
         @if($employees->isEmpty())
-            <p class="text-center text-gray-600 mt-6">No employees found.</p> <!-- No data message -->
+            <p class="text-center text-gray-600 mt-6">No employees found.</p>
         @else
             <table class="table w-full mt-6">
                 <thead class="bg-blue-800 text-white">
@@ -38,7 +38,7 @@
                                 </form>
                             </td>
                             <td class="py-3 px-4">
-                                <a href="{{ route('employee.edit', $employee->id) }}" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">Edit</a>
+                                <button onclick="openEditModal({{ $employee }})" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">Edit</button>
                             </td>
                         </tr>
                     @endforeach
@@ -47,47 +47,67 @@
         @endif
     </div>
 
+    <!-- Add Employee Modal -->
+    <div id="addEmployeeModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('addEmployeeModal')">&times;</span>
+            <h2>Add Employee</h2>
+            <form action="{{ route('employee.store') }}" method="POST">
+                @csrf
+                <input type="text" name="first_name" placeholder="First Name" required>
+                <input type="text" name="last_name" placeholder="Last Name" required>
+                <input type="text" name="employee_number" placeholder="Employee Number" required>
+                <input type="text" name="department" placeholder="Department" required>
+                <input type="date" name="hire_date" required>
+                <button type="submit">Add Employee</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Employee Modal -->
+    <div id="editEmployeeModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('editEmployeeModal')">&times;</span>
+            <h2>Edit Employee</h2>
+            <form id="editEmployeeForm" method="POST">
+                @csrf
+                @method('PUT')
+                <input type="hidden" id="edit_employee_id">
+                <input type="text" id="edit_first_name" name="first_name" required>
+                <input type="text" id="edit_last_name" name="last_name" required>
+                <input type="text" id="edit_employee_number" name="employee_number" required>
+                <input type="text" id="edit_department" name="department" required>
+                <input type="date" id="edit_hire_date" name="hire_date" required>
+                <button type="submit">Update Employee</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.remove('hidden');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        function openEditModal(employee) {
+            document.getElementById('edit_employee_id').value = employee.id;
+            document.getElementById('edit_first_name').value = employee.first_name;
+            document.getElementById('edit_last_name').value = employee.last_name;
+            document.getElementById('edit_employee_number').value = employee.employee_number;
+            document.getElementById('edit_department').value = employee.department;
+            document.getElementById('edit_hire_date').value = employee.hire_date;
+            document.getElementById('editEmployeeForm').action = `/employee/${employee.id}`;
+            openModal('editEmployeeModal');
+        }
+    </script>
+
     <style>
-        .background {
-            margin: 0;
-            padding: 160px;
-            font-family: sans-serif;
-            background: linear-gradient(#30142b, #2772a1);
-        }
-
-        .table {
-            width: 100%;
-            height: 20vh;
-            grid-template-columns: 1fr 1fr;
-            border: 3px solid #00ffff;
-            box-shadow: 0 0 50px 0 #00a6bc;
-        }
-
-        .button {
-            position: relative;
-            display: inline-block;
-            padding: 10px 20px;
-            color: #b79726;
-            font-size: 16px;
-            text-decoration: none;
-            text-transform: uppercase;
-            overflow: hidden;
-            transition: .5s;
-            margin-top: 5px;
-            letter-spacing: 4px;
-        }
-
-        .button {
-            background: #2772a1;
-            font: 6px;
-            color: #fff;
-            border-radius: 0px;
-            box-shadow: 0 0 5px #00a6bc,
-                        0 0 10px #00a6bc,
-                        0 0 10px #00a6bc,
-                        0 0 20px #00a6bc;
-        }
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); display: flex; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 20px; border-radius: 5px; width: 300px; }
+        .close { float: right; cursor: pointer; }
+        .hidden { display: none; }
     </style>
-    <script src="https://cdn.tailwindcss.com"></script>
-
 @endsection
