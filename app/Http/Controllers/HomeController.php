@@ -18,7 +18,16 @@ class HomeController extends Controller
         if (Auth::check()) {
            // Get the user type and user ID
             $usertype = Auth::user()->usertype;
-          
+            $userID = Auth::user()->id;
+            // Retrieve the employee record using the user_id from the authenticated user
+            $userStatus = Employees::where('user_id', $userID)->first();
+
+            if ($userStatus && $userStatus->active == 0) {
+                // Log the user out if the account is deactivated
+                Auth::logout();
+                return redirect()->back()->withErrors(['status' => 'Your account is deactivated. Please contact support.']);
+            }
+
 
             // Pass the equipment data to the view
             if ($usertype == 'user') {
