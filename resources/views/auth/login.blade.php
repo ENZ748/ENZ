@@ -41,7 +41,7 @@
             @endif
 
             <x-primary-button class="ms-3">
-            <div class="button">Sign In</div>
+            <div class="button">login</div>
 
             </x-primary-button>
             </form>
