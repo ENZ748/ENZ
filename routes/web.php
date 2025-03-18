@@ -50,7 +50,7 @@ Route::delete('/accountability/{id}', [AssignController::class, 'destroy'])->nam
 
 
 
-Route::get('/dashboard', function () {
+Route::middleware([Admin::class])->get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -74,7 +74,7 @@ Route::middleware('auth')->group(function () {
 });
 
 
-Route::get('/chart', [ChartController::class, 'showChart'])->name('chart');
+Route::middleware([Admin::class])->get('/chart', [ChartController::class, 'showChart'])->name('chart');
 
 
 require __DIR__.'/auth.php';
