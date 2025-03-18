@@ -7,27 +7,26 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
-        /* Basic styling for the sidebar */
+        /* Sidebar Styling */
         .sidebar {
             position: fixed;
             top: 0;
             left: 0;
             height: 100%;
-            width: 180px;
+            width: 220px;
             background-color: rgb(0, 116, 232);
             padding-top: 20px;
             text-align: center;
+            transition: all 0.3s;
         }
         .sidebar img {
             width: 120px;
             height: 120px;
             background-color: white;
             padding: 10px;
-            border-radius: 50%; /* Makes the image circular */
+            border-radius: 50%;
             display: block;
-            margin: 0 auto; /* Centers the image */
-            margin-bottom: 20px;
-
+            margin: 0 auto 20px;
         }
         .sidebar a {
             color: white;
@@ -35,22 +34,55 @@
             text-decoration: none;
             display: flex;
             align-items: center;
-
         }
         .sidebar a i {
             margin-right: 10px;
         }
         .sidebar a:hover {
-            background-color: rgb(0, 116, 232);
+            background-color: rgb(0, 90, 180);
         }
         .content {
-            margin-left: 260px;
+            margin-left: 240px;
             padding: 20px;
+            transition: all 0.3s;
+        }
+
+        /* Responsive Sidebar */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 0;
+                overflow: hidden;
+            }
+            .sidebar.open {
+                width: 220px;
+            }
+            .content {
+                margin-left: 0;
+            }
+        }
+
+        /* Button for toggling sidebar */
+        .toggle-btn {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            background-color: rgb(0, 116, 232);
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            z-index: 1000;
         }
     </style>
 </head>
 <body>
-    <div class="sidebar">
+
+    <!-- Sidebar -->
+    <button class="toggle-btn d-md-none" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="sidebar" id="sidebar">
         <img src="EnzLogo.png" alt="Enz Logo">
         <ul class="nav flex-column">
             <li class="nav-item">
@@ -81,6 +113,11 @@
         </ul>
     </div>
 
+    <script>
+        function toggleSidebar() {
+            document.getElementById("sidebar").classList.toggle("open");
+        }
+    </script>
 
 </body>
 </html>
