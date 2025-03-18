@@ -3,7 +3,7 @@
 @section('content')
     <div class="max-w-6xl mx-auto p-6 rounded-lg shadow-md">
         <h1 class="text-3xl font-bold text-blue-800 mb-6">EMPLOYEE</h1>
-        <a href="{{ route('employee.create') }}" class="button">Add Employee</a>
+        <a href="{{ route('register') }}" class="button">Add Employee</a>
 
         @if($employees->isEmpty())
             <p class="text-center text-gray-600 mt-6">No employees found.</p> <!-- No data message -->

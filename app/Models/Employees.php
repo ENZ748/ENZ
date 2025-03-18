@@ -16,7 +16,8 @@ class Employees extends Model
         'employee_number',
         'department', 
         'hire_date',
-        'active'
+        'active',
+        'user_id'
     ];
 
     public function assigned()
@@ -27,5 +28,9 @@ class Employees extends Model
     public function return_item()
     {
         return $this->hasMany(ReturnItem::class);
+    }
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }
