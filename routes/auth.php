@@ -10,6 +10,7 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Middleware\Admin;
 
 Route::middleware('guest')->group(function () {
  
@@ -55,7 +56,7 @@ Route::middleware('auth')->group(function () {
         ->name('logout');
 });
 
-Route::get('register', [RegisteredUserController::class, 'create'])
+Route::middleware([Admin::class])->get('register', [RegisteredUserController::class, 'create'])
 ->name('register');
 
 Route::post('register', [RegisteredUserController::class, 'store']);
