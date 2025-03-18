@@ -43,8 +43,6 @@
         </form>
     </div>
     <style>
-        .background
-    
         </style>
 </body>
 </html>
