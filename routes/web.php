@@ -16,6 +16,7 @@ Route::get('/', function () {
 })->name('/');
 
 //Inventoryyyyyy
+
 //add
 
 Route::get('Inventory/create', [InventoryController::class, 'create'])->name('equipment.create');
