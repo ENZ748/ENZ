@@ -1,4 +1,4 @@
-@extends('layouts.userApp') <!-- Extend the master layout -->
+@extends('layouts.userApp')
 
 @section('content')
 
