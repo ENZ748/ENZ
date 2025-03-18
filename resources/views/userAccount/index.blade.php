@@ -14,7 +14,7 @@
                 </tr>
             </thead>
             <tbody>
-                <!-- Loop through each asset and display it in a new row -->
+                
                 @foreach($assets as $asset)
                     <tr class="border-t hover:bg-gray-50">
                         <td class="px-4 py-2 text-gray-600">{{ $asset->equipment_name }}</td>
