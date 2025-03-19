@@ -46,7 +46,7 @@ class HomeController extends Controller
 
                 return view('userAccount.index', compact('assets'));
             } elseif ($usertype == 'admin') {
-                return view('dashboard');
+                return redirect('chart');
             } else {
                 return redirect()->back();
             }

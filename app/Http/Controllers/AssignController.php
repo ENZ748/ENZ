@@ -37,6 +37,7 @@ class AssignController extends Controller
                     'equipment_name' => $equipment->equipment_name,
                     'equipment_detail' => $equipment->equipment_details,
                     'id' => $accountability->id,
+                    'created_at' => $accountability->created_at,
                 ]);
             }
         }
@@ -63,7 +64,7 @@ class AssignController extends Controller
             'notes' => 'required|string|max:255',
             'assigned_by' => 'required|in:IT,HR',
         ]);
-    
+
         // Get employee ID by employee number
         $employee = Employees::where('employee_number', $request->employee_number)->first();
         if (!$employee) {
@@ -96,8 +97,8 @@ class AssignController extends Controller
     {
         $accountability = Accountability::findOrFail($id);
         $employees = Employees::all();
-        $equipments = Equipments::all();
-
+        $equipments = Equipments::where('equipment_status', 0)->get();
+        
         return view('assign.edit', compact('employees', 'equipments', 'accountability'));
     }
 

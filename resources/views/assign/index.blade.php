@@ -20,6 +20,7 @@
                         <th>Employee Number</th>
                         <th>Equipment Name</th>
                         <th>Equipment Detail</th>
+                        <th>Assigned Date</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -31,9 +32,11 @@
                             <td>{{ $item['employee_number'] }}</td>
                             <td>{{ $item['equipment_name'] }}</td>
                             <td>{{ $item['equipment_detail'] }}</td>
+                            <td>{{ $item['created_at'] }}</td>
                             <td>
-                                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" 
-                                        data-bs-target="#editItemModal{{ $item['id'] }}">Edit</button>
+                                    <!-- <button class="btn btn-sm btn-primary" data-bs-toggle="modal" 
+                                            data-bs-target="#editItemModal{{ $item['id'] }}">Edit</button> -->
+                                        <a class="btn btn-primary btn-sm" href="{{ route('accountability.edit', $item['id']) }}">Edit</a>
                                 <form action="{{ route('accountability.destroy', $item['id']) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure?');">
                                     @csrf
                                     @method('DELETE')
@@ -42,7 +45,7 @@
                             </td>
                         </tr>
 
-                        <!-- Edit Item Modal -->
+                        <!-- Edit Item Modal
                         <div class="modal fade" id="editItemModal{{ $item['id'] }}" tabindex="-1" aria-labelledby="editItemModalLabel" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
@@ -57,13 +60,14 @@
                                             <label for="employee_number">Employee</label>
                                             <input type="text" name="employee_number" class="form-control" value="{{ $item['employee_number'] }}">
                                             <label for="equipment_name">Equipment</label>
+                                            
                                             <input type="text" name="equipment_name" class="form-control" value="{{ $item['equipment_name'] }}">
                                             <button type="submit" class="btn btn-primary mt-3">Update</button>
                                         </form>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                     @endforeach
                 </tbody>
             </table>

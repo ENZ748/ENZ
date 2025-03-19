@@ -13,8 +13,8 @@ class HistoryController extends Controller
      public function index()
     {
         // Retrieve all accountability records (or use a specific query)
-        $historyItems = ReturnItem::all();  // This retrieves all accountability records
-    
+        $historyItems = ReturnItem::orderBy('created_at', 'desc')->get();
+
         // Initialize an empty collection to hold the data for the view
         $returned_items = collect();
     

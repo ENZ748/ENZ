@@ -38,6 +38,9 @@ Route::get('employee/edit/{id}', [UserController::class, 'edit'])->name('employe
 Route::put('employee/update/{id}', [UserController::class, 'update'])->name('employee.update');
 Route::patch('/employee/{id}/toggleStatus', [UserController::class, 'toggleStatus'])->name('employee.toggleStatus');
 
+// Route for the edit assigned items modal
+Route::get('/employee/items/{id}', [UserController::class, 'items'])->name('employee.items');
+
 //Assignnnnn
 //Displayy
 
@@ -68,6 +71,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware([Admin::class])->get('/accountability', [AssignController::class, 'index'])->name('accountability');
     Route::middleware([Admin::class])->get('/user', [UserController::class, 'index'])->name('user');
     Route::middleware([Admin::class])->get('/Inventory', [InventoryController::class, 'index'])->name('inventory');
+    Route::middleware([Admin::class])->get('/chart', [ChartController::class, 'showChart'])->name('chart');
 
     //Historyyyyy
     Route::middleware([Admin::class])->get('/history', [HistoryController::class, 'index'])->name('history');
@@ -75,7 +79,6 @@ Route::middleware('auth')->group(function () {
 });
 
 
-Route::middleware([Admin::class])->get('/chart', [ChartController::class, 'showChart'])->name('chart');
 
 
 require __DIR__.'/auth.php';
