@@ -1,29 +1,15 @@
 @extends('layouts.userApp')
 
 @section('content')
-
-    <h1 class="text-2xl font-semibold text-gray-800 mb-4">User Page</h1>
-
-    <div class="overflow-x-auto">
-        <table class="min-w-full table-auto bg-white border-collapse border border-gray-200">
-            <thead class="bg-gray-100">
-                <tr>
-                    <th class="px-4 py-2 text-left text-gray-700">Equipment Name</th>
-                    <th class="px-4 py-2 text-left text-gray-700">Serial Number</th>
-                    <th class="px-4 py-2 text-left text-gray-700">Equipment Details</th>
-                </tr>
-            </thead>
-            <tbody>
-                
-                @foreach($assets as $asset)
-                    <tr class="border-t hover:bg-gray-50">
-                        <td class="px-4 py-2 text-gray-600">{{ $asset->equipment_name }}</td>
-                        <td class="px-4 py-2 text-gray-600">{{ $asset->serial_number }}</td>
-                        <td class="px-4 py-2 text-gray-600">{{ $asset->equipment_details }}</td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
+    <h1 class="text-2xl font-bold mb-4">User Assets</h1>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        @foreach($assets as $asset)
+            <div class="bg-white shadow-md rounded-lg p-4 border border-gray-200">
+                <h2 class="text-lg font-semibold"><strong>Equipment:</strong> {{ $asset->equipment_name }}</h2>
+                <p class="text-gray-600"><strong>Serial Number:</strong> {{ $asset->serial_number }}</p>
+                <p class="text-gray-600"><strong>Details:</strong> {{ $asset->equipment_details }}</p>
+            </div>
+        @endforeach
     </div>
-
 @endsection
