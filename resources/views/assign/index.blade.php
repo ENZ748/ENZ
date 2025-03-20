@@ -32,7 +32,7 @@
                             <td>{{ $item['employee_number'] }}</td>
                             <td>{{ $item['equipment_name'] }}</td>
                             <td>{{ $item['equipment_detail'] }}</td>
-                            <td>{{ $item['created_at'] }}</td>
+                            <td>{{ $item['assigned_date'] }}</td>
                             <td>
                                     <!-- <button class="btn btn-sm btn-primary" data-bs-toggle="modal" 
                                             data-bs-target="#editItemModal{{ $item['id'] }}">Edit</button> -->
