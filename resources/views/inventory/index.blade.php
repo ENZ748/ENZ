@@ -19,6 +19,10 @@
         <div class="flex justify-end mb-4">
             <a href="{{ route('equipment.create') }}" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Add Equipment</a>
         </div>
+        
+        <div class="flex justify-end mb-4">
+            <a href="{{ route('equipment.create') }}" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Add Category</a>
+        </div>
 
         @if($equipments->isEmpty())
             <p class="text-center text-gray-600">No equipment available.</p>

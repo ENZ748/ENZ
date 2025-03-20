@@ -7,12 +7,23 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\AssignController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\HistoryController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\BrandController;
+use App\Http\Controllers\UnitController;
+use App\Http\Controllers\ItemController;
+
+
+
 use App\Http\Middleware\Admin;
 
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
+})->name('/');
+
+Route::get('/items', function () {
+    return view('inventory.items');
 })->name('/');
 
 //Inventoryyyyyy
@@ -79,6 +90,28 @@ Route::middleware('auth')->group(function () {
 });
 
 
+//Categoryyyyy
+Route::get('/categories/create', [CategoryController::class, 'create'])->name('categories.create');
+Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+Route::post('/categories/add', [CategoryController::class, 'store'])->name('categories.store');
+
+
+//Brandssssss
+Route::get('/brands/create', [BrandController::class, 'create'])->name('brands.create');
+Route::get('/brands', [BrandController::class, 'index'])->name('brands.index');
+Route::post('/brands/add', [BrandController::class, 'store'])->name('brands.store');
+
+
+//Unitsssssssss
+Route::get('/units/create', [UnitController::class, 'create'])->name('units.create');
+Route::get('/units', [UnitController::class, 'index'])->name('units.index');
+Route::post('/units/add', [UnitController::class, 'store'])->name('units.store');
+
+//Itemsssssssssss
+Route::get('items/create', [ItemController::class, 'create'])->name('items.create');
+Route::post('items', [ItemController::class, 'store'])->name('items.store');
+Route::get('get-brands/{categoryId}', [ItemController::class, 'getBrands']);
+Route::get('get-units/{brandId}', [ItemController::class, 'getUnits']);
 
 
 require __DIR__.'/auth.php';
