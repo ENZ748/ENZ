@@ -2,6 +2,7 @@
 
 @section('content')
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <div class="container mt-4">
         <h1 class="text-primary">Employees</h1>
@@ -24,6 +25,7 @@
                             <th>Hire Date</th>
                             <th>Status</th>
                             <th>Action</th>
+                            <th>View</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -35,28 +37,22 @@
                                 <td>{{ $employee->department }}</td>
                                 <td>{{ $employee->hire_date }}</td>
                                 <td>
-                                    <form action="{{ route('employee.toggleStatus', $employee->id) }}" method="POST">
+                                    <form action="{{ route('employee.toggleStatus', $employee->id) }}" method="POST" class="status-form">
                                         @csrf
                                         @method('PATCH')
-                                        <button type="submit" class="btn btn-sm {{ $employee->active ? 'btn-success' : 'btn-danger' }}">
+                                        <button type="button" class="btn btn-sm {{ $employee->active ? 'btn-success' : 'btn-danger' }}"
+                                            onclick="confirmStatusChange(this)">
                                             {{ $employee->active ? 'Active' : 'Inactive' }}
                                         </button>
                                     </form>
                                 </td>
                                 <td>
-                                <button class="btn btn-primary btn-sm" onclick="openEditModal({{ $employee }})">
-                                    Edit
-                                </button>
-
+                                    <button class="btn btn-primary btn-sm" onclick="openEditModal({{ $employee }})">Edit</button>
                                 </td>
-
                                 <td>
-                                <button class="btn btn-primary btn-sm" onclick="openAssignedModal({{ $employee->id }})">
-                                    View
-                                </button>
+                                    <button class="btn btn-primary btn-sm" onclick="openAssignedModal({{ $employee->id }})">View</button>
                                 </td>
                             </tr>
-
                         @endforeach
                     </tbody>
                 </table>
@@ -210,7 +206,23 @@
         }
 
 
-    </script>
+        function confirmStatusChange(button) {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You are about to change the employee's status!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, change it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    button.closest('form').submit();
+                }
+            });
+         }
+
+         </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
