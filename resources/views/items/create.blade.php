@@ -1,6 +1,10 @@
 @extends('layouts.app')
 
 @section('content')
+@php
+    use App\Models\Brand;
+    use App\Models\Unit;
+@endphp
 <div class="container">
     <h2>Add Item</h2>
 
