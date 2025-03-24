@@ -9,7 +9,7 @@ class Unit extends Model
     use HasFactory;
 
 
-    protected $table = 'unittbl';
+    protected $table = 'units';
     // Define the attributes that are mass assignable
     protected $fillable = [
         'unit_name',

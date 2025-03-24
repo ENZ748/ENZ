@@ -13,6 +13,16 @@
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
+    @if($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <form action="{{ route('items.store') }}" method="post">
         @csrf
      
@@ -24,7 +34,7 @@
                     {{ $category->category_name }}
                 </option>
             @endforeach
-        </select><br><br>
+        </select><br><br>   
 
         @if (old('category_id'))
             @php

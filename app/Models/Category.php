@@ -8,7 +8,7 @@ class Category extends Model
 {
     use HasFactory;
 
-    protected $table = 'categorytbl';    
+    protected $table = 'categories';    
 
     protected $fillable = [
         'category_name'

@@ -108,8 +108,9 @@ Route::get('/units', [UnitController::class, 'index'])->name('units.index');
 Route::post('/units/add', [UnitController::class, 'store'])->name('units.store');
 
 //Itemsssssssssss
+Route::get('items', [ItemController::class, 'index'])->name('items');
 Route::get('items/create', [ItemController::class, 'create'])->name('items.create');
-Route::post('items', [ItemController::class, 'store'])->name('items.store');
+Route::post('items/store', [ItemController::class, 'store'])->name('items.store');
 Route::get('get-brands/{categoryId}', [ItemController::class, 'getBrands']);
 Route::get('get-units/{brandId}', [ItemController::class, 'getUnits']);
 

@@ -22,6 +22,8 @@ return new class extends Migration
             $table->date('date_acquired');  // Date acquired
             $table->timestamps();  // Created at & Updated at
         });
+
+        
     }
 
     /**

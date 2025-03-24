@@ -10,7 +10,7 @@ class Item extends Model
 {
     use HasFactory;
 
-    protected $table = "itemstbl";
+    protected $table = "items";
     protected $fillable = [
         'categoryID',
         'brandID',

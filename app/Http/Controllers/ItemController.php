@@ -9,6 +9,11 @@ use Illuminate\Http\Request;
 
 class ItemController extends Controller
 {
+    public function index()
+    {
+      return view('items.index');  
+    }
+    
     // Show the item creation form
     public function create()
     {
@@ -20,6 +25,9 @@ class ItemController extends Controller
     // Store the new item
     public function store(Request $request)
     {
+        \Log::info($request->all());
+        $categoryId = intval($request->category_id);
+
         // Validate the form data
         $request->validate([
             'category_id'    => 'required|exists:categories,id', 
@@ -43,6 +51,6 @@ class ItemController extends Controller
         ]);
 
         // Redirect back to the form with a success message
-        return redirect()->route('items.create')->with('success', 'Item added successfully!');
+        return redirect()->route('items')->with('success', 'Item added successfully!');
     }
 }
