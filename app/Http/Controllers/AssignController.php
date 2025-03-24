@@ -12,9 +12,9 @@ class AssignController extends Controller
 {
     public function index()
     {
-        // Retrieve all accountability records
-        $accountabilities = Accountability::all();
-        
+
+        $accountabilities = Accountability::orderBy('assigned_date', 'desc')->get();
+
         // Retrieve all employees and available equipment
         $employees = Employees::all();
         $equipments = Equipments::all();
@@ -37,7 +37,7 @@ class AssignController extends Controller
                     'equipment_name' => $equipment->equipment_name,
                     'equipment_detail' => $equipment->equipment_details,
                     'id' => $accountability->id,
-                    'created_at' => $accountability->created_at,
+                    'assigned_date' => $accountability->assigned_date,
                 ]);
             }
         }
