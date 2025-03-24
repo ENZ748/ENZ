@@ -6,10 +6,9 @@
 
     <div class="container mt-4">
         <h1 class="text-primary">Employees</h1>
-        <!-- <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addEmployeeModal">
+        <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addEmployeeModal">
             Add Employee
-        </button> -->
-        <a href="{{ route('register') }}" class="btn btn-primary mb-3">Add Employee</a>
+        </button> 
 
         @if($employees->isEmpty())
             <div class="alert alert-warning">No employees found.</div>
@@ -61,7 +60,7 @@
     </div>
 
     <!-- Add Employee Modal -->
-    <div class="modal fade" id="addEmployeeModal" tabindex="-1" aria-labelledby="addEmployeeModalLabel" aria-hidden="true">
+        <<div class="modal fade" id="addEmployeeModal" tabindex="-1" aria-labelledby="addEmployeeModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -69,7 +68,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="{{ route('employee.store') }}" method="POST">
+                    <form method="POST" action="{{ route('register') }}">
                         @csrf
                         <div class="mb-3">
                             <label class="form-label">First Name</label>
@@ -91,6 +90,18 @@
                             <label class="form-label">Hire Date</label>
                             <input type="date" name="hire_date" class="form-control" required>
                         </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="email" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <input type="password" name="password" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Confirm Password</label>
+                            <input type="password" name="password_confirmation" class="form-control" required>
+                        </div>
                         <button type="submit" class="btn btn-primary">Add Employee</button>
                     </form>
                 </div>
@@ -98,45 +109,46 @@
         </div>
     </div>
 
-    <!-- Edit Employee Modal -->
-    <div class="modal fade" id="editEmployeeModal" tabindex="-1" aria-labelledby="editEmployeeModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Edit Employee</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form action="{{ route('employee.update', $employee->id) }}" id="editEmployeeForm" method="POST">
-                        @csrf
-                        @method('PUT')
-                        <input type="hidden" id="edit_employee_id">
-                        <div class="mb-3">
-                            <label class="form-label">First Name</label>
-                            <input type="text" id="edit_first_name" name="first_name" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Last Name</label>
-                            <input type="text" id="edit_last_name" name="last_name" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Employee Number</label>
-                            <input type="text" id="edit_employee_number" name="employee_number" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Department</label>
-                            <input type="text" id="edit_department" name="department" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Hire Date</label>
-                            <input type="date" id="edit_hire_date" name="hire_date" class="form-control" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Update Employee</button>
-                    </form>
+
+                <!-- Edit Employee Modal -->
+        <div class="modal fade" id="editEmployeeModal" tabindex="-1" aria-labelledby="editEmployeeModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Employee</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editEmployeeForm" method="POST">
+                            @csrf
+                            @method('PUT')
+                            <input type="hidden" id="edit_employee_id">
+                            <div class="mb-3">
+                                <label class="form-label">First Name</label>
+                                <input type="text" id="edit_first_name" name="first_name" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Last Name</label>
+                                <input type="text" id="edit_last_name" name="last_name" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Employee Number</label>
+                                <input type="text" id="edit_employee_number" name="employee_number" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Department</label>
+                                <input type="text" id="edit_department" name="department" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Hire Date</label>
+                                <input type="date" id="edit_hire_date" name="hire_date" class="form-control" required>
+                            </div>
+                            <button type="button" class="btn btn-primary" onclick="confirmUpdate()">Update Employee</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
     <!-- Assigned Item Modal -->
     <div class="modal fade" id="editAssignedModal" tabindex="-1" aria-labelledby="editAssignedModalLabel" aria-hidden="true">
@@ -167,8 +179,8 @@
 
     <script>
 
-        function openEditModal(employee) {
-            // Populate form fields with the employee data
+    function openEditModal(employee) {
+            // Populate form fields with employee data
             document.getElementById('edit_employee_id').value = employee.id;
             document.getElementById('edit_first_name').value = employee.first_name;
             document.getElementById('edit_last_name').value = employee.last_name;
@@ -176,11 +188,48 @@
             document.getElementById('edit_department').value = employee.department;
             document.getElementById('edit_hire_date').value = employee.hire_date;
 
-            // Optionally set the form action dynamically based on the employee's ID
+            // Dynamically set form action
             document.getElementById('editEmployeeForm').action = `/employee/update/${employee.id}`;
 
-            // Show the modal
+            // Show modal
             new bootstrap.Modal(document.getElementById('editEmployeeModal')).show();
+        }
+
+        function confirmUpdate() {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "Do you want to update this employee's details?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, update it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Show loading animation
+                    Swal.fire({
+                        title: "Updating...",
+                        text: "Please wait while processing your request.",
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    // Simulate a delay (2 seconds) before success message
+                    setTimeout(() => {
+                        Swal.fire({
+                            title: "Success!",
+                            text: "Employee details have been updated.",
+                            icon: "success",
+                            confirmButtonColor: "#3085d6"
+                        }).then(() => {
+                            document.getElementById('editEmployeeForm').submit(); // Submit after clicking "OK"
+                        });
+                    }, 2000); // Simulated 2-second delay
+                }
+            });
         }
 
         function openAssignedModal(employeeId) {
@@ -207,20 +256,41 @@
 
 
         function confirmStatusChange(button) {
-            Swal.fire({
-                title: "Are you sure?",
-                text: "You are about to change the employee's status!",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Yes, change it!"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    button.closest('form').submit();
-                }
-            });
-         }
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You are about to change the employee's status!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, change it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Show loading animation
+                Swal.fire({
+                    title: "Processing...",
+                    text: "Please wait",
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                // Simulate a delay (2 seconds) before showing success message
+                setTimeout(() => {
+                    Swal.fire({
+                        title: "Success!",
+                        text: "Employee status has been updated.",
+                        icon: "success",
+                        confirmButtonColor: "#3085d6"
+                    }).then(() => {
+                        button.closest('form').submit(); // Only submit after clicking OK
+                    });
+                }, 2000); // Simulated delay of 2 seconds
+            }
+        });
+    }
 
          </script>
 
