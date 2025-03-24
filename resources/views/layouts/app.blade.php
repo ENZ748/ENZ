@@ -15,10 +15,11 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100 flex">
-            <!-- Sidebar -->
-            @include('layouts.sidebar')
+        @include('layouts.navigation')
 
+        <div class="min-h-screen bg-gray-100 flex">
+
+        @include('layouts.sidebar')
             <!-- Main Content Area -->
             <div class="flex-1 p-6">
                 <!-- Page Heading -->
@@ -32,6 +33,9 @@
 
                 <!-- Page Content -->
                 <main>
+                    <div class="content">
+                        @yield('content')
+                    </div>
                 </main>
             </div>
         </div>

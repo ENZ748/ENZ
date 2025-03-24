@@ -4,12 +4,16 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Employees;
+use App\Models\Equipments;
+use App\Models\Accountability;
 
 class UserController extends Controller
 {
     public function index()
     {
-        $employees = Employees::all();
+        $employees = Employees::orderBy('hire_date', 'desc')->get();
+
+               
           return view('users.index',compact('employees'));
     }
 
@@ -70,7 +74,33 @@ class UserController extends Controller
 
         return redirect()-> route('user')->with('success', 'Equipment Updated successfully');  
 
+    }   
+
+    public function items($id)
+    {
+        $accountabilities = Accountability::where('employee_id', $id)->get();
+        
+        // Initialize an empty collection to hold the assigned items
+        $assigned_items = collect();
+    
+        // Loop through each accountability record
+        foreach ($accountabilities as $accountability) {
+            // Retrieve employee and equipment details
+            $equipment = Equipments::find($accountability->equipment_id);
+    
+            if ($equipment) {
+                $assigned_items->push([
+                    'equipment_name' => $equipment->equipment_name,
+                    'equipment_detail' => $equipment->equipment_details,
+                    'equipment_serialNumber' => $equipment->serial_number,
+                ]);
+            }
+        }
+    
+        // Return the assigned items to the view
+        return response()->json($assigned_items);
     }
+    
 
 
     public function destroy($id)
