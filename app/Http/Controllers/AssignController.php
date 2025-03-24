@@ -12,9 +12,9 @@ class AssignController extends Controller
 {
     public function index()
     {
-        // Retrieve all accountability records
-        $accountabilities = Accountability::all();
-        
+
+        $accountabilities = Accountability::orderBy('assigned_date', 'desc')->get();
+
         // Retrieve all employees and available equipment
         $employees = Employees::all();
         $equipments = Equipments::all();
@@ -27,6 +27,7 @@ class AssignController extends Controller
             // Retrieve employee and equipment details
             $employee = Employees::find($accountability->employee_id);
             $equipment = Equipments::find($accountability->equipment_id);
+            $available_items = Equipments::where('equipment_status', 0)->get();
 
             if ($employee && $equipment) {
                 $assigned_items->push([
@@ -36,12 +37,13 @@ class AssignController extends Controller
                     'equipment_name' => $equipment->equipment_name,
                     'equipment_detail' => $equipment->equipment_details,
                     'id' => $accountability->id,
+                    'assigned_date' => $accountability->assigned_date,
                 ]);
             }
         }
 
         // Return the view with all required data
-        return view('assign.index', compact('assigned_items', 'employees', 'equipments'));
+        return view('assign.index', compact('assigned_items', 'employees', 'equipments','available_items'));
     }
 
     public function create()
@@ -95,8 +97,8 @@ class AssignController extends Controller
     {
         $accountability = Accountability::findOrFail($id);
         $employees = Employees::all();
-        $equipments = Equipments::all();
-
+        $equipments = Equipments::where('equipment_status', 0)->get();
+        
         return view('assign.edit', compact('employees', 'equipments', 'accountability'));
     }
 

@@ -2,12 +2,14 @@
 
 @section('content')
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <div class="container mt-4">
         <h1 class="text-primary">Employees</h1>
-        <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addEmployeeModal">
+        <!-- <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addEmployeeModal">
             Add Employee
-        </button>
+        </button> -->
+        <a href="{{ route('register') }}" class="btn btn-primary mb-3">Add Employee</a>
 
         @if($employees->isEmpty())
             <div class="alert alert-warning">No employees found.</div>
@@ -23,6 +25,7 @@
                             <th>Hire Date</th>
                             <th>Status</th>
                             <th>Action</th>
+                            <th>View</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -34,18 +37,20 @@
                                 <td>{{ $employee->department }}</td>
                                 <td>{{ $employee->hire_date }}</td>
                                 <td>
-                                    <form action="{{ route('employee.toggleStatus', $employee->id) }}" method="POST">
+                                    <form action="{{ route('employee.toggleStatus', $employee->id) }}" method="POST" class="status-form">
                                         @csrf
                                         @method('PATCH')
-                                        <button type="submit" class="btn btn-sm {{ $employee->active ? 'btn-success' : 'btn-danger' }}">
+                                        <button type="button" class="btn btn-sm {{ $employee->active ? 'btn-success' : 'btn-danger' }}"
+                                            onclick="confirmStatusChange(this)">
                                             {{ $employee->active ? 'Active' : 'Inactive' }}
                                         </button>
                                     </form>
                                 </td>
                                 <td>
-                                    <button class="btn btn-primary btn-sm" onclick="openEditModal({{ $employee }})">
-                                        Edit
-                                    </button>
+                                    <button class="btn btn-primary btn-sm" onclick="openEditModal({{ $employee }})">Edit</button>
+                                </td>
+                                <td>
+                                    <button class="btn btn-primary btn-sm" onclick="openAssignedModal({{ $employee->id }})">View</button>
                                 </td>
                             </tr>
                         @endforeach
@@ -102,7 +107,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="editEmployeeForm" method="POST">
+                    <form action="{{ route('employee.update', $employee->id) }}" id="editEmployeeForm" method="POST">
                         @csrf
                         @method('PUT')
                         <input type="hidden" id="edit_employee_id">
@@ -133,18 +138,92 @@
         </div>
     </div>
 
+    <!-- Assigned Item Modal -->
+    <div class="modal fade" id="editAssignedModal" tabindex="-1" aria-labelledby="editAssignedModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Assigned Items</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <table id="assignedItemsTable" class="table">
+                        <thead>
+                            <tr>
+                                <th>Item Name</th>
+                                <th>Details</th>
+                                <th>Serial Number</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Assigned items will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <script>
+
         function openEditModal(employee) {
+            // Populate form fields with the employee data
             document.getElementById('edit_employee_id').value = employee.id;
             document.getElementById('edit_first_name').value = employee.first_name;
             document.getElementById('edit_last_name').value = employee.last_name;
             document.getElementById('edit_employee_number').value = employee.employee_number;
             document.getElementById('edit_department').value = employee.department;
             document.getElementById('edit_hire_date').value = employee.hire_date;
-            document.getElementById('editEmployeeForm').action = `/employee/${employee.id}`;
+
+            // Optionally set the form action dynamically based on the employee's ID
+            document.getElementById('editEmployeeForm').action = `/employee/update/${employee.id}`;
+
+            // Show the modal
             new bootstrap.Modal(document.getElementById('editEmployeeModal')).show();
         }
-    </script>
+
+        function openAssignedModal(employeeId) {
+            fetch(`/employee/items/${employeeId}`)  // Assuming this route returns assigned items
+                .then(response => response.json())
+                .then(assignedItems => {
+                    const tableBody = document.querySelector('#assignedItemsTable tbody');
+                    tableBody.innerHTML = '';  // Clear the table
+
+                    assignedItems.forEach(item => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${item.equipment_name}</td>
+                            <td>${item.equipment_detail}</td>
+                            <td>${item.equipment_serialNumber}</td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+
+                    // Show the modal
+                    new bootstrap.Modal(document.getElementById('editAssignedModal')).show();
+                });
+        }
+
+
+        function confirmStatusChange(button) {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You are about to change the employee's status!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, change it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    button.closest('form').submit();
+                }
+            });
+         }
+
+         </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
 @endsection
