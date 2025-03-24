@@ -15,7 +15,7 @@
 
     <form action="{{ route('items.store') }}" method="post">
         @csrf
-    
+     
         <label for="category">Category:</label>
         <select id="category" name="category_id" onchange="this.form.submit()">
             <option value="">Select Category</option>

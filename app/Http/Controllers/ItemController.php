@@ -22,11 +22,11 @@ class ItemController extends Controller
     {
         // Validate the form data
         $request->validate([
-            'category_id'    => 'required|exists:categories,id', // Ensure category is valid
-            'brand_id'       => 'required|exists:brands,id', // Ensure brand is valid
-            'unit_id'        => 'required|exists:units,id', // Ensure unit is valid
-            'serial_number'  => 'required|unique:items,serial_number', // Ensure serial number is unique
-            'equipment_status' => 'required|in:0,1,2', // Ensure valid equipment status
+            'category_id'    => 'required|exists:categories,id', 
+            'brand_id'       => 'required|exists:brands,id', 
+            'unit_id'        => 'required|exists:units,id', 
+            'serial_number'  => 'required|unique:items,serial_number', 
+            'equipment_status' => 'required|in:0,1,2', 
             'date_purchased' => 'required|date',
             'date_acquired'  => 'required|date',
         ]);
