@@ -91,7 +91,7 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{route('inventory')}}">
+                <a class="nav-link" href="{{route('categories.index')}}">
                     <i class="fas fa-box"></i> Inventory
                 </a>
             </li>
