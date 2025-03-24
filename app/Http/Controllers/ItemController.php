@@ -11,9 +11,13 @@ class ItemController extends Controller
 {
     public function index()
     {
-      return view('items.index');  
-    }
     
+        $items = Item::all();
+        $categories = Category::all();
+
+        return view('items.index', compact('items', 'categories'));
+    }
+
     // Show the item creation form
     public function create()
     {

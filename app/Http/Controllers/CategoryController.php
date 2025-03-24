@@ -9,14 +9,15 @@ class CategoryController extends Controller
 
     public function index()
     {
-        return view('categories.index');
+        $categories = Category::all();
+        return view('categories.index', compact('categories'));
     }
     // Display the form to create a new category
     public function create()
     {
         return view('categories.create'); // Make sure you have a view for the form
     }
-
+    
     // Store the new category in the database
     public function store(Request $request)
     {

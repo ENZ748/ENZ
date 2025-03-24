@@ -97,15 +97,18 @@ Route::post('/categories/add', [CategoryController::class, 'store'])->name('cate
 
 
 //Brandssssss
-Route::get('/brands/create', [BrandController::class, 'create'])->name('brands.create');
-Route::get('/brands', [BrandController::class, 'index'])->name('brands.index');
-Route::post('/brands/add', [BrandController::class, 'store'])->name('brands.store');
+Route::get('/brands/create/{categoryID}', [BrandController::class, 'create'])->name('brands.create');
+Route::post('/brands/add/{categoryID}', [BrandController::class, 'store'])->name('brands.store');
+//View Brandsss
+Route::get('/brands/{categoryID}', [BrandController::class, 'index'])->name('brands.index');
 
 
 //Unitsssssssss
-Route::get('/units/create', [UnitController::class, 'create'])->name('units.create');
-Route::get('/units', [UnitController::class, 'index'])->name('units.index');
-Route::post('/units/add', [UnitController::class, 'store'])->name('units.store');
+Route::get('/units/create/{brandID}/{categoryID}', [UnitController::class, 'create'])->name('units.create');
+Route::post('/units/add/{brandID}/{categoryID}', [UnitController::class, 'store'])->name('units.store');
+//View Unitss
+Route::get('/units/{brandID}/{categoryID}', [UnitController::class, 'index'])->name('units.index');
+
 
 //Itemsssssssssss
 Route::get('items', [ItemController::class, 'index'])->name('items');
@@ -115,4 +118,7 @@ Route::get('get-brands/{categoryId}', [ItemController::class, 'getBrands']);
 Route::get('get-units/{brandId}', [ItemController::class, 'getUnits']);
 
 
-require __DIR__.'/auth.php';
+
+
+
+require __DIR__.'/auth.php';    

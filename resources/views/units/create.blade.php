@@ -15,8 +15,8 @@
         <div>{{ session('success') }}</div>
     @endif
 
-    <form action="{{ route('units.store') }}" method="POST">
-        @csrf
+    <form action="{{ route('units.store', ['brandID' => $brandID, 'categoryID' => $categoryID]) }}" method="POST">
+    @csrf
         <label for="unit_name">Unit Name:</label>
         <input type="text" id="unit_name" name="unit_name" required>
         

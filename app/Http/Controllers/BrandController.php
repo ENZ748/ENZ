@@ -9,33 +9,34 @@ use App\Models\Category;
 
 class BrandController extends Controller
 {
-    public function index()
+    public function index($categoryID)
     {
-        return view('brands.index');
+        $brands = Brand::where('categoryID', $categoryID)->get();
+        return view('brands.index', compact('brands', 'categoryID'));
     }
+
     // Display the form to create a new category
-    public function create()
+    public function create($categoryID)
     {
-        return view('brands.create'); // Make sure you have a view for the form
+        return view('brands.create', compact('categoryID')); // Make sure you have a view for the form
     }
 
     // Store the new category in the database
-    public function store(Request $request)
+    public function store(Request $request, $categoryID)
     {
-        $category = Category::all();
-
         // Validate the incoming data
         $request->validate([
             'brand_name' => 'required|unique:brandtbl,brand_name|max:255',
         ]);
-
-        // Create a new category and save it to the database
+    
+        // Create a new brand and save it to the database
         Brand::create([
             'brand_name' => $request->brand_name,
-            'categoryID' => 1,
+            'categoryID' => $categoryID,
         ]);
-
-        // Redirect to a page, for example the index page
-        return redirect()->route('brands.index')->with('success', 'Brand created successfully!');
+    
+        // Redirect to the brands index page for that category
+        return redirect()->route('brands.index', $categoryID)->with('success', 'Brand created successfully!');
     }
+    
 }
