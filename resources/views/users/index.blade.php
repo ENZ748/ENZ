@@ -59,8 +59,8 @@
         @endif
     </div>
 
-    <!-- Add Employee Modal -->
-        <<div class="modal fade" id="addEmployeeModal" tabindex="-1" aria-labelledby="addEmployeeModalLabel" aria-hidden="true">
+            <!-- Add Employee Modal -->
+        <div class="modal fade" id="addEmployeeModal" tabindex="-1" aria-labelledby="addEmployeeModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -68,7 +68,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form method="POST" action="{{ route('register') }}">
+                    <form method="POST" action="{{ route('register') }}" onsubmit="return validatePassword(event)">
                         @csrf
                         <div class="mb-3">
                             <label class="form-label">First Name</label>
@@ -96,11 +96,12 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Password</label>
-                            <input type="password" name="password" class="form-control" required>
+                            <input type="password" id="password" name="password" class="form-control" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Confirm Password</label>
-                            <input type="password" name="password_confirmation" class="form-control" required>
+                            <input type="password" id="confirm_password" name="password_confirmation" class="form-control" required>
+                            <span id="password_error" class="text-danger" style="display: none;">⚠ Passwords do not match.</span>
                         </div>
                         <button type="submit" class="btn btn-primary">Add Employee</button>
                     </form>
@@ -108,6 +109,8 @@
             </div>
         </div>
     </div>
+
+
 
 
                 <!-- Edit Employee Modal -->
@@ -291,6 +294,20 @@
             }
         });
     }
+
+
+        function validatePassword(event) {
+            var password = document.getElementById("password").value;
+            var confirmPassword = document.getElementById("confirm_password").value;
+            var errorSpan = document.getElementById("password_error");
+
+            if (password !== confirmPassword) {
+                errorSpan.style.display = "block"; // Show error message
+                event.preventDefault(); // Prevent form submission
+            } else {
+                errorSpan.style.display = "none"; // Hide error message
+            }
+        }
 
          </script>
 
