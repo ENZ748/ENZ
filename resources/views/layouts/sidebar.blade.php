@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laravel Sidebar</title>
+    <title>Responsive Sidebar</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
@@ -17,7 +17,8 @@
             background-color: rgb(0, 116, 232);
             padding-top: 20px;
             text-align: center;
-            transition: all 0.3s;
+            transition: all 0.3s ease-in-out;
+            z-index: 1000;
         }
         .sidebar img {
             width: 120px;
@@ -41,8 +42,9 @@
         .sidebar a:hover {
             background-color: rgb(0, 90, 180);
         }
+        
         .content {
-            margin-left: 240px;
+            margin-left: 220px;
             padding: 20px;
             transition: all 0.3s;
         }
@@ -50,14 +52,16 @@
         /* Responsive Sidebar */
         @media (max-width: 768px) {
             .sidebar {
-                width: 0;
-                overflow: hidden;
+                left: -220px;
             }
             .sidebar.open {
-                width: 220px;
+                left: 0;
             }
             .content {
                 margin-left: 0;
+            }
+            .overlay {
+                display: block;
             }
         }
 
@@ -71,17 +75,43 @@
             border: none;
             padding: 10px;
             cursor: pointer;
-            z-index: 1000;
+            z-index: 1100;
+        }
+
+        /* Overlay to cover content when sidebar is open */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 999;
+        }
+        .overlay.show {
+            display: block;
+        }
+
+        /* Keep sidebar visible on larger screens */
+        @media (min-width: 769px) {
+            .sidebar {
+                left: 0;
+            }
+            .content {
+                margin-left: 220px;
+            }
         }
     </style>
 </head>
 <body>
 
-    <!-- Sidebar -->
+    <!-- Toggle Button -->
     <button class="toggle-btn d-md-none" onclick="toggleSidebar()">
         <i class="fas fa-bars"></i>
     </button>
 
+    <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <img src="EnzLogo.png" alt="Enz Logo">
         <ul class="nav flex-column">
@@ -91,7 +121,7 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{route('categories.index')}}">
+                <a class="nav-link" href="{{route('items')}}">
                     <i class="fas fa-box"></i> Inventory
                 </a>
             </li>
@@ -113,9 +143,13 @@
         </ul>
     </div>
 
+    <!-- Overlay -->
+    <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
     <script>
         function toggleSidebar() {
             document.getElementById("sidebar").classList.toggle("open");
+            document.getElementById("overlay").classList.toggle("show");
         }
     </script>
 

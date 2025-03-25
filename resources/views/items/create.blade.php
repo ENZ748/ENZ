@@ -13,21 +13,11 @@
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    @if($errors->any())
-        <div class="alert alert-danger">
-            <ul>
-                @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
-    <form action="{{ route('items.store') }}" method="post">
+    <form action="{{ route('items.store') }}" method="post" id="add-item-form">
         @csrf
      
         <label for="category">Category:</label>
-        <select id="category" name="category_id" onchange="this.form.submit()">
+        <select id="category" name="category_id">
             <option value="">Select Category</option>
             @foreach ($categories as $category)
                 <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
@@ -36,35 +26,19 @@
             @endforeach
         </select><br><br>   
 
-        @if (old('category_id'))
-            @php
-                $brands = Brand::where('categoryID', old('category_id'))->get();
-            @endphp
+        <div id="brand-container">
             <label for="brand">Brand Name:</label>
-            <select id="brand" name="brand_id" onchange="this.form.submit()">
+            <select id="brand" name="brand_id">
                 <option value="">Select Brand</option>
-                @foreach ($brands as $brand)
-                    <option value="{{ $brand->id }}" {{ old('brand_id') == $brand->id ? 'selected' : '' }}>
-                        {{ $brand->brand_name }}
-                    </option>
-                @endforeach
             </select><br><br>
+        </div>
 
-            @if (old('brand_id'))
-                @php
-                    $units = Unit::where('brandID', old('brand_id'))->get();
-                @endphp
-                <label for="unit">Unit:</label>
-                <select id="unit" name="unit_id">
-                    <option value="">Select Unit</option>
-                    @foreach ($units as $unit)
-                        <option value="{{ $unit->id }}" {{ old('unit_id') == $unit->id ? 'selected' : '' }}>
-                            {{ $unit->unit_name }}
-                        </option>
-                    @endforeach
-                </select><br><br>
-            @endif
-        @endif
+        <div id="unit-container">
+            <label for="unit">Unit:</label>
+            <select id="unit" name="unit_id">
+                <option value="">Select Unit</option>
+            </select><br><br>
+        </div>
 
         <label for="serial_number">Serial Number:</label>
         <input type="text" id="serial_number" name="serial_number" value="{{ old('serial_number') }}" required><br><br>
@@ -82,7 +56,87 @@
         <label for="date_acquired">Date Acquired:</label>
         <input type="date" id="date_acquired" name="date_acquired" value="{{ old('date_acquired') }}" required><br><br>
 
-        <button type="submit">Submit</button>
+        <button type="submit" id="submit-btn">Submit</button>
     </form>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+
+    // Load brands when a category is selected
+    $('#category').change(function() {
+        var categoryId = $(this).val();
+        
+        // Clear the brand and unit selections
+        $('#brand').empty().append('<option value="">Select Brand</option>');
+        $('#unit').empty().append('<option value="">Select Unit</option>');
+        
+        if (categoryId) {
+            $.ajax({
+                url: '/get-brands/' + categoryId, // Change URL as needed
+                type: 'GET',
+                success: function(data) {
+                    $.each(data, function(key, brand) {
+                        $('#brand').append('<option value="' + brand.id + '">' + brand.brand_name + '</option>');
+                    });
+                }
+            });
+        }
+    });
+
+    // Load units when a brand is selected
+    $('#brand').change(function() {
+        var brandId = $(this).val();
+        
+        // Clear the unit selection
+        $('#unit').empty().append('<option value="">Select Unit</option>');
+        
+        if (brandId) {
+            $.ajax({
+                url: '/get-units/' + brandId, // Change URL as needed
+                type: 'GET',
+                success: function(data) {
+                    $.each(data, function(key, unit) {
+                        $('#unit').append('<option value="' + unit.id + '">' + unit.unit_name + '</option>');
+                    });
+                }
+            });
+        }
+    });
+
+    // Submit the form via AJAX
+    $('#add-item-form').submit(function(e) {
+        e.preventDefault(); // Prevent the default form submission
+        
+        var formData = $(this).serialize(); // Get all the form data
+
+        $.ajax({
+            url: $(this).attr('action'), // Use the form's action attribute (POST route)
+            method: 'POST',
+            data: formData,
+            success: function(response) {
+                // Handle success response
+                if(response.success) {
+                    alert('Item added successfully!');
+                    window.location.href = "{{ route('items') }}"; // Pass the URL as a string
+                } else {
+                    window.location.href = "{{ route('items') }}"; // Pass the URL as a string
+                }
+            },
+            error: function(xhr) {
+                console.log(xhr); // This will log the full response from the server
+                if (xhr.responseJSON && xhr.responseJSON.errors) {
+                    var errors = xhr.responseJSON.errors;
+                    for (var field in errors) {
+                        alert(errors[field].join(' ')); // Show the error messages for each field
+                    }
+                } else {
+                    alert('An unknown error occurred. Please try again.');
+                }
+            }
+        });
+    });
+});
+</script>
 @endsection

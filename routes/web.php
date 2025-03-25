@@ -112,10 +112,21 @@ Route::get('/units/{brandID}/{categoryID}', [UnitController::class, 'index'])->n
 
 //Itemsssssssssss
 Route::get('items', [ItemController::class, 'index'])->name('items');
+Route::get('items/category', [ItemController::class, 'category'])->name('items.index');
+
+//Update Itemmm
+Route::get('items/edit/{id}', [ItemController::class, 'edit'])->name('items.edit');
+Route::put('items/update/{id}', [ItemController::class, 'update'])->name('items.update');
+
+//Delete Itemmm
+Route::delete('/items/{id}', [ItemController::class, 'destroy'])->name('items.destroy');
+
+
 Route::get('items/create', [ItemController::class, 'create'])->name('items.create');
 Route::post('items/store', [ItemController::class, 'store'])->name('items.store');
-Route::get('get-brands/{categoryId}', [ItemController::class, 'getBrands']);
-Route::get('get-units/{brandId}', [ItemController::class, 'getUnits']);
+Route::get('/get-brands/{categoryId}', [ItemController::class, 'getBrands']);
+Route::get('/get-units/{brandId}', [ItemController::class, 'getUnits']);
+
 
 
 

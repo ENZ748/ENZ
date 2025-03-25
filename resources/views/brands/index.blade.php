@@ -9,6 +9,13 @@
 
 @endphp
 
+@if ($errors->has('brand_name'))
+    <div class="alert alert-danger">
+        {{ $errors->first('brand_name') }}
+    </div>
+@endif
+
+
 <h1>All Units for {{ $category ? $category->category_name : 'No Category Found' }}</h1>
 
 <!-- Add a New Brand Link for the Specific Category -->
