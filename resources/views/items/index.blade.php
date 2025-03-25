@@ -26,6 +26,7 @@
 
 <!-- Add Item Button -->
 <a href="{{ route('items.create') }}" class="btn btn-primary mb-4 px-4 py-2 bg-blue-500 text-white rounded-lg">Add Item</a>
+<a href="{{ route('categories.index') }}" class="btn btn-primary mb-4">View Categories</a>
 
 <!-- Card Grid for Displaying Items -->
 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4">
