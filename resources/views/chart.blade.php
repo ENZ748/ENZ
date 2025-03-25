@@ -12,7 +12,7 @@
           <span class="icon">📦</span>
         </div>
         <div class="card-title">TOTAL ITEMS</div>
-        <div class="card-value">24,538</div>
+        <div class="card-value">{{$count_items}}</div>
         <div class="card-indicator indicator-up">
           ↑ 12.3% from last month
         </div>
@@ -24,7 +24,7 @@
           <span class="icon">🏷️</span>
         </div>
         <div class="card-title">TOTAL CATEGORIES</div>
-        <div class="card-value">128</div>
+        <div class="card-value">{{$count_categories}}</div>
         <div class="card-indicator indicator-up">
           ↑ 4 new categories
         </div>
@@ -62,7 +62,7 @@
       <span class="close-modal" onclick="closeModal('items')">&times;</span>
       <h2 class="modal-title">Total Items Details</h2>
       <div class="modal-details">
-        <p><strong>Current Total:</strong> 24,538 items</p>
+        <p><strong>Current Total:</strong> {{$count_items}} items</p>
         <p><strong>Change:</strong> +12.3% from last month (21,850 items)</p>
         <p><strong>New Additions:</strong> 3,145 items this month</p>
         <p><strong>Discontinued:</strong> 457 items this month</p>
@@ -76,7 +76,7 @@
       <span class="close-modal" onclick="closeModal('categories')">&times;</span>
       <h2 class="modal-title">Categories Details</h2>
       <div class="modal-details">
-        <p><strong>Total Categories:</strong> 128</p>
+        <p><strong>Total Categories:</strong> {{$count_categories}}</p>
         <p><strong>New Categories:</strong> Electronics, Home Décor, Outdoor Tools, Personal Care</p>
         <p><strong>Largest Category:</strong> Kitchen Appliances (2,345 items)</p>
         <p><strong>Smallest Category:</strong> Specialty Tools (78 items)</p>
