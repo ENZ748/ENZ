@@ -10,6 +10,34 @@
                     </a>
                 </div>
             </div>
+<body>           
+        <!-- Flag Selector -->
+        <div class="flag-selector">
+            <div class="flag-container">
+                <div class="flag-button flag-australia" data-flag="australia" data-country="Australia" onclick="changeBackground('australia')"></div>
+                <span class="flag-name">Australia</span>
+            </div>
+            <div class="flag-container">
+                <div class="flag-button flag-canada" data-flag="canada" data-country="Canada" onclick="changeBackground('canada')"></div>
+                <span class="flag-name">Canada</span>
+            </div>
+            <div class="flag-container">
+                <div class="flag-button flag-newzealand" data-flag="newzealand" data-country="New Zealand" onclick="changeBackground('newzealand')"></div>
+                <span class="flag-name">New Zealand</span>
+            </div>
+            <div class="flag-container">
+                <div class="flag-button flag-germany" data-flag="germany" data-country="Germany" onclick="changeBackground('germany')"></div>
+                <span class="flag-name">Germany</span>
+            </div>
+            <div class="flag-container">
+                <div class="flag-button flag-ireland" data-flag="ireland" data-country="Ireland" onclick="changeBackground('ireland')"></div>
+                <span class="flag-name">Ireland</span>
+            </div>
+            <div class="flag-container">
+                <div class="flag-button flag-unitedkingdom" data-flag="unitedkingdom" data-country="United Kingdom" onclick="changeBackground('unitedkingdom')"></div>
+                <span class="flag-name">UK</span>
+            </div>
+        </div>
 
             <!-- Social Media Icons Container -->
             <div class="flex items-center space-x-1"> <!-- More compact spacing -->
@@ -39,7 +67,7 @@
                 <div class="social-icon">
                     <a href="https://www.youtube.com/@enzconsultancy" target="_blank">
                         <button class="button btn-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 576 512"> 
+                            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 576 512" fill="red"> 
                                 <path d="M549.7 124.1c-6.3-23.7-24.8-42.3-48.3-48.6C458.8 64 288 64 288 64S117.2 64 74.6 75.5c-23.5 6.3-42 24.9-48.3 48.6-11.4 42.9-11.4 132.3-11.4 132.3s0 89.4 11.4 132.3c6.3 23.7 24.8 41.5 48.3 47.8C117.2 448 288 448 288 448s170.8 0 213.4-11.5c23.5-6.3 42-24.2 48.3-47.8 11.4-42.9 11.4-132.3 11.4-132.3s0-89.4-11.4-132.3zm-317.5 213.5V175.2l142.7 81.2-142.7 81.2z"></path>
                             </svg>
                         </button>
@@ -50,7 +78,7 @@
                 <div class="social-icon">
                     <a href="https://www.facebook.com/enzecs" target="_blank">
                         <button class="button btn-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 320 512" fill="#4267B2">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 320 512" fill="#1e90ff">
                                 <path d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z"></path>
                             </svg>
                         </button>
@@ -61,7 +89,7 @@
                 <div class="social-icon">
                     <a href="https://www.linkedin.com/company/enz/" target="_blank">
                         <button class="button btn-5">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512" fill="#4267B2">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512" fill="#1e90ff">
                                 <path d="M100.28 448H7.4V148.9h92.88zM53.79 108.1C24.09 108.1 0 83.5 0 53.8a53.79 53.79 0 0 1 107.58 0c0 29.7-24.1 54.3-53.79 54.3zM447.9 448h-92.68V302.4c0-34.7-.7-79.2-48.29-79.2-48.29 0-55.69 37.7-55.69 76.7V448h-92.78V148.9h89.08v40.8h1.3c12.4-23.5 42.69-48.3 87.88-48.3 94 0 111.28 61.9 111.28 142.3V448z"></path>
                             </svg>
                         </button>
@@ -157,8 +185,87 @@
         </div>
     </div>
 </nav>
+</body>
 
 <style>
+    body {
+            background: linear-gradient(to right,#449DD1,rgb(243, 249, 252));
+        }
+    
+    * Icons Container */
+        .icons-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Uniform Icon Styling */
+        .icon-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .icon-wrapper:hover {
+            background-color: rgba(0,0,0,0.1);
+            transform: scale(1.1);
+        }
+
+        .icon-wrapper svg {
+            width: 24px;
+            height: 24px;
+        }
+        /* Flag Selector */
+        .flag-selector {
+            display: flex;
+            gap: 50px;
+            align-items: center;
+        }
+
+        .flag-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .flag-button {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-size: cover;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .flag-button:hover {
+            transform: scale(1.1);
+            border-color: #007bff;
+        }
+
+        .flag-button.active {
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0,123,255,0.3);
+        }
+
+        .flag-name {
+            font-size: 13px;
+            color: #333;
+            text-align: center;
+        }
+
+        /* Flag SVGs (kept from previous implementation) */
+        .flag-australia { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Ccircle cx='30' cy='30' r='30' fill='%230052B4'/%3E%3Cpath fill='%23FFF' d='M30 0l15 25.98-15 25.98L15 25.98z'/%3E%3Cpath fill='%23C8102E' d='M0 30l30-15 30 15-30 15z'/%3E%3C/svg%3E"); }
+        .flag-canada { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Ccircle cx='30' cy='30' r='30' fill='%23FFF'/%3E%3Cpath fill='%23FF0000' d='M0 0h25v60H0zM35 0h25v60H35z'/%3E%3Cpath fill='%23FF0000' d='M30 15l-6 9h12z M30 45l-6-9h12z'/%3E%3C/svg%3E"); }
+        .flag-newzealand { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Ccircle cx='30' cy='30' r='30' fill='%23012169'/%3E%3Cpath fill='%23FFF' d='M0 0l30 15L0 30z'/%3E%3Cpath fill='%23C8102E' d='M0 0h15l45 60h-15zM60 0h-15L0 60h15z'/%3E%3Cpath fill='%23FFF' d='M24.75 21l-2.25-6.75-2.25 6.75h-7.5l6 4.5-2.25 6.75 6-4.5 6 4.5-2.25-6.75 6-4.5z'/%3E%3C/svg%3E"); }
+        .flag-germany { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Ccircle cx='30' cy='30' r='30' fill='%23000000'/%3E%3Crect width='60' height='20' y='0' fill='%23DD0000'/%3E%3Crect width='60' height='20' y='20' fill='%23FFCC00'/%3E%3Crect width='60' height='20' y='40' fill='%23FF0000'/%3E%3C/svg%3E"); }
+        .flag-ireland { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Ccircle cx='30' cy='30' r='30' fill='%23FFF'/%3E%3Crect width='20' height='60' fill='%23169B62'/%3E%3Crect width='20' height='60' x='40' fill='%23FF883E'/%3E%3C/svg%3E"); }
+        .flag-unitedkingdom { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Crect width='60' height='60' fill='%23012169'/%3E%3Cpath fill='%23FFF' d='M30 0v30h30v-30z'/%3E%3Cpath fill='%23FFF' d='M0 0v30h30v-30z'/%3E%3Cpath fill='%23C8102E' d='M0 0l30 30h30l-30-30z'/%3E%3Cpath fill='%23C8102E' d='M0 30l30-30h30l-30 30z'/%3E%3Cpath fill='%23C8102E' d='M30 0l-15 15h10v30h10v-30h10z'/%3E%3Cpath fill='%23C8102E' d='M30 30h15v10l-15-10z'/%3E%3C/svg%3E"); }
     /* General navigation styling */
     nav {
         min-height: 56px; /* Fixed minimum height */
@@ -280,3 +387,24 @@
         transform: translate(1px, 1px); /* Smaller movement */
     }
 </style>
+
+<script>
+        const flagButtons = document.querySelectorAll('.flag-button');
+
+        function changeBackground(country) {
+            // Remove active class from all buttons
+            flagButtons.forEach(button => {
+                button.classList.remove('active');
+            });
+
+            // Add active class to selected button
+            const selectedButton = document.querySelector(`.flag-${country}`);
+            selectedButton.classList.add('active');
+
+            // Optional: Add additional functionality as needed
+            console.log(`Selected country: ${country}`);
+        }
+
+        // Set initial background to first flag
+        changeBackground('australia');
+    </script>
