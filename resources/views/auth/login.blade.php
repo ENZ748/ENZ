@@ -1,220 +1,82 @@
-<x-guest-layout>
-<div class="bg"></div>
-<div class="container">
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
-    <img src="EnzLogo.png" alt="Enz Logo">
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
-        <form>
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full " type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(to right, #667eea, #764ba2);
+        }
+        .login-container {
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            overflow: hidden;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .input-field {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 10px;
+            transition: all 0.3s ease;
+        }
+        .input-field:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 8px rgba(102, 126, 234, 0.5);
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen">
+    <div class="bg-white login-container flex w-full max-w-3xl">
+        <!-- Left Side: Image -->
+        <div class="w-1/2 flex items-center justify-center bg-gray-200 p-6">
+            <img src="EnzLogo.png" alt="Logo" class="w-48 h-48">
         </div>
-
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
-
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
-            </label>
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
-                </a>
-            @endif
-
-            <x-primary-button class="ms-3">
-            <div class="button">login</div>
-
-            </x-primary-button>
+        
+        <!-- Right Side: Login Form -->
+        <div class="w-1/2 p-8">
+            <!-- Session Status -->
+            <x-auth-session-status class="mb-4" :status="session('status')" />
+            
+            <form method="POST" action="{{ route('login') }}">
+                @csrf
+                
+                <!-- Email Address -->
+                <div class="mb-4">
+                    <x-input-error :messages="$errors->get('email')" class="text-red-500 text-sm mb-1" />
+                    <label for="email" class="block text-gray-700 font-semibold">Email</label>
+                    <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus autocomplete="username" 
+                        class="input-field w-full mt-1">
+                </div>
+                
+                <!-- Password -->
+                <div class="mb-4">
+                    <x-input-error :messages="$errors->get('password')" class="text-red-500 text-sm mb-1" />
+                    <label for="password" class="block text-gray-700 font-semibold">Password</label>
+                    <input id="password" type="password" name="password" required autocomplete="current-password"
+                        class="input-field w-full mt-1">
+                </div>
+                
+                <!-- Remember Me -->
+                <div class="flex items-center mb-4">
+                    <input id="remember_me" type="checkbox" name="remember" class="mr-2">
+                    <label for="remember_me" class="text-gray-600 text-sm">Remember me</label>
+                </div>
+                
+                <!-- Actions -->
+                <div class="flex items-center justify-between">
+                    @if (Route::has('password.request'))
+                        <a href="{{ route('password.request') }}" class="text-sm text-indigo-600 hover:underline">Forgot your password?</a>
+                    @endif
+                    <button type="submit" class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-transform transform hover:scale-105">Login</button>
+                </div>
             </form>
         </div>
-    </form>
-</div>
-
-    <style>
-     /* From Uiverse.io by jeel-sardhara */ 
-.container {
-  max-width: 350px;
-  background: #f8f9fd;
-  border-radius: 40px;
-  padding: 25px 35px;
-  border: 5px solid rgb(255, 255, 255);
-  box-shadow: rgba(133, 189, 215, 0.8784313725) 0px 30px 30px -20px;
-  margin: 20px;
-  border: 3px solid #00ffff;
-  box-shadow: 0 0 35px 0 #00a6bc;
-  
-}
-
-    .button {
-            position: relative;
-            display: inline-block;
-            padding: 5px 5px;
-            color: #b79726;
-            font-size: 12px;
-            text-decoration: none;
-            text-transform: uppercase;
-            overflow: hidden;
-            transition: .5s;
-            margin-top: 0px;
-            letter-spacing: 2 px;
-        }
-
-        .button {
-            background: #2772a1;
-            font: 6px;
-            color: #fff;
-            border-radius: 0px;
-            box-shadow: 0 0 5px #00a6bc,
-                        0 0 10px #00a6bc,
-                        0 0 10px #00a6bc,
-                        0 0 20px #00a6bc;
-        }
-
-
-
-    .form {
-    margin-top: 20px;
-    }
-
-    .form .input {
-    width: 100%;
-    background: #12b1d1; ;
-    border: none;
-    padding: 15px 20px;
-    border-radius: 20px;
-    margin-top: 15px;
-    box-shadow: #cff0ff 0px 10px 10px -5px;
-    border-inline: 2px solid transparent;
-    }
-
-    .form .input::-moz-placeholder {
-    color: rgb(170, 170, 170);
-    }
-
-    .form .input::placeholder {
-    color: rgb(170, 170, 170);
-    }
-
-    .form .input:focus {
-    outline: none;
-    border-inline: 2px solid #12b1d1;
-    }
-
-    .form .forgot-password {
-    display: block;
-    margin-top: 10px;
-    margin-left: 10px;
-    }
-
-    .form .forgot-password a {
-    font-size: 11px;
-    color: #0099ff;
-    text-decoration: none;
-    }
-
-    .form .login-button {
-    display: block;
-    width: 100%;
-    font-weight: bold;
-    background: linear-gradient(
-        45deg,
-        rgb(16, 137, 211) 0%,
-        rgb(18, 177, 209) 100%
-    );
-    color: white;
-    padding-block: 15px;
-    margin: 20px auto;
-    border-radius: 20px;
-    box-shadow: rgba(133, 189, 215, 0.8784313725) 0px 20px 10px -15px;
-    border: none;
-    transition: all 0.2s ease-in-out;
-    }
-
-    .form .login-button:hover {
-    transform: scale(1.03);
-    box-shadow: rgba(133, 189, 215, 0.8784313725) 0px 23px 10px -20px;
-    }
-
-    .form .login-button:active {
-    transform: scale(0.95);
-    box-shadow: rgba(133, 189, 215, 0.8784313725) 0px 15px 10px -10px;
-    }
-
-    .social-account-container {
-    margin-top: 25px;
-    }
-
-    .social-account-container .title {
-    display: block;
-    text-align: center;
-    font-size: 10px;
-    color: rgb(170, 170, 170);
-    }
-
-    .social-account-container .social-accounts {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-top: 5px;
-    }
-
-    .social-account-container .social-accounts .social-button {
-    border: 5px solid white;
-    padding: 5px;
-    border-radius: 50%;
-    width: 40px;
-    aspect-ratio: 1;
-    display: grid;
-    place-content: center;
-    box-shadow: rgba(133, 189, 215, 0.8784313725) 0px 12px 10px -8px;
-    transition: all 0.2s ease-in-out;
-    }
-
-    .social-account-container .social-accounts .social-button .svg {
-    fill: white;
-    margin: auto;
-    }
-
-    .social-account-container .social-accounts .social-button:hover {
-    transform: scale(1.2);
-    }
-
-    .social-account-container .social-accounts .social-button:active {
-    transform: scale(0.9);
-    }
-
-    .agreement {
-    display: block;
-    text-align: center;
-    margin-top: 15px;
-    }
-
-    .agreement a {
-    text-decoration: none;
-    color: #0099ff;
-    font-size: 9px;
-    }
-
-    </style>
-</x-guest-layout>
+    </div>
+</body>
+</html>
