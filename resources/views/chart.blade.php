@@ -172,52 +172,52 @@
         createChart('chart4', 'doughnut', 'Damaged Items', ['rgba(255, 159, 64, 0.5)', 'rgba(201, 203, 207, 0.5)'], ['rgba(255, 159, 64, 1)', 'rgba(201, 203, 207, 1)']);
     </script>
 
-<style>
-  
-  /* From Uiverse.io by Lokesh1379 */ 
-  .parent {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: right;
-    align-items: right;
-  }
-  
-  .child {
-    width: 50px;
-    height: 50px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transform-style: preserve-3d;
-    transition: all 0.5s ease-in-out;
-    border-radius: 50%;
-    margin: 0 5px;
-  }
-  
-  .child:hover {
-    background-color: white;
-    background-position: -100px 100px, -100px 100px;
-    transform: rotate3d(0.5, 1, 0, 30deg);
-    transform: perspective(180px) rotateX(60deg) translateY(2px);
-    box-shadow: 0px 10px 10px rgb(1, 49, 182);
-  }
-  
-  button {
-    border: none;
-    background-color: transparent;
-    font-size: 20px;
-  }
-  
-  .button:hover {
-    width: inherit;
-    height: inherit;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transform: translate3d(0px, 0px, 15px) perspective(180px) rotateX(-35deg) translateY(2px);
-    border-radius: 50%;
-  }
+  <style>
+    
+    /* From Uiverse.io by Lokesh1379 */ 
+    .parent {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: right;
+      align-items: right;
+    }
+    
+    .child {
+      width: 50px;
+      height: 50px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transform-style: preserve-3d;
+      transition: all 0.5s ease-in-out;
+      border-radius: 50%;
+      margin: 0 5px;
+    }
+    
+    .child:hover {
+      background-color: white;
+      background-position: -100px 100px, -100px 100px;
+      transform: rotate3d(0.5, 1, 0, 30deg);
+      transform: perspective(180px) rotateX(60deg) translateY(2px);
+      box-shadow: 0px 10px 10px rgb(1, 49, 182);
+    }
+    
+    button {
+      border: none;
+      background-color: transparent;
+      font-size: 20px;
+    }
+    
+    .button:hover {
+      width: inherit;
+      height: inherit;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transform: translate3d(0px, 0px, 15px) perspective(180px) rotateX(-35deg) translateY(2px);
+      border-radius: 50%;
+    }
   
    {
       margin: 0;
