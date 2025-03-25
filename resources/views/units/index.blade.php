@@ -30,10 +30,16 @@
                     <p><strong>Created At:</strong> {{ \Carbon\Carbon::parse($unit->created_at)->format('Y-m-d') }}</p>
                 </div>
                 <!-- Link to view the unit's details (you might want to replace 'brands.index' with the correct route for unit details) -->
-                <a href="{{ route('brands.index', $unit->id) }}" class="btn btn-primary">View</a>
+                <a href="{{ route('units.edit',['id' => $unit->id, 'brandID' => $brandID, 'categoryID' => $categoryID]) }}" class="btn btn-primary">Edit</a>
+                <form action="{{ route('units.destroy', ['id' => $unit->id, 'brandID' => $brandID, 'categoryID' => $categoryID]) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this equipment?');">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">DELETE</button>
+                    </form>
             </div>
         </div>
     @endforeach
 </div>
+<script src="https://cdn.tailwindcss.com"></script>
 
 @endsection

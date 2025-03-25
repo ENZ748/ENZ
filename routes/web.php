@@ -94,11 +94,25 @@ Route::middleware('auth')->group(function () {
 Route::get('/categories/create', [CategoryController::class, 'create'])->name('categories.create');
 Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
 Route::post('/categories/add', [CategoryController::class, 'store'])->name('categories.store');
+Route::get('/categories/{id}', [CategoryController::class, 'edit'])->name('categories.edit');
+Route::put('categories/update/{id}', [CategoryController::class, 'update'])->name('categories.update');
+
+//Delete Category
+Route::delete('/categories/{id}', [CategoryController::class, 'destroy'])->name('categories.destroy');
 
 
 //Brandssssss
 Route::get('/brands/create/{categoryID}', [BrandController::class, 'create'])->name('brands.create');
 Route::post('/brands/add/{categoryID}', [BrandController::class, 'store'])->name('brands.store');
+
+//Update Brand
+Route::get('brands/{id}/edit/{categoryID}', [BrandController::class, 'edit'])->name('brands.edit');
+Route::put('/brands/{id}/update/{categoryID}', [BrandController::class, 'update'])->name('brands.update');
+
+//Delete Brand
+Route::delete('/brands/{id}/category/{categoryID}', [BrandController::class, 'destroy'])->name('brands.destroy');
+
+
 //View Brandsss
 Route::get('/brands/{categoryID}', [BrandController::class, 'index'])->name('brands.index');
 
@@ -108,6 +122,14 @@ Route::get('/units/create/{brandID}/{categoryID}', [UnitController::class, 'crea
 Route::post('/units/add/{brandID}/{categoryID}', [UnitController::class, 'store'])->name('units.store');
 //View Unitss
 Route::get('/units/{brandID}/{categoryID}', [UnitController::class, 'index'])->name('units.index');
+
+//Update Unitss
+Route::get('/units/{id}/brand/{brandID}/category/{categoryID}', [UnitController::class, 'edit'])->name('units.edit');
+Route::put('/units/{id}/update/brand/{brandID}/category/{categoryID}', [UnitController::class, 'update'])->name('units.update');
+
+//Delete Unit
+Route::delete('/units/{id}/brand/{brandID}/category/{categoryID}', [UnitController::class, 'destroy'])->name('units.destroy');
+
 
 
 //Itemsssssssssss
