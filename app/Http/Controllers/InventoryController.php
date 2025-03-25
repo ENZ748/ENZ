@@ -9,8 +9,8 @@ class InventoryController extends Controller
 {
     public function index()
     {
-        $equipments = Equipments::all();
-          return view('inventory.index',compact('equipments'));
+        $equipments = Equipments::orderBy('date_acquired', 'desc')->get();
+        return view('inventory.index',compact('equipments'));
     }
 
     public function create()

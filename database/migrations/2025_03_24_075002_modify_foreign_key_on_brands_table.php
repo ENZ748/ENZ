@@ -1,0 +1,34 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::table('brands', function (Blueprint $table) {
+            $table->dropForeign(['categoryID']);  // Drop the current foreign key on the 'brandID' column (if it exists)
+        });
+        Schema::table('brands', function (Blueprint $table) {
+            $table->foreign('categoryID') // The column in 'units' table
+                    ->references('id')     // The column it references in 'brands' table
+                    ->on('categories')         // The 'brands' table
+                    ->onDelete('cascade'); // On delete, cascade the change to 'units' table           
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::table('brands', function (Blueprint $table) {
+            $table->dropForeign(['categoryID']);
+        });
+    }
+};
