@@ -26,8 +26,14 @@ class BrandController extends Controller
     {
         // Validate the incoming data
         $request->validate([
-            'brand_name' => 'required|unique:brandtbl,brand_name|max:255',
+            'brand_name' => 'required|string|max:255',
         ]);
+        if (Brand::where('brand_name', $request->brand_name)
+        ->where('categoryID', $categoryID)
+        ->exists()) {
+        return back()->withErrors(['brand_name' => 'This brand name already exists in this category.']);
+        }
+    
     
         // Create a new brand and save it to the database
         Brand::create([
