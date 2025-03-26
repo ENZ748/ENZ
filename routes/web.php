@@ -11,7 +11,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\ItemController;
-
+use App\Http\Controllers\AssignedItemController;
 
 
 use App\Http\Middleware\Admin;
@@ -146,12 +146,32 @@ Route::delete('/items/{id}', [ItemController::class, 'destroy'])->name('items.de
 
 Route::get('items/create', [ItemController::class, 'create'])->name('items.create');
 Route::post('items/store', [ItemController::class, 'store'])->name('items.store');
+
+
+
 Route::get('/get-brands/{categoryId}', [ItemController::class, 'getBrands']);
 Route::get('/get-units/{brandId}', [ItemController::class, 'getUnits']);
+Route::get('/get-serials/{unitId}', [ItemController::class, 'getSerials']);
+
+// web.php
+
+Route::get('/get-brands-by-category/{categoryId}', [AssignedItemController::class, 'getBrandsByCategory']);
+Route::get('/get-units-by-brand/{brandId}', [AssignedItemController::class, 'getUnitsByBrand']);
+Route::get('/get-serials-by-unit/{unitId}', [AssignedItemController::class, 'getSerialsByUnit']);
 
 
-//Dashhhhhhhboadrrdddddddddddddd
+//Dashhhhhhhboarrdddddddddddddd
 
+
+
+//Assiagned Itemssss(Accountability)
+Route::resource('assigned_items', AssignedItemController::class);
+
+Route::get('assigned_items', [AssignedItemController::class, 'index'])->name('assigned_items.index');
+Route::get('assigned_items/create', [AssignedItemController::class, 'create'])->name('assigned_items.create');
+Route::post('assigned_items', [AssignedItemController::class, 'store'])->name('assigned_items.store');
+Route::get('assigned_items/{id}/edit', [AssignedItemController::class, 'edit'])->name('assigned_items.edit');
+Route::put('assigned_items/{id}', [AssignedItemController::class, 'update'])->name('assigned_items.update');
 
 
 require __DIR__.'/auth.php';    

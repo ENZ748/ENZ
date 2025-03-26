@@ -29,6 +29,13 @@ class Employees extends Model
     {
         return $this->hasMany(ReturnItem::class);
     }
+
+    public function assigned_items()
+    {
+        return $this->hasMany(AssignedItem::class);
+    }
+
+
     public function user()
     {
         return $this->belongsTo(User::class);

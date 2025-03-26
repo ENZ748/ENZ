@@ -25,6 +25,7 @@ class Brand extends Model
     {
         return $this->hasMany(Unit::class, 'brandID');
     }
+    
 
     public function items()
     {

@@ -146,4 +146,10 @@ class ItemController extends Controller
         return response()->json($units);
     }
 
+    public function getSerials($unitId)
+    {
+        $serials = Item::where('unitID', $unitId)->get();
+        return response()->json($serials);
+    }
+
 }
