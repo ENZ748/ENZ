@@ -42,17 +42,17 @@
                         <div class="btn-group gap-2" role="group">
                             <a href="{{ route('units.index', ['brandID' => $brand->id, 'categoryID' => $categoryID]) }}" class="btn btn-sm btn-primary">View Units</a>
                             <!-- Edit Button -->
-                            <button class="btn btn-sm btn-warning editBrandBtn" 
-                                    data-id="{{ $brand->id }}" 
-                                    data-name="{{ $brand->brand_name }}"
-                                    data-bs-toggle="modal" 
-                                    data-bs-target="#editBrandModal">
+                            <button class="btn btn-sm btn-warning editBrandBtn"
+                                data-id="{{ $brand->id }}"
+                                data-category="{{ $categoryID }}"
+                                data-name="{{ $brand->brand_name }}">
                                 Edit
                             </button>
-                            <form action="{{ route('brands.destroy', ['id' => $brand->id, 'categoryID' => $categoryID]) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this brand?');">
+
+                            <form id="delete-form-{{ $brand->id }}" action="{{ route('brands.destroy', ['id' => $brand->id, 'categoryID' => $categoryID]) }}" method="POST" class="d-inline">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete({{ $brand->id }})">Delete</button>
                             </form>
                         </div>
                     </td>
@@ -62,7 +62,31 @@
     </table>
 </div>
 
-<!-- Bootstrap Modal for Adding a Brand -->
+<!-- Modal for Editing a Brand -->
+<div class="modal fade" id="editBrandModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Brand</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editBrandForm" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <div class="mb-3">
+                        <label for="edit_brand_name" class="form-label">Brand Name:</label>
+                        <input type="text" id="edit_brand_name" name="brand_name" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal for Adding a Brand -->
 <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -71,8 +95,8 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="addCategoryForm" action="{{ route('brands.store', $categoryID) }}" method="POST">
-                    @csrf
+            <form id="addCategoryForm" action="{{ route('brands.store', ['categoryID' => $categoryID]) }}" method="POST">
+            @csrf
                     <div class="mb-3">
                         <label for="brand_name" class="form-label">Brand Name:</label>
                         <input type="text" id="brand_name" name="brand_name" class="form-control" required>
@@ -84,103 +108,129 @@
     </div>
 </div>
 
-<!-- Bootstrap Modal for Editing a Brand -->
-<div class="modal fade" id="editBrandModal" tabindex="-1" aria-labelledby="editBrandModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editBrandModalLabel">Edit Brand</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="editBrandForm" action="" method="POST">
-                    @csrf
-                    @method('PUT')
-                    <div class="mb-3">
-                        <label for="edit_brand_name" class="form-label">Brand Name:</label>
-                        <input type="text" id="edit_brand_name" name="brand_name" class="form-control" required>
-                    </div>
-                    <button type="submit" class="btn btn-warning">Update Brand</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Bootstrap JS (Ensure this is loaded for the modal to work) -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<!-- JavaScript for Validation and Alerts -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- JavaScript for Handling Edit Modal Data -->
 <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const editBrandModal = new bootstrap.Modal(document.getElementById('editBrandModal'));
+        const editBrandForm = document.getElementById('editBrandForm');
+        const brandNameInput = document.getElementById('edit_brand_name');
 
-    document.addEventListener("DOMContentLoaded", function () {
-            document.querySelectorAll(".editBrandBtn").forEach(button => {
-                button.addEventListener("click", function () {
-                    let brandId = this.getAttribute("data-id");
-                    let brandName = this.getAttribute("data-name");
+        document.querySelectorAll('.editBrandBtn').forEach(button => {
+            button.addEventListener('click', function() {
+                const brandID = this.getAttribute('data-id');
+                const categoryID = this.getAttribute('data-category');
+                const brandName = this.getAttribute('data-name');
 
-                    // Set form action dynamically
-                    document.getElementById("editBrandForm").setAttribute("action", `/brands/update/${brandId}`);
+                // Set form action dynamically
+                editBrandForm.action = `/brands/${brandID}/${categoryID}`;
+                brandNameInput.value = brandName;
 
-                    // Set input value
-                    document.getElementById("edit_brand_name").value = brandName;
-                });
+                // Show the modal
+                editBrandModal.show();
             });
         });
 
-
-    function validateCategoryForm(event) {
-        event.preventDefault();
-        let categoryName = document.getElementById("brand_name").value.trim();
-
-        if (!categoryName) {
+        // Function to show a loading animation with a custom message
+        function showLoading(message) {
             Swal.fire({
-                icon: 'error',
-                title: 'Validation Error',
-                text: 'Brand name is required!'
+                title: message,
+                html: `
+                    <div style="display: flex; justify-content: center; align-items: center;">
+                        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                    <p>Please wait...</p>
+                `,
+                showConfirmButton: false,
+                allowOutsideClick: false,
+                allowEscapeKey: false
             });
-            return false;
         }
 
+        // Confirm before submitting the Add Brand form
+        document.getElementById('addCategoryForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            let form = this;
+
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You are about to add a new brand!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, proceed",
+                cancelButtonText: "Cancel"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    showLoading("Adding Brand...");
+
+                    setTimeout(() => {
+                        Swal.fire({
+                            title: "Success!",
+                            text: "Brand has been created successfully.",
+                            icon: "success"
+                        }).then(() => {
+                            form.submit();
+                        });
+                    }, 2000);
+                }
+            });
+        });
+
+        // Confirm before submitting the Edit Brand form
+        document.getElementById('editBrandForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            let form = this;
+
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You are about to update this brand!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, update it!",
+                cancelButtonText: "Cancel"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    showLoading("Updating Brand...");
+
+                    setTimeout(() => {
+                        Swal.fire({
+                            title: "Updated!",
+                            text: "Brand has been updated successfully.",
+                            icon: "success"
+                        }).then(() => {
+                            form.submit();
+                        });
+                    }, 2000);
+                }
+            });
+        });
+    });
+
+    function confirmDelete(brandId) {
         Swal.fire({
             title: "Are you sure?",
-            text: "You are about to add a new brand!",
+            text: "You won't be able to revert this!",
             icon: "warning",
             showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, add it!"
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, delete it!"
         }).then((result) => {
             if (result.isConfirmed) {
-                Swal.fire({
-                    title: "Adding Brand...",
-                    text: "Please wait while we process your request.",
-                    allowOutsideClick: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    }
-                });
-
-                setTimeout(() => {
-                    Swal.fire({
-                        icon: "success",
-                        title: "Success!",
-                        text: "Brand has been created successfully."
-                    }).then(() => {
-                        document.getElementById("addCategoryForm").submit();
-                    });
-                }, 2000);
+                document.getElementById('delete-form-' + brandId).submit();
             }
         });
     }
-
-    document.addEventListener("DOMContentLoaded", function () {
-        let alertBox = document.querySelector(".alert-success");
-        if (alertBox) {
-            alertBox.style.display = "none";
-        }
-    });
-
 </script>
+
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 @endsection
