@@ -30,9 +30,14 @@ class AssignedItemController extends Controller
         // Fetch necessary data, like categories, brands, and units
         
         $categories = Category::all(); // assuming you have a Category model
+        $categoriesWithItems = Category::whereHas('items', function ($query) {
+            $query->where('equipment_status', 0);
+        })->get();
+
+        $items = Item::all();
         $employees = Employees::all(); // assuming you have an Employee model
 
-        return view('assigned_items.create', compact('categories', 'employees'));
+        return view('assigned_items.create', compact('categories', 'employees','categoriesWithItems'));
     }
 
     // Store the assigned item
@@ -75,11 +80,17 @@ class AssignedItemController extends Controller
     public function edit($id)
     {
         $assignedItem = AssignedItem::findOrFail($id); // Find the assigned item to edit
-        $categories = Category::all(); // Fetch categories
+        $categories = Category::whereHas('items', function ($query) {
+            $query->where('equipment_status', 0);
+        })->get();
+        
         $employees = Employees::all(); // Fetch employees
-        $brands = Brand::all(); // Fetch brands
-        $units = Unit::all(); // Fetch units
-        $items = Item::all(); // Fetch items
+        $items = Item::where('id', $assignedItem->itemID)->get(); // Fetch items
+
+        // Load the initial brand and unit based on the item data
+        $brands = Brand::has('items')->where('categoryID', $assignedItem->item->categoryID)->get();
+        $units = Unit::has('items')->where('brandID', $assignedItem->item->brandID)->get();
+
 
         // Pass the data to the view
         return view('assigned_items.edit', compact('assignedItem', 'categories', 'employees', 'brands', 'units','items'));
@@ -119,6 +130,36 @@ class AssignedItemController extends Controller
         // Redirect or return response
         return redirect()->route('assigned_items.index')->with('success', 'Assigned item updated successfully!');
     }
+
+    public function getBrands($categoryId)
+    {
+        $brands = Brand::whereHas('items', function ($query) {
+            $query->where('equipment_status', 0);
+        })->where('categoryID', $categoryId)->get();
+
+        return response()->json($brands);
+    }
+
+    public function getUnits($brandId)
+    {
+
+        $units = Unit::whereHas('items', function ($query) {
+            $query->where('equipment_status', 0);
+        })->where('brandID', $brandId)->get();
+
+        return response()->json($units);
+    }
+
+    public function getSerials($unitId)
+    {
+        $serials = Item::where('equipment_status', 0)
+        ->where('unitID', $unitId)->get();
+
+
+        return response()->json($serials);
+    }
+
+
 
     public function markAsReturned($id)
     {

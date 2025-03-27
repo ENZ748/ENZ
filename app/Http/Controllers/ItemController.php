@@ -5,6 +5,10 @@ use App\Models\Category;
 use App\Models\Brand;
 use App\Models\Unit;
 use App\Models\Item;
+use App\Models\Employees;
+
+use App\Models\AssignedItem;
+
 use Illuminate\Http\Request;
 
 class ItemController extends Controller
@@ -13,9 +17,11 @@ class ItemController extends Controller
     {
     
         $items = Item::all();
+        $assigned_items = AssignedItem::all();
+
         $categories = Category::all();
 
-        return view('items.index', compact('items', 'categories'));
+        return view('items.index', compact('items', 'categories','assigned_items'));
     }
 
     // Show the item creation form

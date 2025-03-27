@@ -156,6 +156,11 @@ Route::get('/get-brands/{categoryId}', [ItemController::class, 'getBrands']);
 Route::get('/get-units/{brandId}', [ItemController::class, 'getUnits']);
 Route::get('/get-serials/{unitId}', [ItemController::class, 'getSerials']);
 
+
+Route::get('/get-brands/create/{categoryId}', [AssignedItemController::class, 'getBrands']);
+Route::get('/get-units/create/{brandId}', [AssignedItemController::class, 'getUnits']);
+Route::get('/get-serials/create/{unitId}', [AssignedItemController::class, 'getSerials']);
+
 // web.php
 
 Route::get('/get-brands-by-category/{categoryId}', [AssignedItemController::class, 'getBrandsByCategory']);
