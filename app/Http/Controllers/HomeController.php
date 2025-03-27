@@ -8,6 +8,9 @@ use App\Models\Employees;
 use App\Models\Equipments;
 use App\Models\Accountability;
 use App\Models\ReturnItem;
+use App\Models\AssignedItem;
+use App\Models\Item;
+use App\Models\ItemHistory;
 
 use Illuminate\Support\Facades\Auth;
 
@@ -39,17 +42,13 @@ class HomeController extends Controller
                 $employee = Employees::where('user_id', $user_id)->first();
     
                 // Retrieve all assigned items for the employee
-                $assigned_items = Accountability::where('employee_id', $employee->id)->get();
-    
-                // Retrieve all equipment associated with the assigned items
-                $assets = Equipments::whereIn('id', $assigned_items->pluck('equipment_id'))->get();
-
+                $assigned_items = AssignedItem::where('employeeID', $employee->id)
+                ->where('item_status', 'unreturned')->get();
+     
                 //Historyyyy
-                $history_items = ReturnItem::where('employee_id', $employee->id)->get();
-                $assets_history = Equipments::whereIn('id', $history_items->pluck('equipment_id'))->get();
+                $history_items = ItemHistory::where('employeeID', $employee->id)->get();
 
-
-                return view('userAccount.index', compact('assets','assets_history'));
+                return view('userAccount.index', compact('assigned_items','history_items'));
 
             } elseif ($usertype == 'admin') {
                 return redirect('chart');

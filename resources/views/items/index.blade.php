@@ -22,6 +22,42 @@
         
         <div class="flex justify-end mb-4">
             <a href="{{ route('equipment.create') }}" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Add Category</a>
+=======
+            <div class="text-sm mb-2">
+                <span class="text-gray-600">Assigned to:</span>
+                <span class="text-green-500">
+                    @php 
+                        // Assuming $assigned_items is a collection of assigned items
+                        $assignedItem = $assigned_items->firstWhere('itemID', $item->id); // or another way to find the related assigned item
+
+                        if ($item->equipment_status == 1 && $assignedItem) {
+                            $user = $assignedItem->employee->employee_number;
+                        } else {
+                            $user = 'None';
+                        }
+                    @endphp
+                    {{ $user }}
+                </span>
+            </div>
+
+
+            <div class="text-sm mb-2">
+                <span class="text-gray-600">Date Purchased:</span>
+                <span class="text-blue-500">{{ $datePurchased->format('Y-m-d') }}</span>
+            </div>
+
+            <div class="text-sm mb-2">
+                <span class="text-gray-600">Date Acquired:</span>
+                <span class="text-blue-500">{{ $dateAcquired->format('Y-m-d') }}</span>
+            </div>
+
+            <a href="{{ route('items.edit',$item->id) }}" class="btn btn-primary mb-4 px-4 py-2 bg-blue-500 text-white rounded-lg">Edit</a>
+            <form action="{{ route('items.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this equipment?');">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">DELETE</button>
+            </form>
+              
         </div>
 
         @if($equipments->isEmpty())

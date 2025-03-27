@@ -12,6 +12,7 @@ use App\Http\Controllers\BrandController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\AssignedItemController;
+use App\Http\Controllers\ItemHistoryController;
 
 
 use App\Http\Middleware\Admin;
@@ -86,6 +87,7 @@ Route::middleware('auth')->group(function () {
 
     //Historyyyyy
     Route::middleware([Admin::class])->get('/history', [HistoryController::class, 'index'])->name('history');
+    Route::middleware([Admin::class])->get('/item/history', [ItemHistoryController::class, 'index'])->name('item.history');
 
 });
 
@@ -153,6 +155,11 @@ Route::post('items/store', [ItemController::class, 'store'])->name('items.store'
 Route::get('/get-brands/{categoryId}', [ItemController::class, 'getBrands']);
 Route::get('/get-units/{brandId}', [ItemController::class, 'getUnits']);
 Route::get('/get-serials/{unitId}', [ItemController::class, 'getSerials']);
+
+
+Route::get('/get-brands/create/{categoryId}', [AssignedItemController::class, 'getBrands']);
+Route::get('/get-units/create/{brandId}', [AssignedItemController::class, 'getUnits']);
+Route::get('/get-serials/create/{unitId}', [AssignedItemController::class, 'getSerials']);
 
 // web.php
 

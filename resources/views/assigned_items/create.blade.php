@@ -44,9 +44,9 @@
             <label for="category">Category:</label>
             <select id="category" name="category_id" class="form-control" required>
                 <option value="">Select Category</option>
-                @foreach ($categories as $category)
-                    <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
-                        {{ $category->category_name }}
+                @foreach ($categoriesWithItems as $categoriesWithItem)
+                    <option value="{{ $categoriesWithItem->id }}" {{ old('category_id') == $categoriesWithItem->id ? 'selected' : '' }}>
+                        {{ $categoriesWithItem->category_name }}
                     </option>
                 @endforeach
             </select><br><br>
@@ -112,7 +112,7 @@
 
                 if (categoryId) {
                     $.ajax({
-                        url: '/get-brands/' + categoryId, // Change URL as needed
+                        url: '/get-brands/create/' + categoryId, // Change URL as needed
                         type: 'GET',
                         success: function(data) {
                             if (data.length > 0) {
@@ -140,7 +140,7 @@
 
                 if (brandId) {
                     $.ajax({
-                        url: '/get-units/' + brandId, // Make sure this URL is correct
+                        url: '/get-units/create/' + brandId, // Make sure this URL is correct
                         type: 'GET',
                         success: function(data) {
                             if (data.length > 0) {
@@ -170,7 +170,7 @@
 
                 if (unitId) {
                     $.ajax({
-                        url: '/get-serials/' + unitId, // Change URL as needed
+                        url: '/get-serials/create/' + unitId, // Change URL as needed
                         type: 'GET',
                         success: function(data) {
                             if (data.length > 0) {
