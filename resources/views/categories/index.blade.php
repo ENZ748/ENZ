@@ -36,7 +36,7 @@
                             <td>
                                 <div class="btn-group gap-2">
                                     <a href="{{ route('brands.index', $category->id) }}" class="btn btn-primary btn-sm">
-                                        <i class="bi bi-eye"></i> View
+                                        <i class="bi bi-eye"></i> View Brands
                                     </a>
                                     <button class="btn btn-primary btn-sm edit-category-btn"
                                             data-bs-toggle="modal"
