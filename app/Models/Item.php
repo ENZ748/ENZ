@@ -35,4 +35,15 @@ class Item extends Model
     {
         return $this->belongsTo(Unit::class,'unitID');
     }
+
+    public function assigned_items()
+    {
+        return $this->hasMany(AssignedItem::class);
+    }
+
+    public function item_history()
+    {
+        return $this->hasMany(ItemHistory::class);
+    }
+    
 }

@@ -11,7 +11,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\ItemController;
-
+use App\Http\Controllers\AssignedItemController;
 
 
 use App\Http\Middleware\Admin;
@@ -94,11 +94,25 @@ Route::middleware('auth')->group(function () {
 Route::get('/categories/create', [CategoryController::class, 'create'])->name('categories.create');
 Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
 Route::post('/categories/add', [CategoryController::class, 'store'])->name('categories.store');
+Route::get('/categories/{id}', [CategoryController::class, 'edit'])->name('categories.edit');
+Route::put('categories/update/{id}', [CategoryController::class, 'update'])->name('categories.update');
+
+//Delete Category
+Route::delete('/categories/{id}', [CategoryController::class, 'destroy'])->name('categories.destroy');
 
 
 //Brandssssss
 Route::get('/brands/create/{categoryID}', [BrandController::class, 'create'])->name('brands.create');
 Route::post('/brands/add/{categoryID}', [BrandController::class, 'store'])->name('brands.store');
+
+//Update Brand
+Route::get('brands/{id}/edit/{categoryID}', [BrandController::class, 'edit'])->name('brands.edit');
+Route::put('/brands/{id}/update/{categoryID}', [BrandController::class, 'update'])->name('brands.update');
+
+//Delete Brand
+Route::delete('/brands/{id}/category/{categoryID}', [BrandController::class, 'destroy'])->name('brands.destroy');
+
+
 //View Brandsss
 Route::get('/brands/{categoryID}', [BrandController::class, 'index'])->name('brands.index');
 
@@ -108,6 +122,14 @@ Route::get('/units/create/{brandID}/{categoryID}', [UnitController::class, 'crea
 Route::post('/units/add/{brandID}/{categoryID}', [UnitController::class, 'store'])->name('units.store');
 //View Unitss
 Route::get('/units/{brandID}/{categoryID}', [UnitController::class, 'index'])->name('units.index');
+
+//Update Unitss
+Route::get('/units/{id}/brand/{brandID}/category/{categoryID}', [UnitController::class, 'edit'])->name('units.edit');
+Route::put('/units/{id}/update/brand/{brandID}/category/{categoryID}', [UnitController::class, 'update'])->name('units.update');
+
+//Delete Unit
+Route::delete('/units/{id}/brand/{brandID}/category/{categoryID}', [UnitController::class, 'destroy'])->name('units.destroy');
+
 
 
 //Itemsssssssssss
@@ -124,12 +146,34 @@ Route::delete('/items/{id}', [ItemController::class, 'destroy'])->name('items.de
 
 Route::get('items/create', [ItemController::class, 'create'])->name('items.create');
 Route::post('items/store', [ItemController::class, 'store'])->name('items.store');
+
+
+
 Route::get('/get-brands/{categoryId}', [ItemController::class, 'getBrands']);
 Route::get('/get-units/{brandId}', [ItemController::class, 'getUnits']);
+Route::get('/get-serials/{unitId}', [ItemController::class, 'getSerials']);
+
+// web.php
+
+Route::get('/get-brands-by-category/{categoryId}', [AssignedItemController::class, 'getBrandsByCategory']);
+Route::get('/get-units-by-brand/{brandId}', [AssignedItemController::class, 'getUnitsByBrand']);
+Route::get('/get-serials-by-unit/{unitId}', [AssignedItemController::class, 'getSerialsByUnit']);
+
+
+//Dashhhhhhhboarrdddddddddddddd
 
 
 
+//Assiagned Itemssss(Accountability)
+Route::resource('assigned_items', AssignedItemController::class);
 
+Route::get('assigned_items', [AssignedItemController::class, 'index'])->name('assigned_items.index');
+Route::get('assigned_items/create', [AssignedItemController::class, 'create'])->name('assigned_items.create');
+Route::post('assigned_items', [AssignedItemController::class, 'store'])->name('assigned_items.store');
+Route::get('assigned_items/{id}/edit', [AssignedItemController::class, 'edit'])->name('assigned_items.edit');
+Route::put('assigned_items/{id}', [AssignedItemController::class, 'update'])->name('assigned_items.update');
+
+Route::post('assigned-items/{id}/return', [AssignedItemController::class, 'markAsReturned'])->name('assigned_items.return');
 
 
 require __DIR__.'/auth.php';    

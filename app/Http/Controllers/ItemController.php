@@ -58,6 +58,7 @@ class ItemController extends Controller
         return redirect()->route('items')->with('success', 'Item added successfully!');
     }
 
+    //Update Item
     public function edit($id)
     {
         $item = Item::findOrFail($id);
@@ -97,13 +98,14 @@ class ItemController extends Controller
         $item->date_acquired = $validated['date_acquired'];
 
         // Save the updated item
-        $item->save();
+        
 
         // Redirect back to the edit page with a success message
         return redirect()->route('items', $item->id)
             ->with('success', 'Item updated successfully!');
     }
-
+   
+    //Delete Item
     public function destroy($id)
     {
         Item::where('id', $id)->delete();
@@ -142,6 +144,12 @@ class ItemController extends Controller
     {
         $units = Unit::where('brandID', $brandId)->get();
         return response()->json($units);
+    }
+
+    public function getSerials($unitId)
+    {
+        $serials = Item::where('unitID', $unitId)->get();
+        return response()->json($serials);
     }
 
 }

@@ -59,61 +59,62 @@
         @endif
     </div>
 
-            <!-- Add Employee Modal -->
+        
+        <!-- Add Employee Modal -->
         <div class="modal fade" id="addEmployeeModal" tabindex="-1" aria-labelledby="addEmployeeModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Add Employee</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form method="POST" action="{{ route('register') }}" onsubmit="return validatePassword(event)">
-                        @csrf
-                        <div class="mb-3">
-                            <label class="form-label">First Name</label>
-                            <input type="text" name="first_name" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Last Name</label>
-                            <input type="text" name="last_name" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Employee Number</label>
-                            <input type="text" name="employee_number" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Department</label>
-                            <input type="text" name="department" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Hire Date</label>
-                            <input type="date" name="hire_date" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Email</label>
-                            <input type="email" name="email" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Password</label>
-                            <input type="password" id="password" name="password" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Confirm Password</label>
-                            <input type="password" id="confirm_password" name="password_confirmation" class="form-control" required>
-                            <span id="password_error" class="text-danger" style="display: none;">⚠ Passwords do not match.</span>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Add Employee</button>
-                    </form>
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add Employee</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="addEmployeeForm" method="POST" action="{{ route('register') }}" onsubmit="return confirmAddEmployee(event)">
+                            @csrf
+                            <div class="mb-3">
+                                <label class="form-label">First Name</label>
+                                <input type="text" name="first_name" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Last Name</label>
+                                <input type="text" name="last_name" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Employee Number</label>
+                                <input type="text" name="employee_number" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Department</label>
+                                <input type="text" name="department" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Hire Date</label>
+                                <input type="date" name="hire_date" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" name="email" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Password</label>
+                                <input type="password" id="password" name="password" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Confirm Password</label>
+                                <input type="password" id="confirm_password" name="password_confirmation" class="form-control" required>
+                                <span id="password_error" class="text-danger" style="display: none;">⚠ Passwords do not match.</span>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Add Employee</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
 
 
 
-                <!-- Edit Employee Modal -->
+        <!-- Edit Employee Modal -->
         <div class="modal fade" id="editEmployeeModal" tabindex="-1" aria-labelledby="editEmployeeModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -296,18 +297,62 @@
     }
 
 
-        function validatePassword(event) {
-            var password = document.getElementById("password").value;
-            var confirmPassword = document.getElementById("confirm_password").value;
-            var errorSpan = document.getElementById("password_error");
+    function validatePassword() {
+        var password = document.getElementById("password").value;
+        var confirmPassword = document.getElementById("confirm_password").value;
+        var errorSpan = document.getElementById("password_error");
 
-            if (password !== confirmPassword) {
-                errorSpan.style.display = "block"; // Show error message
-                event.preventDefault(); // Prevent form submission
-            } else {
-                errorSpan.style.display = "none"; // Hide error message
-            }
+        if (password !== confirmPassword) {
+            errorSpan.style.display = "block"; // Show error message
+            return false; // Prevent form submission
+        } else {
+            errorSpan.style.display = "none"; // Hide error message
+            return true;
         }
+    }
+
+    function confirmAddEmployee(event) {
+        event.preventDefault(); // Prevent form from submitting immediately
+
+        if (!validatePassword()) {
+            return; // Stop if passwords don't match
+        }
+
+        Swal.fire({
+            title: "Are you sure?",
+            text: "Do you want to add this employee?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, add employee!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Show loading animation
+                Swal.fire({
+                    title: "Processing...",
+                    text: "Please wait while we add the employee.",
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                // Simulate a delay (2 seconds) before showing the success message
+                setTimeout(() => {
+                    Swal.fire({
+                        title: "Success!",
+                        text: "Employee has been added successfully.",
+                        icon: "success",
+                        confirmButtonColor: "#3085d6"
+                    }).then(() => {
+                        document.getElementById('addEmployeeForm').submit(); // Submit after clicking "OK"
+                    });
+                }, 2000); // 2-second delay
+            }
+        });
+    }
 
          </script>
 
