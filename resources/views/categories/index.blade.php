@@ -36,7 +36,7 @@
                             <td>
                                 <div class="btn-group gap-2">
                                     <a href="{{ route('brands.index', $category->id) }}" class="btn btn-primary btn-sm">
-                                        <i class="bi bi-eye"></i> View
+                                        <i class="bi bi-eye"></i> View Brands
                                     </a>
                                     <button class="btn btn-primary btn-sm edit-category-btn"
                                             data-bs-toggle="modal"
@@ -76,7 +76,7 @@
                         <label for="category_name" class="form-label">Category Name:</label>
                         <input type="text" id="category_name" name="category_name" class="form-control" required>
                     </div>
-                    <button type="submit" class="btn btn-success w-100">Create Category</button>
+                    <button type="submit" class="btn btn-success">Create Category</button>
                 </form>
             </div>
         </div>
@@ -100,7 +100,7 @@
                         <label for="edit_category_name" class="form-label">Category Name:</label>
                         <input type="text" id="edit_category_name" name="category_name" class="form-control" required>
                     </div>
-                    <button type="submit" class="btn btn-primary w-100">Save Changes</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
                 </form>
             </div>
         </div>
