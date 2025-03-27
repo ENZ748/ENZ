@@ -12,6 +12,7 @@ use App\Http\Controllers\BrandController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\AssignedItemController;
+use App\Http\Controllers\ItemHistoryController;
 
 
 use App\Http\Middleware\Admin;
@@ -86,6 +87,7 @@ Route::middleware('auth')->group(function () {
 
     //Historyyyyy
     Route::middleware([Admin::class])->get('/history', [HistoryController::class, 'index'])->name('history');
+    Route::middleware([Admin::class])->get('/item/history', [ItemHistoryController::class, 'index'])->name('item.history');
 
 });
 
@@ -94,6 +96,7 @@ Route::middleware('auth')->group(function () {
 Route::get('/categories/create', [CategoryController::class, 'create'])->name('categories.create');
 Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
 Route::post('/categories/add', [CategoryController::class, 'store'])->name('categories.store');
+Route::post('/categories/check', [CategoryController::class, 'checkCategory'])->name('categories.check');
 Route::get('/categories/{id}', [CategoryController::class, 'edit'])->name('categories.edit');
 Route::put('categories/update/{id}', [CategoryController::class, 'update'])->name('categories.update');
 
@@ -107,7 +110,7 @@ Route::post('/brands/add/{categoryID}', [BrandController::class, 'store'])->name
 
 //Update Brand
 Route::get('brands/{id}/edit/{categoryID}', [BrandController::class, 'edit'])->name('brands.edit');
-Route::put('/brands/{id}/update/{categoryID}', [BrandController::class, 'update'])->name('brands.update');
+Route::put('/brands/{id}/{categoryID}', [BrandController::class, 'update'])->name('brands.update');
 
 //Delete Brand
 Route::delete('/brands/{id}/category/{categoryID}', [BrandController::class, 'destroy'])->name('brands.destroy');

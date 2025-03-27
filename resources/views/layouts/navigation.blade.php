@@ -10,34 +10,7 @@
                     </a>
                 </div>
             </div>
-<body>           
-        <!-- Flag Selector -->
-        <div class="flag-selector">
-            <div class="flag-container">
-                <div class="flag-button flag-australia" data-flag="australia" data-country="Australia" onclick="changeBackground('australia')"></div>
-                <span class="flag-name">Australia</span>
-            </div>
-            <div class="flag-container">
-                <div class="flag-button flag-canada" data-flag="canada" data-country="Canada" onclick="changeBackground('canada')"></div>
-                <span class="flag-name">Canada</span>
-            </div>
-            <div class="flag-container">
-                <div class="flag-button flag-newzealand" data-flag="newzealand" data-country="New Zealand" onclick="changeBackground('newzealand')"></div>
-                <span class="flag-name">New Zealand</span>
-            </div>
-            <div class="flag-container">
-                <div class="flag-button flag-germany" data-flag="germany" data-country="Germany" onclick="changeBackground('germany')"></div>
-                <span class="flag-name">Germany</span>
-            </div>
-            <div class="flag-container">
-                <div class="flag-button flag-ireland" data-flag="ireland" data-country="Ireland" onclick="changeBackground('ireland')"></div>
-                <span class="flag-name">Ireland</span>
-            </div>
-            <div class="flag-container">
-                <div class="flag-button flag-unitedkingdom" data-flag="unitedkingdom" data-country="United Kingdom" onclick="changeBackground('unitedkingdom')"></div>
-                <span class="flag-name">UK</span>
-            </div>
-        </div>
+<body>     
 
             <!-- Social Media Icons Container -->
             <div class="flex items-center space-x-1"> <!-- More compact spacing -->
@@ -188,15 +161,8 @@
 </body>
 
 <style>
-    body {
-            background: linear-gradient(to right,#449DD1,rgb(243, 249, 252));
-        }
-    
-    * Icons Container */
-        .icons-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+     body {
+            background: linear-gradient(to right,white,rgb(243, 249, 252));
         }
 
         /* Uniform Icon Styling */
@@ -219,58 +185,6 @@
             width: 24px;
             height: 24px;
         }
-        /* Flag Selector */
-        .flag-selector {
-            display: flex;
-            gap: 50px;
-            align-items: center;
-        }
-
-        .flag-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .flag-button {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-size: cover;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-        }
-
-        .flag-button:hover {
-            transform: scale(1.1);
-            border-color: #007bff;
-        }
-
-        .flag-button.active {
-            border-color: #007bff;
-            box-shadow: 0 0 0 3px rgba(0,123,255,0.3);
-        }
-
-        .flag-name {
-            font-size: 13px;
-            color: #333;
-            text-align: center;
-        }
-
-        /* Flag SVGs (kept from previous implementation) */
-        .flag-australia { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Ccircle cx='30' cy='30' r='30' fill='%230052B4'/%3E%3Cpath fill='%23FFF' d='M30 0l15 25.98-15 25.98L15 25.98z'/%3E%3Cpath fill='%23C8102E' d='M0 30l30-15 30 15-30 15z'/%3E%3C/svg%3E"); }
-        .flag-canada { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Ccircle cx='30' cy='30' r='30' fill='%23FFF'/%3E%3Cpath fill='%23FF0000' d='M0 0h25v60H0zM35 0h25v60H35z'/%3E%3Cpath fill='%23FF0000' d='M30 15l-6 9h12z M30 45l-6-9h12z'/%3E%3C/svg%3E"); }
-        .flag-newzealand { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Ccircle cx='30' cy='30' r='30' fill='%23012169'/%3E%3Cpath fill='%23FFF' d='M0 0l30 15L0 30z'/%3E%3Cpath fill='%23C8102E' d='M0 0h15l45 60h-15zM60 0h-15L0 60h15z'/%3E%3Cpath fill='%23FFF' d='M24.75 21l-2.25-6.75-2.25 6.75h-7.5l6 4.5-2.25 6.75 6-4.5 6 4.5-2.25-6.75 6-4.5z'/%3E%3C/svg%3E"); }
-        .flag-germany { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Ccircle cx='30' cy='30' r='30' fill='%23000000'/%3E%3Crect width='60' height='20' y='0' fill='%23DD0000'/%3E%3Crect width='60' height='20' y='20' fill='%23FFCC00'/%3E%3Crect width='60' height='20' y='40' fill='%23FF0000'/%3E%3C/svg%3E"); }
-        .flag-ireland { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Ccircle cx='30' cy='30' r='30' fill='%23FFF'/%3E%3Crect width='20' height='60' fill='%23169B62'/%3E%3Crect width='20' height='60' x='40' fill='%23FF883E'/%3E%3C/svg%3E"); }
-        .flag-unitedkingdom { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Crect width='60' height='60' fill='%23012169'/%3E%3Cpath fill='%23FFF' d='M30 0v30h30v-30z'/%3E%3Cpath fill='%23FFF' d='M0 0v30h30v-30z'/%3E%3Cpath fill='%23C8102E' d='M0 0l30 30h30l-30-30z'/%3E%3Cpath fill='%23C8102E' d='M0 30l30-30h30l-30 30z'/%3E%3Cpath fill='%23C8102E' d='M30 0l-15 15h10v30h10v-30h10z'/%3E%3Cpath fill='%23C8102E' d='M30 30h15v10l-15-10z'/%3E%3C/svg%3E"); }
-    /* General navigation styling */
-    nav {
-        min-height: 56px; /* Fixed minimum height */
-        max-height: 56px; /* Fixed maximum height */
-    }
     
     /* Social media icons styling */
     .social-icon {
@@ -387,24 +301,3 @@
         transform: translate(1px, 1px); /* Smaller movement */
     }
 </style>
-
-<script>
-        const flagButtons = document.querySelectorAll('.flag-button');
-
-        function changeBackground(country) {
-            // Remove active class from all buttons
-            flagButtons.forEach(button => {
-                button.classList.remove('active');
-            });
-
-            // Add active class to selected button
-            const selectedButton = document.querySelector(`.flag-${country}`);
-            selectedButton.classList.add('active');
-
-            // Optional: Add additional functionality as needed
-            console.log(`Selected country: ${country}`);
-        }
-
-        // Set initial background to first flag
-        changeBackground('australia');
-    </script>
