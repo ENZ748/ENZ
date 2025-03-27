@@ -67,6 +67,24 @@
             </div>
 
             <div class="text-sm mb-2">
+                <span class="text-gray-600">Assigned to:</span>
+                <span class="text-green-500">
+                    @php 
+                        // Assuming $assigned_items is a collection of assigned items
+                        $assignedItem = $assigned_items->firstWhere('itemID', $item->id); // or another way to find the related assigned item
+
+                        if ($item->equipment_status == 1 && $assignedItem) {
+                            $user = $assignedItem->employee->employee_number;
+                        } else {
+                            $user = 'None';
+                        }
+                    @endphp
+                    {{ $user }}
+                </span>
+            </div>
+
+
+            <div class="text-sm mb-2">
                 <span class="text-gray-600">Date Purchased:</span>
                 <span class="text-blue-500">{{ $datePurchased->format('Y-m-d') }}</span>
             </div>
