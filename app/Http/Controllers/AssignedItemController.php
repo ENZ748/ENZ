@@ -30,9 +30,14 @@ class AssignedItemController extends Controller
         // Fetch necessary data, like categories, brands, and units
         
         $categories = Category::all(); // assuming you have a Category model
+        $categoriesWithItems = Category::whereHas('items', function ($query) {
+            $query->where('equipment_status', 0);
+        })->get();
+
+        $items = Item::all();
         $employees = Employees::all(); // assuming you have an Employee model
 
-        return view('assigned_items.create', compact('categories', 'employees'));
+        return view('assigned_items.create', compact('categories', 'employees','categoriesWithItems'));
     }
 
     // Store the assigned item
@@ -119,6 +124,36 @@ class AssignedItemController extends Controller
         // Redirect or return response
         return redirect()->route('assigned_items.index')->with('success', 'Assigned item updated successfully!');
     }
+
+    public function getBrands($categoryId)
+    {
+        $brands = Brand::whereHas('items', function ($query) {
+            $query->where('equipment_status', 0);
+        })->where('categoryID', $categoryId)->get();
+
+        return response()->json($brands);
+    }
+
+    public function getUnits($brandId)
+    {
+
+        $units = Unit::whereHas('items', function ($query) {
+            $query->where('equipment_status', 0);
+        })->where('brandID', $brandId)->get();
+
+        return response()->json($units);
+    }
+
+    public function getSerials($unitId)
+    {
+        $serials = Item::where('equipment_status', 0)
+        ->where('unitID', $unitId)->get();
+
+
+        return response()->json($serials);
+    }
+
+
 
     public function markAsReturned($id)
     {
