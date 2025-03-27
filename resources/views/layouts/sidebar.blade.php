@@ -131,12 +131,12 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="accountability">
+                <a class="nav-link" href="{{route('assigned_items.index')}}">
                     <i class="fas fa-file-invoice"></i> Accountability
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="history">
+                <a class="nav-link" href="{{route('item.history')}}">
                     <i class="fas fa-file-invoice"></i> History
                 </a>
             </li>
