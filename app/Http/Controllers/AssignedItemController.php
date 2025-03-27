@@ -80,11 +80,17 @@ class AssignedItemController extends Controller
     public function edit($id)
     {
         $assignedItem = AssignedItem::findOrFail($id); // Find the assigned item to edit
-        $categories = Category::all(); // Fetch categories
+        $categories = Category::whereHas('items', function ($query) {
+            $query->where('equipment_status', 0);
+        })->get();
+        
         $employees = Employees::all(); // Fetch employees
-        $brands = Brand::all(); // Fetch brands
-        $units = Unit::all(); // Fetch units
-        $items = Item::all(); // Fetch items
+        $items = Item::where('id', $assignedItem->itemID)->get(); // Fetch items
+
+        // Load the initial brand and unit based on the item data
+        $brands = Brand::has('items')->where('categoryID', $assignedItem->item->categoryID)->get();
+        $units = Unit::has('items')->where('brandID', $assignedItem->item->brandID)->get();
+
 
         // Pass the data to the view
         return view('assigned_items.edit', compact('assignedItem', 'categories', 'employees', 'brands', 'units','items'));
