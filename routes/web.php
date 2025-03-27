@@ -12,6 +12,7 @@ use App\Http\Controllers\BrandController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\AssignedItemController;
+use App\Http\Controllers\ItemHistoryController;
 
 
 use App\Http\Middleware\Admin;
@@ -86,6 +87,7 @@ Route::middleware('auth')->group(function () {
 
     //Historyyyyy
     Route::middleware([Admin::class])->get('/history', [HistoryController::class, 'index'])->name('history');
+    Route::middleware([Admin::class])->get('/item/history', [ItemHistoryController::class, 'index'])->name('item.history');
 
 });
 
