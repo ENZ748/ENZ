@@ -79,4 +79,13 @@ class CategoryController extends Controller
 
         return redirect()-> route('categories.index')->with('success', 'Item deleted successfully');  
     }
+
+    public function checkCategory(Request $request)
+    {
+        // Check if the category already exists in the database
+        $exists = Category::where('category_name', $request->category_name)->exists();
+
+        return response()->json(['exists' => $exists]);
+    }
+
 }
