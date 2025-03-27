@@ -166,8 +166,9 @@
                     <table id="assignedItemsTable" class="table">
                         <thead>
                             <tr>
-                                <th>Item Name</th>
-                                <th>Details</th>
+                                <th>Category</th>
+                                <th>Brand</th>
+                                <th>Unit</th>
                                 <th>Serial Number</th>
                             </tr>
                         </thead>
@@ -246,8 +247,9 @@
                     assignedItems.forEach(item => {
                         const row = document.createElement('tr');
                         row.innerHTML = `
-                            <td>${item.equipment_name}</td>
-                            <td>${item.equipment_detail}</td>
+                            <td>${item.equipment_category}</td>
+                            <td>${item.equipment_brand}</td>
+                            <td>${item.equipment_unit}</td>
                             <td>${item.equipment_serialNumber}</td>
                         `;
                         tableBody.appendChild(row);

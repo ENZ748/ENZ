@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Employees;
 use App\Models\Equipments;
 use App\Models\Accountability;
+use App\Models\AssignedItem;
+use App\Models\Item;
 
 class UserController extends Controller
 {
@@ -78,21 +80,24 @@ class UserController extends Controller
 
     public function items($id)
     {
-        $accountabilities = Accountability::where('employee_id', $id)->get();
+        $items = AssignedItem::where('employeeID', $id)
+        ->where('item_status', 'unreturned')->get();
         
         // Initialize an empty collection to hold the assigned items
         $assigned_items = collect();
     
         // Loop through each accountability record
-        foreach ($accountabilities as $accountability) {
+        foreach ($items as $item) {
             // Retrieve employee and equipment details
-            $equipment = Equipments::find($accountability->equipment_id);
-    
+            $equipment = Item::find($item->itemID);
+            
             if ($equipment) {
                 $assigned_items->push([
-                    'equipment_name' => $equipment->equipment_name,
-                    'equipment_detail' => $equipment->equipment_details,
+                    'equipment_category' => $equipment->category->category_name,
+                    'equipment_brand' => $equipment->brand->brand_name,
+                    'equipment_unit' => $equipment->unit->unit_name,
                     'equipment_serialNumber' => $equipment->serial_number,
+
                 ]);
             }
         }

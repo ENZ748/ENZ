@@ -129,7 +129,7 @@
 
                 if (categoryId) {
                     $.ajax({
-                        url: '/get-brands/' + categoryId, // Change URL as needed
+                        url: '/get-brands/create/' + categoryId, // Change URL as needed
                         type: 'GET',
                         success: function(data) {
                             if (data.length > 0) {
@@ -157,7 +157,7 @@
 
                 if (brandId) {
                     $.ajax({
-                        url: '/get-units/' + brandId, // Make sure this URL is correct
+                        url: '/get-units/create/' + brandId, // Make sure this URL is correct
                         type: 'GET',
                         success: function(data) {
                             if (data.length > 0) {
@@ -187,7 +187,7 @@
 
                 if (unitId) {
                     $.ajax({
-                        url: '/get-serials/' + unitId, // Change URL as needed
+                        url: '/get-serials/create/' + unitId, // Change URL as needed
                         type: 'GET',
                         success: function(data) {
                             if (data.length > 0) {
