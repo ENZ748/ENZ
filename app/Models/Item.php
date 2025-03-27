@@ -40,5 +40,10 @@ class Item extends Model
     {
         return $this->hasMany(AssignedItem::class);
     }
+
+    public function item_history()
+    {
+        return $this->hasMany(ItemHistory::class);
+    }
     
 }

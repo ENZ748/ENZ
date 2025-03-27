@@ -8,6 +8,8 @@ use App\Models\Category;
 use App\Models\Brand;
 use App\Models\Unit;
 use App\Models\Item;
+use App\Models\ItemHistory;
+
 use Illuminate\Http\Request;
 
 class AssignedItemController extends Controller
@@ -15,7 +17,7 @@ class AssignedItemController extends Controller
     public function index()
     {
         // Fetch all assigned items
-        $assignedItems = AssignedItem::all();
+        $assignedItems = AssignedItem::where('item_status', 'unreturned')->get();
 
         // Return the index view with assigned items
         return view('assigned_items.index', compact('assignedItems'));
@@ -60,6 +62,11 @@ class AssignedItemController extends Controller
             'notes' => $validatedData['notes'],
             'assigned_date' => $validatedData['assigned_date'],
         ]);
+
+        $itemStatus = Item::where('id',$item->id)->first();
+        
+        $itemStatus->equipment_status = 1;
+        $itemStatus->save();
 
         return redirect()->route('assigned_items.index')->with('success', 'Item assigned successfully.');
     }
@@ -111,5 +118,32 @@ class AssignedItemController extends Controller
 
         // Redirect or return response
         return redirect()->route('assigned_items.index')->with('success', 'Assigned item updated successfully!');
+    }
+
+    public function markAsReturned($id)
+    {
+        // Find the assigned item by its ID
+        $assignedItem = AssignedItem::findOrFail($id);
+
+      
+        // Update the item status to "returned"
+        $assignedItem->item_status = 'returned';
+        $assignedItem->save();
+
+        $itemStatus = Item::where('id',$assignedItem->itemID)->first();
+        
+        $itemStatus->equipment_status = 0;
+        $itemStatus->save();
+
+        ItemHistory::create([
+            'employeeID' => $assignedItem->employeeID,
+            'itemID' => $assignedItem->itemID,
+            'notes' => $assignedItem->notes,
+            'assigned_date' => $assignedItem->assigned_date,
+        ]);
+
+
+        // Redirect back with a success message
+        return redirect()->route('assigned_items.index')->with('success', 'Item marked as returned.');
     }
 }

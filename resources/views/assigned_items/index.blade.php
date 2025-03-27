@@ -22,18 +22,26 @@
         <tbody>
             @foreach($assignedItems as $assignedItem)
                 <tr>
-                    <td>{{ $assignedItem->employee->first_name }}</td> <!-- Assuming you have a relationship to fetch employee name -->
-                    <td>{{ $assignedItem->employee->last_name }}</td> <!-- Assuming you have a relationship to fetch employee name -->
-                    <td>{{ $assignedItem->employee->employee_number }}</td> <!-- Assuming you have a relationship to fetch employee name -->
-                    <td>{{ $assignedItem->item->category->category_name }}</td> <!-- Assuming you have a relationship to fetch item name -->
-                    <td>{{ $assignedItem->item->brand->brand_name }}</td> <!-- Assuming you have a relationship to fetch item name -->
-                    <td>{{ $assignedItem->item->unit->unit_name }}</td> <!-- Assuming you have a relationship to fetch item name -->
-                    <td>{{ $assignedItem->item->serial_number }}</td> <!-- Assuming you have a relationship to fetch item name -->
+                    <td>{{ $assignedItem->employee->first_name }}</td>
+                    <td>{{ $assignedItem->employee->last_name }}</td>
+                    <td>{{ $assignedItem->employee->employee_number }}</td>
+                    <td>{{ $assignedItem->item->category->category_name }}</td>
+                    <td>{{ $assignedItem->item->brand->brand_name }}</td>
+                    <td>{{ $assignedItem->item->unit->unit_name }}</td>
+                    <td>{{ $assignedItem->item->serial_number }}</td>
                     <td>{{ $assignedItem->assigned_date }}</td>
                     <td>{{ $assignedItem->notes }}</td>
                     <td>
                         <a href="{{ route('assigned_items.edit', $assignedItem->id) }}" class="btn btn-warning">Edit</a>
-                        <!-- Add a delete button if needed -->
+
+                        <!-- Add a form for marking the item as returned -->
+                        <form action="{{ route('assigned_items.return', $assignedItem->id) }}" method="POST" style="display: inline;">
+                            @csrf
+                            @method('POST')
+                            <button type="submit" class="btn btn-success">Return</button>
+                        </form>
+
+                        <!-- You can also add a delete button here if needed -->
                     </td>
                 </tr>
             @endforeach

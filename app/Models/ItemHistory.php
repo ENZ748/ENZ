@@ -5,12 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class AssignedItem extends Model
+class ItemHistory extends Model
 {
     use HasFactory;
 
     // Define the table associated with the model
-    protected $table = 'assigned_items';
+    protected $table = 'item_history';
 
     // Define the fillable properties to protect from mass-assignment vulnerabilities
     protected $fillable = [
@@ -18,7 +18,6 @@ class AssignedItem extends Model
         'itemID',
         'notes',
         'assigned_date',
-        'item_status',
     ];
 
     // If you want to handle the assigned_date as a date

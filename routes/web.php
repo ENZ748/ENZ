@@ -173,5 +173,7 @@ Route::post('assigned_items', [AssignedItemController::class, 'store'])->name('a
 Route::get('assigned_items/{id}/edit', [AssignedItemController::class, 'edit'])->name('assigned_items.edit');
 Route::put('assigned_items/{id}', [AssignedItemController::class, 'update'])->name('assigned_items.update');
 
+Route::post('assigned-items/{id}/return', [AssignedItemController::class, 'markAsReturned'])->name('assigned_items.return');
+
 
 require __DIR__.'/auth.php';    
