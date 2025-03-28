@@ -125,7 +125,21 @@
                     <i class="fas fa-box"></i> Inventory
                 </a>
             </li>
-           
+            <li class="nav-item">
+                <a class="nav-link" href="{{route('user')}}">
+                    <i class="fas fa-users"></i> Users
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{route('assigned_items.index')}}">
+                    <i class="fas fa-file-invoice"></i> Accountability
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{route('item.history')}}">
+                    <i class="fas fa-file-invoice"></i> History
+                </a>
+            </li>
         </ul>
     </div>
 
