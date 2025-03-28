@@ -17,8 +17,8 @@
 
 <!-- Add Brand & Categories Buttons -->
 <div class="mb-3">
-    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCategoryModal">Add Brand</button>
-    <a href="{{ route('categories.index') }}" class="btn btn-secondary">Categories</a>
+    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addCategoryModal">Add Brand</button>
+    <a href="{{ route('categories.index') }}" class="btn btn-success">Categories</a>
 </div>
 
 <!-- Brands Table -->
@@ -42,7 +42,7 @@
                         <div class="btn-group gap-2" role="group">
                             <a href="{{ route('units.index', ['brandID' => $brand->id, 'categoryID' => $categoryID]) }}" class="btn btn-sm btn-primary">View Units</a>
                             <!-- Edit Button -->
-                            <button class="btn btn-sm btn-warning editBrandBtn"
+                            <button class="btn btn-sm btn-primary editBrandBtn"
                                 data-id="{{ $brand->id }}"
                                 data-category="{{ $categoryID }}"
                                 data-name="{{ $brand->brand_name }}">
