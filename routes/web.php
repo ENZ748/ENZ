@@ -83,7 +83,11 @@ Route::middleware('auth')->group(function () {
 
 //Super Adminnnn
     Route::middleware([SuperAdmin::class])->get('/superAdmin', [SuperAdminController::class, 'index'])->name('superAdmin.index');
-
+    Route::get('admin/create', [SuperAdminController::class, 'create'])->name('admin.create');
+    Route::post('admin/store', [SuperAdminController::class, 'store'])->name('admin.store');
+    Route::get('admin', [SuperAdminController::class, 'index'])->name('admin');
+    Route::get('admin/edit/{id}', [SuperAdminController::class, 'edit'])->name('admin.edit');
+    Route::put('admin/update/{id}', [SuperAdminController::class, 'update'])->name('admin.update');
 
 //Admin
     Route::middleware([Admin::class])->get('/accountability', function () {

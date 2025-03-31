@@ -106,6 +106,7 @@
 </head>
 <body>
 
+
     <!-- Toggle Button -->
     <button class="toggle-btn d-md-none" onclick="toggleSidebar()">
         <i class="fas fa-bars"></i>
@@ -120,24 +121,17 @@
                     <i class="fas fa-tachometer-alt"></i> Dashboard
                 </a>
             </li>
+
             <li class="nav-item">
-                <a class="nav-link" href="{{route('items')}}">
-                    <i class="fas fa-box"></i> Inventory
+                <a class="nav-link" href="{{route('admin')}}">
+                    <i class="fas fa-users"></i> Admin Accounts
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{route('user')}}">
-                    <i class="fas fa-users"></i> Users
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{route('assigned_items.index')}}">
-                    <i class="fas fa-file-invoice"></i> Accountability
-                </a>
-            </li>
+
             <li class="nav-item">
                 <a class="nav-link" href="{{route('item.history')}}">
-                    <i class="fas fa-file-invoice"></i> History
+                    <i class="fas fa-file-invoice"></i> Activity Logs
                 </a>
             </li>
         </ul>
