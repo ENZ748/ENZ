@@ -110,7 +110,7 @@ Route::post('/brands/add/{categoryID}', [BrandController::class, 'store'])->name
 
 //Update Brand
 Route::get('brands/{id}/edit/{categoryID}', [BrandController::class, 'edit'])->name('brands.edit');
-Route::put('/brands/{id}/{categoryID}', [BrandController::class, 'update'])->name('brands.update');
+Route::put('brands/{id}/{categoryID}', [BrandController::class, 'update'])->name('brands.update');
 
 //Delete Brand
 Route::delete('/brands/{id}/category/{categoryID}', [BrandController::class, 'destroy'])->name('brands.destroy');
