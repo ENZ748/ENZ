@@ -108,7 +108,6 @@
     </div>
 </div>
 
-<!-- JavaScript for Handling Edit Modal Data -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const editBrandModal = new bootstrap.Modal(document.getElementById('editBrandModal'));
@@ -148,86 +147,152 @@
             });
         }
 
-        // Confirm before submitting the Add Brand form
+        // Function to check if brand name exists
+        function checkBrandExists(brandName, categoryID) {
+            return fetch("{{ route('brands.check') }}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ brand_name: brandName, categoryID: categoryID })
+            })
+            .then(response => response.json())
+            .then(data => data.exists);
+        }
+
+        // Handle Add Brand Form Submission
         document.getElementById('addCategoryForm').addEventListener('submit', function(event) {
             event.preventDefault();
             let form = this;
+            let formData = new FormData(form);
+            let brandName = formData.get('brand_name');
+            let categoryID = formData.get('categoryID');
 
-            Swal.fire({
-                title: "Are you sure?",
-                text: "You are about to add a new brand!",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Yes, proceed",
-                cancelButtonText: "Cancel"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    showLoading("Adding Brand...");
-
-                    setTimeout(() => {
-                        Swal.fire({
-                            title: "Success!",
-                            text: "Brand has been created successfully.",
-                            icon: "success"
-                        }).then(() => {
-                            form.submit();
-                        });
-                    }, 2000);
+            checkBrandExists(brandName, categoryID).then(exists => {
+                if (exists) {
+                    Swal.fire({
+                        title: "Error!",
+                        text: "This brand name already exists in this category.",
+                        icon: "error"
+                    });
+                } else {
+                    Swal.fire({
+                        title: "Are you sure?",
+                        text: "You are about to add a new brand!",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#3085d6",
+                        cancelButtonColor: "#d33",
+                        confirmButtonText: "Yes, proceed",
+                        cancelButtonText: "Cancel"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            showLoading("Adding Brand...");
+                            fetch(form.action, {
+                                method: 'POST',
+                                body: formData
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.error) {
+                                    Swal.fire({
+                                        title: "Error!",
+                                        text: data.error,
+                                        icon: "error"
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        title: "Success!",
+                                        text: "Brand has been created successfully.",
+                                        icon: "success"
+                                    }).then(() => {
+                                        location.reload();
+                                    });
+                                }
+                            })
+                            .catch(error => console.error("Error:", error));
+                        }
+                    });
                 }
             });
         });
 
-        // Confirm before submitting the Edit Brand form
+        // Handle Edit Brand Form Submission
         document.getElementById('editBrandForm').addEventListener('submit', function(event) {
             event.preventDefault();
             let form = this;
+            let formData = new FormData(form);
+            let brandName = formData.get('brand_name');
+            let categoryID = form.action.split('/').pop();
 
-            Swal.fire({
-                title: "Are you sure?",
-                text: "You are about to update this brand!",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Yes, update it!",
-                cancelButtonText: "Cancel"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    showLoading("Updating Brand...");
-
-                    setTimeout(() => {
-                        Swal.fire({
-                            title: "Updated!",
-                            text: "Brand has been updated successfully.",
-                            icon: "success"
-                        }).then(() => {
-                            form.submit();
-                        });
-                    }, 2000);
+            checkBrandExists(brandName, categoryID).then(exists => {
+                if (exists) {
+                    Swal.fire({
+                        title: "Error!",
+                        text: "This brand name already exists in this category.",
+                        icon: "error"
+                    });
+                } else {
+                    Swal.fire({
+                        title: "Are you sure?",
+                        text: "You are about to update this brand!",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#3085d6",
+                        cancelButtonColor: "#d33",
+                        confirmButtonText: "Yes, update it!",
+                        cancelButtonText: "Cancel"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            showLoading("Updating Brand...");
+                            fetch(form.action, {
+                                method: 'POST',
+                                body: formData
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.error) {
+                                    Swal.fire({
+                                        title: "Error!",
+                                        text: data.error,
+                                        icon: "error"
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        title: "Updated!",
+                                        text: "Brand has been updated successfully.",
+                                        icon: "success"
+                                    }).then(() => {
+                                        location.reload();
+                                    });
+                                }
+                            })
+                            .catch(error => console.error("Error:", error));
+                        }
+                    });
                 }
             });
         });
+
+        // Confirm before deleting a brand
+        window.confirmDelete = function(brandId) {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You won't be able to revert this!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Yes, delete it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('delete-form-' + brandId).submit();
+                }
+            });
+        };
     });
-
-    function confirmDelete(brandId) {
-        Swal.fire({
-            title: "Are you sure?",
-            text: "You won't be able to revert this!",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#d33",
-            cancelButtonColor: "#3085d6",
-            confirmButtonText: "Yes, delete it!"
-        }).then((result) => {
-            if (result.isConfirmed) {
-                document.getElementById('delete-form-' + brandId).submit();
-            }
-        });
-    }
 </script>
-
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
