@@ -88,6 +88,10 @@ Route::middleware('auth')->group(function () {
     Route::get('admin', [SuperAdminController::class, 'index'])->name('admin');
     Route::get('admin/edit/{id}', [SuperAdminController::class, 'edit'])->name('admin.edit');
     Route::put('admin/update/{id}', [SuperAdminController::class, 'update'])->name('admin.update');
+    Route::patch('/admin/{id}/toggleStatus', [SuperAdminController::class, 'toggleStatus'])->name('admin.toggleStatus');
+
+    //Activity Logs
+    Route::get('activity_logs', [SuperAdminController::class, 'activityLog'])->name('admin.activityLogs');
 
 //Admin
     Route::middleware([Admin::class])->get('/accountability', function () {

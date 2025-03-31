@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use Illuminate\Support\Facades\Auth;
 
 use App\Models\AssignedItem;
 use App\Models\Employees;
@@ -9,7 +10,8 @@ use App\Models\Brand;
 use App\Models\Unit;
 use App\Models\Item;
 use App\Models\ItemHistory;
-
+use App\Models\ActivityLog;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class AssignedItemController extends Controller
@@ -73,6 +75,18 @@ class AssignedItemController extends Controller
         $itemStatus->equipment_status = 1;
         $itemStatus->save();
 
+        $assignedItem = Employees::where('id',$validatedData['employeeID'])->first();
+
+        $user = Auth::user(); 
+      
+        $userId = $user->id;
+        
+        
+        ActivityLog::create([
+            'user_id' => $userId,
+            'activity_logs' => 'Assigned '. $item->serial_number. ' Item to ' . $assignedItem->employee_number,
+        ]);
+
         return redirect()->route('assigned_items.index')->with('success', 'Item assigned successfully.');
     }
 
@@ -124,6 +138,17 @@ class AssignedItemController extends Controller
             'itemID' => $item->id,
             'notes' => $validatedData['notes'],
             'assigned_date' => $validatedData['assigned_date'],
+        ]);
+
+        $assignedItem = Employees::where('id',$validatedData['employeeID'])->first();
+
+        $user = Auth::user(); 
+      
+        $userId = $user->id;  
+        
+        ActivityLog::create([
+            'user_id' => $userId,
+            'activity_logs' => 'Update assigned item '. $item->serial_number. ' Item to ' . $assignedItem->employee_number,
         ]);
 
 
@@ -181,6 +206,15 @@ class AssignedItemController extends Controller
             'itemID' => $assignedItem->itemID,
             'notes' => $assignedItem->notes,
             'assigned_date' => $assignedItem->assigned_date,
+        ]);
+
+        $user = Auth::user(); 
+      
+        $userId = $user->id;  
+        
+        ActivityLog::create([
+            'user_id' => $userId,
+            'activity_logs' => 'Confirmed Item',
         ]);
 
 

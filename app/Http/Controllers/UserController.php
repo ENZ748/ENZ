@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Http\Request;
 use App\Models\Employees;
@@ -8,17 +9,28 @@ use App\Models\Equipments;
 use App\Models\Accountability;
 use App\Models\AssignedItem;
 use App\Models\Item;
+use App\Models\User;
+use App\Models\ActivityLog;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules;
 
 class UserController extends Controller
 {
     public function index()
     {
-        $employees = Employees::orderBy('hire_date', 'desc')->get();
-
-               
-          return view('users.index',compact('employees'));
+        $employees = Employees::whereHas('users', function ($query) {
+            $query->where('usertype', 'user');
+        })
+        ->with(['users' => function ($query) {
+            $query->select('id', 'email', 'password');  // Select specific fields from the users table
+        }])
+        ->orderBy('hire_date', 'desc')
+        ->get();
+        
+        return view('users.index', compact('employees'));
+        
     }
-
+    
     public function create()
     {
           return view('users.add');
@@ -57,6 +69,8 @@ class UserController extends Controller
     public function update(Request $request,$id)
     {
         $request->validate([
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'first_name' => 'required|string|max:255',
             'last_name'=>  'required|string|max:255',
             'employee_number' => 'required|string|max:255',
@@ -72,6 +86,30 @@ class UserController extends Controller
             'department' => $request->department,
             'hire_date' => $request->hire_date,
 
+
+        ]);
+
+        $user = User::find($employee->user_id);
+
+        // Check if user exists
+        if ($user) {
+            // Update the user's email and password
+            $user->update([
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+            ]);
+        } else {
+            // Handle the case if the user is not found (optional)
+            return back()->withErrors(['error' => 'User not found!']);
+        }
+
+        $user = Auth::user(); 
+      
+        $userId = $user->id;  
+        
+        ActivityLog::create([
+            'user_id' => $userId,
+            'activity_logs' => 'Update user account '. $request->employee_number,
         ]);
 
         return redirect()-> route('user')->with('success', 'Equipment Updated successfully');  
@@ -125,6 +163,15 @@ class UserController extends Controller
 
         // Save the updated employee record
         $employee->save();
+
+        $user = Auth::user(); 
+      
+        $userId = $user->id;  
+        
+        ActivityLog::create([
+            'user_id' => $userId,
+            'activity_logs' => 'Update User Status',
+        ]);
 
         // Redirect back to the employee list page with a success message
         return redirect()->route('user')->with('success', 'Employee status updated successfully.');

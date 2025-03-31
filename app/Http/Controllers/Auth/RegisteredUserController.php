@@ -1,10 +1,12 @@
 <?php
 
 namespace App\Http\Controllers\Auth;
+use Illuminate\Support\Facades\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Employees;
+use App\Models\ActivityLog;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -53,11 +55,20 @@ class RegisteredUserController extends Controller
             'employee_number' => $request->employee_number,
             'department' => $request->department,
             'hire_date' => $request->hire_date,
-            'user_id' => $user->id, // Assign the created user's ID to the employee
+            'user_id' => $user->id, 
         ]);
 
         // Trigger the Registered event
         event(new Registered($user));
+
+        $user = Auth::user(); 
+      
+        $userId = $user->id;  
+        
+        ActivityLog::create([
+            'user_id' => $userId,
+            'activity_logs' => 'Create user account '. $request->employee_number,
+        ]);
 
         // Redirect to the dashboard or a different page after successful registration
         return redirect()->route('user'); // Or you can change it to route('home') or wherever you want to redirect
