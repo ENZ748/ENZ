@@ -39,11 +39,12 @@
                                 Edit
                             </button>
                             <form action="{{ route('units.destroy', ['id' => $unit->id, 'brandID' => $brandID, 'categoryID' => $categoryID]) }}" 
-                                method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this unit?');">
+                                method="POST" class="d-inline delete-unit-form">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-sm btn-danger">Delete</button>
                             </form>
+
                         </div>
                     </td>
                 </tr>
@@ -90,7 +91,7 @@
                         <label for="edit_unit_name" class="form-label">Unit Name:</label>
                         <input type="text" id="edit_unit_name" name="unit_name" class="form-control" required>
                     </div>
-                    <button type="submit" class="btn btn-primary">Edit Unit</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
                 </form>
             </div>
         </div>
@@ -103,16 +104,112 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        var editUnitModal = document.getElementById('editUnitModal');
-        editUnitModal.addEventListener('show.bs.modal', function(event) {
-            var button = event.relatedTarget;
-            var unitId = button.getAttribute('data-id');
-            var unitName = button.getAttribute('data-name');
-            
-            var form = document.getElementById('editUnitForm');
-            form.action = `/units/${unitId}/update/brand/{{ $brandID }}/category/{{ $categoryID }}`;
-            document.getElementById('edit_unit_name').value = unitName;
+    // Handle Edit Unit Modal
+    var editUnitModal = document.getElementById('editUnitModal');
+    editUnitModal.addEventListener('show.bs.modal', function(event) {
+        var button = event.relatedTarget;
+        var unitId = button.getAttribute('data-id');
+        var unitName = button.getAttribute('data-name');
+
+        var form = document.getElementById('editUnitForm');
+        form.action = `/units/${unitId}/update/brand/{{ $brandID }}/category/{{ $categoryID }}`;
+        document.getElementById('edit_unit_name').value = unitName;
+    });
+
+    // Check if Unit Name Already Exists
+    async function checkUnitExists(unitName) {
+        let response = await fetch("{{ route('units.check') }}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({ unit_name: unitName })
+        });
+        let result = await response.json();
+        return result.exists;
+    }
+
+    // Apply SweetAlert Confirmation for Submission
+    async function handleFormSubmission(event) {
+        event.preventDefault();
+
+        let unitName = event.target.querySelector("input[name='unit_name']").value;
+        let unitExists = await checkUnitExists(unitName);
+
+        if (unitExists) {
+            Swal.fire({
+                title: "Error!",
+                text: "This unit name already exists.",
+                icon: "error",
+                confirmButtonText: "OK"
+            });
+            return;
+        }
+
+        Swal.fire({
+            title: "Are you sure?",
+            text: "Do you want to proceed with the submission?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, submit it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: "Processing...",
+                    text: "Please wait while we process your request.",
+                    icon: "info",
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    willOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                setTimeout(() => {
+                    Swal.fire({
+                        title: "Success!",
+                        text: "Your request has been submitted successfully.",
+                        icon: "success",
+                        confirmButtonText: "OK"
+                    }).then(() => {
+                        event.target.submit();
+                    });
+                }, 2000);
+            }
+        });
+    }
+
+    // Attach event listener to create unit form
+    document.querySelector("#createUnitModal form").addEventListener("submit", handleFormSubmission);
+
+    // Attach event listener to edit unit form
+    document.querySelector("#editUnitForm").addEventListener("submit", handleFormSubmission);
+
+    // Apply SweetAlert Confirmation for Deletion
+    document.querySelectorAll(".delete-unit-form").forEach(form => {
+        form.addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You won't be able to revert this!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Yes, delete it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
         });
     });
+});
+
+
 </script>
 @endsection
