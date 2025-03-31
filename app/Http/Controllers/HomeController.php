@@ -51,8 +51,14 @@ class HomeController extends Controller
                 return view('userAccount.index', compact('assigned_items','history_items'));
 
             } elseif ($usertype == 'admin') {
+
                 return redirect('chart');
+
+            } elseif ($usertype == 'superAdmin') {
+                return view('superAdminDashboard.index');
+
             } else {
+
                 return redirect()->back();
             }
         } else {

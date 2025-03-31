@@ -39,7 +39,7 @@
             $datePurchased = \Carbon\Carbon::parse($item->date_purchased);
             $dateAcquired = \Carbon\Carbon::parse($item->date_acquired);
         @endphp
-
+    
         <!-- Item Card -->
         <div class="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200">
             <div class="text-center font-semibold text-lg text-gray-800 mb-2">{{ $category->category_name }}</div>
