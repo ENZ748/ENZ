@@ -107,6 +107,7 @@ Route::delete('/categories/{id}', [CategoryController::class, 'destroy'])->name(
 //Brandssssss
 Route::get('/brands/create/{categoryID}', [BrandController::class, 'create'])->name('brands.create');
 Route::post('/brands/add/{categoryID}', [BrandController::class, 'store'])->name('brands.store');
+Route::post('/brands/check', [BrandController::class, 'checkBrand'])->name('brands.check');
 
 //Update Brand
 Route::get('brands/{id}/edit/{categoryID}', [BrandController::class, 'edit'])->name('brands.edit');

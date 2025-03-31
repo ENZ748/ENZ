@@ -78,4 +78,14 @@ class BrandController extends Controller
 
         return redirect()->route('brands.index', ['categoryID' => $categoryID])->with('success', 'Brand Deleted Successfully!');
     }
+
+    public function checkBrand(Request $request)
+    {
+        $exists = Brand::where('brand_name', $request->brand_name)
+                    ->where('categoryID', $request->categoryID)
+                    ->exists();
+
+        return response()->json(['exists' => $exists]);
+    }
+
 }
