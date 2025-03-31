@@ -143,6 +143,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/brands/create/{categoryID}', [BrandController::class, 'create'])->name('brands.create');
     Route::post('/brands/add/{categoryID}', [BrandController::class, 'store'])->name('brands.store');
 
+
     //Update Brand
     Route::get('brands/{id}/edit/{categoryID}', [BrandController::class, 'edit'])->name('brands.edit');
     Route::put('/brands/{id}/{categoryID}', [BrandController::class, 'update'])->name('brands.update');
