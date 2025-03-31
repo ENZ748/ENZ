@@ -130,10 +130,10 @@
             <li class="nav-item">
 
             <li class="nav-item">
-                <a class="nav-link" href="{{route('item.history')}}">
+                <a class="nav-link" href="{{route('admin.activityLogs')}}">
                     <i class="fas fa-file-invoice"></i> Activity Logs
                 </a>
-            </li>
+            </li>   
         </ul>
     </div>
 

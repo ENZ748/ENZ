@@ -44,7 +44,7 @@
                                 <td>{{ $admin->department }}</td>
                                 <td>{{ $admin->hire_date }}</td>
                                 <td>    
-                                    <form action="{{ route('employee.toggleStatus', $admin->id) }}" method="POST" class="status-form">
+                                    <form action="{{ route('admin.toggleStatus', $admin->id) }}" method="POST" class="status-form">
                                         @csrf
                                         @method('PATCH')
                                         <button type="button" class="btn btn-sm {{ $admin->active ? 'btn-success' : 'btn-danger' }}"
@@ -202,7 +202,7 @@
             document.getElementById('edit_hire_date').value = employee.hire_date;
 
             // Dynamically set form action
-            document.getElementById('editEmployeeForm').action = `/employee/update/${employee.id}`;
+            document.getElementById('editEmployeeForm').action = `/admin/update/${employee.id}`;
 
             // Show modal
             new bootstrap.Modal(document.getElementById('editEmployeeModal')).show();

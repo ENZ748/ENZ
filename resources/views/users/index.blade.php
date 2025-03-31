@@ -147,6 +147,21 @@
                                 <label class="form-label">Hire Date</label>
                                 <input type="date" id="edit_hire_date" name="hire_date" class="form-control" required>
                             </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" id="edit_email" name="email" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Password</label>
+                                <input type="password" id="edit_password" name="password" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Confirm Password</label>
+                                <input type="password" id="edit_confirm_password" name="password_confirmation" class="form-control" required>
+                                <span id="password_error" class="text-danger" style="display: none;">⚠ Passwords do not match.</span>
+                            </div>
+                            
                             <button type="button" class="btn btn-primary" onclick="confirmUpdate()">Update Employee</button>
                         </form>
                     </div>
