@@ -1,16 +1,24 @@
-@extends('layouts.app')
+@extends('layouts.superAdminApp')
 
 @section('content')
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <div class="container mt-4">
-        <h1 class="text-primary">Employees</h1>
+        <h1 class="text-primary">Admin</h1>
         <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addEmployeeModal">
-            Add Employee
+            Add Admin
         </button> 
-
-        @if($employees->isEmpty())
+        @if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+        @if($admins->isEmpty())
             <div class="alert alert-warning">No employees found.</div>
         @else
             <div class="table-responsive">
@@ -28,28 +36,28 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($employees as $employee)
+                        @foreach ($admins as $admin)
                             <tr>
-                                <td>{{ $employee->first_name }}</td>
-                                <td>{{ $employee->last_name }}</td>
-                                <td>{{ $employee->employee_number }}</td>
-                                <td>{{ $employee->department }}</td>
-                                <td>{{ $employee->hire_date }}</td>
-                                <td>
-                                    <form action="{{ route('employee.toggleStatus', $employee->id) }}" method="POST" class="status-form">
+                                <td>{{ $admin->first_name }}</td>
+                                <td>{{ $admin->last_name }}</td>
+                                <td>{{ $admin->employee_number }}</td>
+                                <td>{{ $admin->department }}</td>
+                                <td>{{ $admin->hire_date }}</td>
+                                <td>    
+                                    <form action="{{ route('admin.toggleStatus', $admin->id) }}" method="POST" class="status-form">
                                         @csrf
                                         @method('PATCH')
-                                        <button type="button" class="btn btn-sm {{ $employee->active ? 'btn-success' : 'btn-danger' }}"
+                                        <button type="button" class="btn btn-sm {{ $admin->active ? 'btn-success' : 'btn-danger' }}"
                                             onclick="confirmStatusChange(this)">
-                                            {{ $employee->active ? 'Active' : 'Inactive' }}
+                                            {{ $admin->active ? 'Active' : 'Inactive' }}
                                         </button>
                                     </form>
                                 </td>
                                 <td>
-                                    <button class="btn btn-primary btn-sm" onclick="openEditModal({{ $employee }})">Edit</button>
+                                    <button class="btn btn-primary btn-sm" onclick="openEditModal({{ $admin }})">Edit</button>
                                 </td>
                                 <td>
-                                    <button class="btn btn-primary btn-sm" onclick="openAssignedModal({{ $employee->id }})">View</button>
+                                    <button class="btn btn-primary btn-sm" onclick="openAssignedModal({{ $admin->id }})">View</button>
                                 </td>
                             </tr>
                         @endforeach
@@ -69,7 +77,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form id="addEmployeeForm" method="POST" action="{{ route('register') }}" onsubmit="return confirmAddEmployee(event)">
+                        <form id="addEmployeeForm" method="POST" action="{{ route('admin.store') }}" onsubmit="return confirmAddEmployee(event)">
                             @csrf
                             <div class="mb-3">
                                 <label class="form-label">First Name</label>
@@ -147,21 +155,6 @@
                                 <label class="form-label">Hire Date</label>
                                 <input type="date" id="edit_hire_date" name="hire_date" class="form-control" required>
                             </div>
-
-                            <div class="mb-3">
-                                <label class="form-label">Email</label>
-                                <input type="email" id="edit_email" name="email" class="form-control" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Password</label>
-                                <input type="password" id="edit_password" name="password" class="form-control" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Confirm Password</label>
-                                <input type="password" id="edit_confirm_password" name="password_confirmation" class="form-control" required>
-                                <span id="password_error" class="text-danger" style="display: none;">⚠ Passwords do not match.</span>
-                            </div>
-                            
                             <button type="button" class="btn btn-primary" onclick="confirmUpdate()">Update Employee</button>
                         </form>
                     </div>
@@ -209,7 +202,7 @@
             document.getElementById('edit_hire_date').value = employee.hire_date;
 
             // Dynamically set form action
-            document.getElementById('editEmployeeForm').action = `/employee/update/${employee.id}`;
+            document.getElementById('editEmployeeForm').action = `/admin/update/${employee.id}`;
 
             // Show modal
             new bootstrap.Modal(document.getElementById('editEmployeeModal')).show();

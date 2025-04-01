@@ -13,9 +13,11 @@ use App\Http\Controllers\UnitController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\AssignedItemController;
 use App\Http\Controllers\ItemHistoryController;
+use App\Http\Controllers\SuperAdminController;
 
 
 use App\Http\Middleware\Admin;
+use App\Http\Middleware\SuperAdmin;
 
 use Illuminate\Support\Facades\Route;
 
@@ -42,33 +44,34 @@ Route::delete('/equipment/{id}', [InventoryController::class, 'destroy'])->name(
 
 
 //USERSSSS
-//add
+    //add
 
-Route::POST('employee', [UserController::class, 'store'])->name('employee.store');
-Route::get('employee/create', [UserController::class, 'create'])->name('employee.create');
-Route::get('employee/edit/{id}', [UserController::class, 'edit'])->name('employee.edit');
-Route::put('employee/update/{id}', [UserController::class, 'update'])->name('employee.update');
-Route::patch('/employee/{id}/toggleStatus', [UserController::class, 'toggleStatus'])->name('employee.toggleStatus');
+    Route::POST('employee', [UserController::class, 'store'])->name('employee.store');
+    Route::get('employee/create', [UserController::class, 'create'])->name('employee.create');
+    Route::get('employee/edit/{id}', [UserController::class, 'edit'])->name('employee.edit');
+    Route::put('employee/update/{id}', [UserController::class, 'update'])->name('employee.update');
+    Route::patch('/employee/{id}/toggleStatus', [UserController::class, 'toggleStatus'])->name('employee.toggleStatus');
 
-// Route for the edit assigned items modal
-Route::get('/employee/items/{id}', [UserController::class, 'items'])->name('employee.items');
+    // Route for the edit assigned items modal
+    Route::get('/employee/items/{id}', [UserController::class, 'items'])->name('employee.items');
 
 //Assignnnnn
-//Displayy
+    //Displayy
 
-//Add
-Route::get('accountability/add', [AssignController::class, 'create'])->name('accountability.create');
-Route::post('accountability/store', [AssignController::class, 'store'])->name('accountability.store');
-//Update
-Route::get('accountability/edit/{id}', [AssignController::class, 'edit'])->name('accountability.edit');
-Route::put('accountability/update/{id}', [AssignController::class, 'update'])->name('accountability.update');
-Route::delete('/accountability/{id}', [AssignController::class, 'destroy'])->name('accountability.destroy');
+    //Add
+    Route::get('accountability/add', [AssignController::class, 'create'])->name('accountability.create');
+    Route::post('accountability/store', [AssignController::class, 'store'])->name('accountability.store');
+    //Update
+    Route::get('accountability/edit/{id}', [AssignController::class, 'edit'])->name('accountability.edit');
+    Route::put('accountability/update/{id}', [AssignController::class, 'update'])->name('accountability.update');
+    Route::delete('/accountability/{id}', [AssignController::class, 'destroy'])->name('accountability.destroy');
 
 
 
 Route::middleware([Admin::class])->get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 
@@ -78,110 +81,146 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+//Super Adminnnn
+    Route::middleware([SuperAdmin::class])->get('/superAdmin', [SuperAdminController::class, 'index'])->name('superAdmin.index');
+    Route::get('admin/create', [SuperAdminController::class, 'create'])->name('admin.create');
+    Route::post('admin/store', [SuperAdminController::class, 'store'])->name('admin.store');
+    Route::get('admin', [SuperAdminController::class, 'index'])->name('admin');
+    Route::get('admin/edit/{id}', [SuperAdminController::class, 'edit'])->name('admin.edit');
+    Route::put('admin/update/{id}', [SuperAdminController::class, 'update'])->name('admin.update');
+    Route::patch('/admin/{id}/toggleStatus', [SuperAdminController::class, 'toggleStatus'])->name('admin.toggleStatus');
 
-    //Admin Page
-    Route::middleware([Admin::class])->get('/accountability', [AssignController::class, 'index'])->name('accountability');
-    Route::middleware([Admin::class])->get('/user', [UserController::class, 'index'])->name('user');
-    Route::middleware([Admin::class])->get('/Inventory', [InventoryController::class, 'index'])->name('inventory');
-    Route::middleware([Admin::class])->get('/chart', [ChartController::class, 'showChart'])->name('chart');
+    //Activity Logs
+    Route::get('activity_logs', [SuperAdminController::class, 'activityLog'])->name('admin.activityLogs');
 
-    //Historyyyyy
-    Route::middleware([Admin::class])->get('/history', [HistoryController::class, 'index'])->name('history');
-    Route::middleware([Admin::class])->get('/item/history', [ItemHistoryController::class, 'index'])->name('item.history');
+//Admin
+    Route::middleware([Admin::class])->get('/accountability', function () {
+        return app('App\Http\Controllers\AssignController')->index();
+    })->middleware(['auth', 'verified'])->name('accountability');
+
+    Route::middleware([Admin::class])->get('/user', function () {
+        return app('App\Http\Controllers\UserController')->index();
+    })->middleware(['auth', 'verified'])->name('user');
+
+    Route::middleware([Admin::class])->get('/items', function () {
+        return app('App\Http\Controllers\ItemController')->index();
+    })->middleware(['auth', 'verified'])->name('items');
+
+    Route::middleware([Admin::class])->get('/chart', function () {
+        return app('App\Http\Controllers\ChartController')->showChart();
+    })->middleware(['auth', 'verified'])->name('chart');
+
+    // Historyyyyy
+    Route::middleware([Admin::class])->get('/history', function () {
+        return app('App\Http\Controllers\HistoryController')->index();
+    })->middleware(['auth', 'verified'])->name('history');
+
+    Route::middleware([Admin::class])->get('/item/history', function () {
+        return app('App\Http\Controllers\ItemHistoryController')->index();
+    })->middleware(['auth', 'verified'])->name('item.history');
 
 });
 
 
 //Categoryyyyy
-Route::get('/categories/create', [CategoryController::class, 'create'])->name('categories.create');
-Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
-Route::post('/categories/add', [CategoryController::class, 'store'])->name('categories.store');
-Route::post('/categories/check', [CategoryController::class, 'checkCategory'])->name('categories.check');
-Route::get('/categories/{id}', [CategoryController::class, 'edit'])->name('categories.edit');
-Route::put('categories/update/{id}', [CategoryController::class, 'update'])->name('categories.update');
+    //View Categories
+    Route::middleware([Admin::class])->get('/categories', function () {
+        return app('App\Http\Controllers\CategoryController')->index();
+    })->middleware(['auth', 'verified'])->name('categories.index');
 
-//Delete Category
-Route::delete('/categories/{id}', [CategoryController::class, 'destroy'])->name('categories.destroy');
+    Route::get('/categories/create', [CategoryController::class, 'create'])->name('categories.create');
+    Route::post('/categories/add', [CategoryController::class, 'store'])->name('categories.store');
+    Route::post('/categories/check', [CategoryController::class, 'checkCategory'])->name('categories.check');
+    Route::get('/categories/{id}', [CategoryController::class, 'edit'])->name('categories.edit');
+    Route::put('categories/update/{id}', [CategoryController::class, 'update'])->name('categories.update');
+
+    //Delete Category
+    Route::delete('/categories/{id}', [CategoryController::class, 'destroy'])->name('categories.destroy');
 
 
 //Brandssssss
-Route::get('/brands/create/{categoryID}', [BrandController::class, 'create'])->name('brands.create');
-Route::post('/brands/add/{categoryID}', [BrandController::class, 'store'])->name('brands.store');
+    //View Brandsss
+    Route::middleware([Admin::class])->get('/brands/{categoryID}', function ($categoryID) {
+        return app('App\Http\Controllers\BrandController')->index($categoryID);
+    })->middleware(['auth', 'verified'])->name('brands.index');
+       
+    Route::get('/brands/create/{categoryID}', [BrandController::class, 'create'])->name('brands.create');
+    Route::post('/brands/add/{categoryID}', [BrandController::class, 'store'])->name('brands.store');
 
-//Update Brand
-Route::get('brands/{id}/edit/{categoryID}', [BrandController::class, 'edit'])->name('brands.edit');
-Route::put('/brands/{id}/{categoryID}', [BrandController::class, 'update'])->name('brands.update');
+    Route::post('/brands/check', [BrandController::class, 'checkBrand'])->name('brands.check');
 
-//Delete Brand
-Route::delete('/brands/{id}/category/{categoryID}', [BrandController::class, 'destroy'])->name('brands.destroy');
+    //Update Brand
+    Route::get('brands/{id}/edit/{categoryID}', [BrandController::class, 'edit'])->name('brands.edit');
+    Route::put('/brands/{id}/{categoryID}', [BrandController::class, 'update'])->name('brands.update');
+
+    //Delete Brand
+    Route::delete('/brands/{id}/category/{categoryID}', [BrandController::class, 'destroy'])->name('brands.destroy');
 
 
-//View Brandsss
-Route::get('/brands/{categoryID}', [BrandController::class, 'index'])->name('brands.index');
 
 
 //Unitsssssssss
-Route::get('/units/create/{brandID}/{categoryID}', [UnitController::class, 'create'])->name('units.create');
-Route::post('/units/add/{brandID}/{categoryID}', [UnitController::class, 'store'])->name('units.store');
-//View Unitss
-Route::get('/units/{brandID}/{categoryID}', [UnitController::class, 'index'])->name('units.index');
+    //View Unitss
+    Route::middleware([Admin::class])->get('/units/{brandID}/{categoryID}', function ($brandID, $categoryID) {
+        return app('App\Http\Controllers\UnitController')->index($brandID, $categoryID);
+    })->middleware(['auth', 'verified'])->name('units.index');
+    
+    Route::get('/units/create/{brandID}/{categoryID}', [UnitController::class, 'create'])->name('units.create');
+    Route::post('/units/add/{brandID}/{categoryID}', [UnitController::class, 'store'])->name('units.store');
 
-//Update Unitss
-Route::get('/units/{id}/brand/{brandID}/category/{categoryID}', [UnitController::class, 'edit'])->name('units.edit');
-Route::put('/units/{id}/update/brand/{brandID}/category/{categoryID}', [UnitController::class, 'update'])->name('units.update');
+    //Update Unitss
+    Route::get('/units/{id}/brand/{brandID}/category/{categoryID}', [UnitController::class, 'edit'])->name('units.edit');
+    Route::put('/units/{id}/update/brand/{brandID}/category/{categoryID}', [UnitController::class, 'update'])->name('units.update');
 
-//Delete Unit
-Route::delete('/units/{id}/brand/{brandID}/category/{categoryID}', [UnitController::class, 'destroy'])->name('units.destroy');
+    Route::post('/units/check', [UnitController::class, 'checkUnit'])->name('units.check');
+
+    //Delete Unit
+    Route::delete('/units/{id}/brand/{brandID}/category/{categoryID}', [UnitController::class, 'destroy'])->name('units.destroy');
 
 
 
 //Itemsssssssssss
-Route::get('items', [ItemController::class, 'index'])->name('items');
-Route::get('items/category', [ItemController::class, 'category'])->name('items.index');
+    Route::get('items/category', [ItemController::class, 'category'])->name('items.index');
 
-//Update Itemmm
-Route::get('items/edit/{id}', [ItemController::class, 'edit'])->name('items.edit');
-Route::put('items/update/{id}', [ItemController::class, 'update'])->name('items.update');
+    //Update Itemmm
+    Route::get('items/edit/{id}', [ItemController::class, 'edit'])->name('items.edit');
+    Route::put('items/update/{id}', [ItemController::class, 'update'])->name('items.update');
 
-//Delete Itemmm
-Route::delete('/items/{id}', [ItemController::class, 'destroy'])->name('items.destroy');
-
-
-Route::get('items/create', [ItemController::class, 'create'])->name('items.create');
-Route::post('items/store', [ItemController::class, 'store'])->name('items.store');
+    //Delete Itemmm
+    Route::delete('/items/{id}', [ItemController::class, 'destroy'])->name('items.destroy');
 
 
-
-Route::get('/get-brands/{categoryId}', [ItemController::class, 'getBrands']);
-Route::get('/get-units/{brandId}', [ItemController::class, 'getUnits']);
-Route::get('/get-serials/{unitId}', [ItemController::class, 'getSerials']);
+    Route::get('items/create', [ItemController::class, 'create'])->name('items.create');
+    Route::post('items/store', [ItemController::class, 'store'])->name('items.store');
 
 
-Route::get('/get-brands/create/{categoryId}', [AssignedItemController::class, 'getBrands']);
-Route::get('/get-units/create/{brandId}', [AssignedItemController::class, 'getUnits']);
-Route::get('/get-serials/create/{unitId}', [AssignedItemController::class, 'getSerials']);
 
-// web.php
+    Route::get('/get-brands/{categoryId}', [ItemController::class, 'getBrands']);
+    Route::get('/get-units/{brandId}', [ItemController::class, 'getUnits']);
+    Route::get('/get-serials/{unitId}', [ItemController::class, 'getSerials']);
 
-Route::get('/get-brands-by-category/{categoryId}', [AssignedItemController::class, 'getBrandsByCategory']);
-Route::get('/get-units-by-brand/{brandId}', [AssignedItemController::class, 'getUnitsByBrand']);
-Route::get('/get-serials-by-unit/{unitId}', [AssignedItemController::class, 'getSerialsByUnit']);
 
 
 //Dashhhhhhhboarrdddddddddddddd
 
 
 
-//Assiagned Itemssss(Accountability)
-Route::resource('assigned_items', AssignedItemController::class);
+//Assiagned Itemssss(Accountability) 
+    Route::resource('assigned_items', AssignedItemController::class);
+    //View Accountability
+    Route::middleware([Admin::class])->get('assigned_items', function () {
+        return app('App\Http\Controllers\AssignedItemController')->index();
+    })->middleware(['auth', 'verified'])->name('assigned_items.index');
 
-Route::get('assigned_items', [AssignedItemController::class, 'index'])->name('assigned_items.index');
-Route::get('assigned_items/create', [AssignedItemController::class, 'create'])->name('assigned_items.create');
-Route::post('assigned_items', [AssignedItemController::class, 'store'])->name('assigned_items.store');
-Route::get('assigned_items/{id}/edit', [AssignedItemController::class, 'edit'])->name('assigned_items.edit');
-Route::put('assigned_items/{id}', [AssignedItemController::class, 'update'])->name('assigned_items.update');
+    Route::get('assigned_items/create', [AssignedItemController::class, 'create'])->name('assigned_items.create');
+    Route::post('assigned_items', [AssignedItemController::class, 'store'])->name('assigned_items.store');
+    Route::get('assigned_items/{id}/edit', [AssignedItemController::class, 'edit'])->name('assigned_items.edit');
+    Route::put('assigned_items/{id}', [AssignedItemController::class, 'update'])->name('assigned_items.update');
 
-Route::post('assigned-items/{id}/return', [AssignedItemController::class, 'markAsReturned'])->name('assigned_items.return');
+    Route::post('assigned-items/{id}/return', [AssignedItemController::class, 'markAsReturned'])->name('assigned_items.return');
+    Route::get('/get-brands/create/{categoryId}', [AssignedItemController::class, 'getBrands']);
+    Route::get('/get-units/create/{brandId}', [AssignedItemController::class, 'getUnits']);
+    Route::get('/get-serials/create/{unitId}', [AssignedItemController::class, 'getSerials']);
 
 
 require __DIR__.'/auth.php';    
