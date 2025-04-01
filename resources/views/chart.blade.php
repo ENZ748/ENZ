@@ -36,7 +36,7 @@
           <span class="icon">↩️</span>
         </div>
         <div class="card-title">RETURNED</div>
-        <div class="card-value">1,245</div>
+        <div class="card-value">{{$count_returned_items}}</div>
         <div class="card-indicator indicator-down">
           ↓ 2.4% from last month
         </div>
@@ -48,7 +48,7 @@
           <span class="icon">📊</span>
         </div>
         <div class="card-title">IN STOCK</div>
-        <div class="card-value">18,756</div>
+        <div class="card-value">{{$count_inStock}}</div>
         <div class="card-indicator indicator-neutral">
           76.4% of total inventory
         </div>
@@ -90,7 +90,7 @@
       <span class="close-modal" onclick="closeModal('returned')">&times;</span>
       <h2 class="modal-title">Returned Items Details</h2>
       <div class="modal-details">
-        <p><strong>Total Returns:</strong> 1,245 items</p>
+        <p><strong>Total Returns:</strong> {{$count_returned_items}} items</p>
         <p><strong>Change:</strong> -2.4% from last month (1,275 items)</p>
         <p><strong>Top Return Reason:</strong> Product defect (42%)</p>
         <p><strong>Most Returned Category:</strong> Electronics (23% of returns)</p>
@@ -104,7 +104,7 @@
       <span class="close-modal" onclick="closeModal('stock')">&times;</span>
       <h2 class="modal-title">In Stock Details</h2>
       <div class="modal-details">
-        <p><strong>Items In Stock:</strong> 18,756 (76.4% of total)</p>
+        <p><strong>Items In Stock:</strong> {{$count_inStock}} total</p>
         <p><strong>Low Stock Alert:</strong> 342 items below minimum threshold</p>
         <p><strong>Out of Stock:</strong> 125 items</p>
         <p><strong>Restock Expected:</strong> 532 items arriving next week</p>
@@ -134,12 +134,21 @@
     </div>
 
     <script>
-        // Sample Data (You can pass this dynamically from Laravel)
+
+        // Equipments
         const labels = @json($labels);
         const dataValues = @json($values);
 
-        // Chart Configurations
-        function createChart(chartId, chartType, label, bgColor, borderColor) {
+        //Users
+        const userLabels = @json($userLabels);
+        const userdataValues = @json($userValues);
+
+        //Returned Items
+        const returnedItemsLabels = @json($returnedItemsLabels);
+        const returnedItemsdataValues = @json($returnedValues);
+
+        //Equipment
+        function createChartEquipment(chartId, chartType, label, bgColor, borderColor) {
             const ctx = document.getElementById(chartId).getContext('2d');
             new Chart(ctx, {
                 type: chartType,
@@ -165,10 +174,64 @@
             });
         }
 
+        //User
+        function createChartUser(chartId, chartType, label, bgColor, borderColor) {
+            const ctx = document.getElementById(chartId).getContext('2d');
+            new Chart(ctx, {
+                type: chartType,
+                data: {
+                    labels: userLabels,
+                    datasets: [{
+                        label: label,
+                        data: userdataValues,
+                        backgroundColor: bgColor,
+                        borderColor: borderColor,
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+         //Returned Items
+         function createChartReturnedItems(chartId, chartType, label, bgColor, borderColor) {
+            const ctx = document.getElementById(chartId).getContext('2d');
+            new Chart(ctx, {
+                type: chartType,
+                data: {
+                    labels: returnedItemsLabels,
+                    datasets: [{
+                        label: label,
+                        data: returnedItemsdataValues,
+                        backgroundColor: bgColor,
+                        borderColor: borderColor,
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
         // Create Multiple Charts
-        createChart('chart1', 'bar', 'Equipment', 'rgba(54, 162, 235, 0.5)', 'rgba(54, 162, 235, 1)');
-        createChart('chart2', 'line', 'Users', 'rgba(255, 99, 132, 0.5)', 'rgba(255, 99, 132, 1)');
-        createChart('chart3', 'pie', 'Returned Items', ['rgba(75, 192, 192, 0.5)', 'rgba(153, 102, 255, 0.5)', 'rgba(255, 206, 86, 0.5)'], ['rgba(75, 192, 192, 1)', 'rgba(153, 102, 255, 1)', 'rgba(255, 206, 86, 1)']);
+        createChartEquipment('chart1', 'bar', 'Equipment', 'rgba(54, 162, 235, 0.5)', 'rgba(54, 162, 235, 1)');
+        createChartUser('chart2', 'line', 'Users', 'rgba(255, 99, 132, 0.5)', 'rgba(255, 99, 132, 1)');
+        createChartReturnedItems('chart3', 'pie', 'Returned Items', ['rgba(75, 192, 192, 0.5)', 'rgba(153, 102, 255, 0.5)', 'rgba(255, 206, 86, 0.5)'], ['rgba(75, 192, 192, 1)', 'rgba(153, 102, 255, 1)', 'rgba(255, 206, 86, 1)']);
         createChart('chart4', 'doughnut', 'Damaged Items', ['rgba(255, 159, 64, 0.5)', 'rgba(201, 203, 207, 0.5)'], ['rgba(255, 159, 64, 1)', 'rgba(201, 203, 207, 1)']);
     </script>
 

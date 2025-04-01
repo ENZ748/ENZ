@@ -2,6 +2,7 @@
 
 @section('content')
 
+<h1>Activity Logs</h1>
     <div class="overflow-x-auto py-4">
         <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
             <thead class="bg-gray-100 text-gray-700">

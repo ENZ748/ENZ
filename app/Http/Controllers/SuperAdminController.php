@@ -133,8 +133,9 @@ class SuperAdminController extends Controller
 
     public function activityLog()
     {
-        $activityLogs = ActivityLog::all();
+        $activityLogs = ActivityLog::orderBy('created_at', 'desc')->get();
         return view('activityLogs.index', compact('activityLogs'));
+        
     }
 
 }
