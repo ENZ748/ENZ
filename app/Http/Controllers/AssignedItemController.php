@@ -184,7 +184,12 @@ class AssignedItemController extends Controller
         return response()->json($serials);
     }
 
+    public function itemStatus($id)
+    {
+        $assignedItem = AssignedItem::findOrFail($id); // Find the assigned item to edit
 
+        return view('assigned_items.itemStatus', compact('assignedItem'));
+    }
 
     public function markAsReturned($id)
     {
@@ -199,6 +204,42 @@ class AssignedItemController extends Controller
         $itemStatus = Item::where('id',$assignedItem->itemID)->first();
         
         $itemStatus->equipment_status = 0;
+        $itemStatus->save();
+
+        ItemHistory::create([
+            'employeeID' => $assignedItem->employeeID,
+            'itemID' => $assignedItem->itemID,
+            'notes' => $assignedItem->notes,
+            'assigned_date' => $assignedItem->assigned_date,
+        ]);
+
+        $user = Auth::user(); 
+      
+        $userId = $user->id;  
+        
+        ActivityLog::create([
+            'user_id' => $userId,
+            'activity_logs' => 'Confirmed Item',
+        ]);
+
+
+        // Redirect back with a success message
+        return redirect()->route('assigned_items.index')->with('success', 'Item marked as returned.');
+    }
+
+    public function markAsDamaged($id)
+    {
+        // Find the assigned item by its ID
+        $assignedItem = AssignedItem::findOrFail($id);
+
+      
+        // Update the item status to "returned"
+        $assignedItem->item_status = 'returned';
+        $assignedItem->save();
+
+        $itemStatus = Item::where('id',$assignedItem->itemID)->first();
+        
+        $itemStatus->equipment_status = 2;
         $itemStatus->save();
 
         ItemHistory::create([

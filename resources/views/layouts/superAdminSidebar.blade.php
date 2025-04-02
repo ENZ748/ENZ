@@ -117,7 +117,7 @@
         <img src="EnzLogo.png" alt="Enz Logo">
         <ul class="nav flex-column">
             <li class="nav-item">
-                <a class="nav-link" href="{{route('chart')}}">
+                <a class="nav-link" href="{{route('superAdmin.dashboard')}}">
                     <i class="fas fa-tachometer-alt"></i> Dashboard
                 </a>
             </li>
