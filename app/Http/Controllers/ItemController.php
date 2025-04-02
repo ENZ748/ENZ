@@ -16,7 +16,7 @@ class ItemController extends Controller
     public function index()
     {
     
-        $items = Item::all();
+        $items = Item::orderBy('created_at','desc')->get();
         $assigned_items = AssignedItem::all();
 
         $categories = Category::all();
@@ -44,7 +44,6 @@ class ItemController extends Controller
             'brand_id'       => 'required|exists:brands,id', 
             'unit_id'        => 'required|exists:units,id', 
             'serial_number'  => 'required|unique:items,serial_number', 
-            'equipment_status' => 'required|in:0,1,2', 
             'date_purchased' => 'required|date',
             'date_acquired'  => 'required|date',
         ]);
@@ -55,7 +54,7 @@ class ItemController extends Controller
             'brandID'         => $request->brand_id,
             'unitID'          => $request->unit_id,
             'serial_number'   => $request->serial_number,
-            'equipment_status'=> $request->equipment_status,
+            'equipment_status'=> 0,
             'date_purchased'  => $request->date_purchased,
             'date_acquired'   => $request->date_acquired,
         ]);
@@ -80,36 +79,41 @@ class ItemController extends Controller
 
     public function update(Request $request, $id)
     {
-        // Validate the incoming data
-        $validated = $request->validate([
-            'category_id' => 'required|exists:categories,id',
-            'brand_id' => 'required|exists:brands,id',
-            'unit_id' => 'required|exists:units,id',
-            'serial_number' => 'required|string|max:255',
-            'equipment_status' => 'required|in:0,1,2',
-            'date_purchased' => 'required|date',
-            'date_acquired' => 'required|date',
-        ]);
-
-        // Retrieve the item from the database
-        $item = Item::findOrFail($id);
-
-        // Update the item with the validated data
-        $item->categoryID = $validated['category_id'];
-        $item->brandID = $validated['brand_id'];
-        $item->unitID = $validated['unit_id'];
-        $item->serial_number = $validated['serial_number'];
-        $item->equipment_status = $validated['equipment_status'];
-        $item->date_purchased = $validated['date_purchased'];
-        $item->date_acquired = $validated['date_acquired'];
-
-        // Save the updated item
-        
-
-        // Redirect back to the edit page with a success message
-        return redirect()->route('items', $item->id)
-            ->with('success', 'Item updated successfully!');
+        try {
+            // Validate the incoming data
+            $validated = $request->validate([
+                'category_id' => 'required|exists:categories,id',
+                'brand_id' => 'required|exists:brands,id',
+                'unit_id' => 'required|exists:units,id',
+                'serial_number' => 'required|string|max:255',
+                'date_purchased' => 'required|date',
+                'date_acquired' => 'required|date',
+            ]);
+    
+            // Retrieve the item from the database
+            $item = Item::findOrFail($id);
+    
+            // Update the item using mass assignment
+            $item->update([
+                'category_id' => $validated['category_id'],
+                'brand_id' => $validated['brand_id'],
+                'unit_id' => $validated['unit_id'],
+                'serial_number' => $validated['serial_number'],
+                'date_purchased' => $validated['date_purchased'],
+                'date_acquired' => $validated['date_acquired'],
+            ]);
+    
+            // Redirect back with success message
+            return redirect()->route('items')->with('success', 'Item updated successfully!');
+        } catch (ModelNotFoundException $e) {
+            // Catch the exception if the item doesn't exist
+            return redirect()->route('items')->with('error', 'Item not found.');
+        } catch (\Exception $e) {
+            // Catch any other exceptions
+            return redirect()->route('items')->with('error', 'An error occurred: ' . $e->getMessage());
+        }
     }
+    
    
     //Delete Item
     public function destroy($id)
