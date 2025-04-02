@@ -55,7 +55,7 @@ class HomeController extends Controller
                 return redirect('chart');
 
             } elseif ($usertype == 'superAdmin') {
-                return redirect('superAdmin.dashboard');
+                return redirect('/superAdmin/Dashboard');
 
             } else {
 
