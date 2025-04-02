@@ -484,7 +484,7 @@
     .modal-details {
       margin-bottom: 20px;
     } 
-    </style>
+  </style>
     
     <script>
      function showModal(type) {

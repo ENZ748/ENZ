@@ -14,6 +14,7 @@ use App\Http\Controllers\ItemController;
 use App\Http\Controllers\AssignedItemController;
 use App\Http\Controllers\ItemHistoryController;
 use App\Http\Controllers\SuperAdminController;
+use App\Http\Controllers\SuperAdminDashboardController;
 
 
 use App\Http\Middleware\Admin;
@@ -82,6 +83,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
 //Super Adminnnn
+    //Dashboard
+    Route::middleware([SuperAdmin::class])->get('/superAdmin/Dashboard', [SuperAdminDashboardController::class, 'index'])->name('superAdmin.dashboard');
+
     Route::middleware([SuperAdmin::class])->get('/superAdmin', [SuperAdminController::class, 'index'])->name('superAdmin.index');
     Route::get('admin/create', [SuperAdminController::class, 'create'])->name('admin.create');
     Route::post('admin/store', [SuperAdminController::class, 'store'])->name('admin.store');
