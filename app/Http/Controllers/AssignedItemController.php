@@ -19,7 +19,9 @@ class AssignedItemController extends Controller
     public function index()
     {
         // Fetch all assigned items
-        $assignedItems = AssignedItem::where('item_status', 'unreturned')->get();
+        $assignedItems = AssignedItem::where('item_status', 'unreturned')
+        ->orderBy('created_at', 'desc')
+        ->get();
 
         // Return the index view with assigned items
         return view('assigned_items.index', compact('assignedItems'));

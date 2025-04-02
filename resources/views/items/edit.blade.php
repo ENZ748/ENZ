@@ -7,7 +7,18 @@
     use App\Models\Category;
 @endphp
 
+
 <div class="container">
+
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
     <h2>Edit Item</h2>
 
     <!-- Display success message -->
@@ -56,14 +67,6 @@
         <label for="serial_number">Serial Number:</label>
         <input type="text" id="serial_number" name="serial_number" value="{{ old('serial_number', $item->serial_number) }}" required><br><br>
 
-        <!-- Equipment Status Dropdown -->
-        <label for="equipment_status">Equipment Status:</label>
-        <select id="equipment_status" name="equipment_status">
-            <option value="0" {{ old('equipment_status', $item->equipment_status) == '0' ? 'selected' : '' }}>Available</option>
-            <option value="1" {{ old('equipment_status', $item->equipment_status) == '1' ? 'selected' : '' }}>In Use</option>
-            <option value="2" {{ old('equipment_status', $item->equipment_status) == '2' ? 'selected' : '' }}>Out of Service</option>
-        </select><br><br>
-
         <!-- Date Purchased Input -->
         <label for="date_purchased">Date Purchased:</label>
         <input type="date" id="date_purchased" name="date_purchased" value="{{ old('date_purchased', $item->date_purchased) }}" required><br><br>
@@ -71,7 +74,7 @@
         <!-- Date Acquired Input -->
         <label for="date_acquired">Date Acquired:</label>
         <input type="date" id="date_acquired" name="date_acquired" value="{{ old('date_acquired', $item->date_acquired) }}" required><br><br>
-
+ 
         <button type="submit">Submit</button>
     </form>
 </div>
