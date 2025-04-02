@@ -112,8 +112,6 @@
         </div>
 
 
-
-
         <!-- Edit Employee Modal -->
         <div class="modal fade" id="editEmployeeModal" tabindex="-1" aria-labelledby="editEmployeeModalLabel" aria-hidden="true">
             <div class="modal-dialog">
