@@ -217,7 +217,11 @@ Route::middleware('auth')->group(function () {
     Route::get('assigned_items/{id}/edit', [AssignedItemController::class, 'edit'])->name('assigned_items.edit');
     Route::put('assigned_items/{id}', [AssignedItemController::class, 'update'])->name('assigned_items.update');
 
-    Route::post('assigned-items/{id}/return', [AssignedItemController::class, 'markAsReturned'])->name('assigned_items.return');
+    //Item Status Button
+    Route::get('assigned-items/{id}/return', [AssignedItemController::class, 'itemStatus'])->name('assigned_items.itemStatus');
+    Route::post('assigned-items/{id}/returned', [AssignedItemController::class, 'markAsReturned'])->name('assigned_items.good');
+    Route::post('assigned-items/{id}/damaged', [AssignedItemController::class, 'markAsDamaged'])->name('assigned_items.damaged');
+
     Route::get('/get-brands/create/{categoryId}', [AssignedItemController::class, 'getBrands']);
     Route::get('/get-units/create/{brandId}', [AssignedItemController::class, 'getUnits']);
     Route::get('/get-serials/create/{unitId}', [AssignedItemController::class, 'getSerials']);

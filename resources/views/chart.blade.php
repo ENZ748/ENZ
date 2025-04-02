@@ -147,6 +147,11 @@
         const returnedItemsLabels = @json($returnedItemsLabels);
         const returnedItemsdataValues = @json($returnedValues);
 
+        //Damged Items
+        //Returned Items
+        const damagedlabels = @json($damagedlabels);
+        const damagedItemsdataValues = @json($damagedvalues);
+
         //Equipment
         function createChartEquipment(chartId, chartType, label, bgColor, borderColor) {
             const ctx = document.getElementById(chartId).getContext('2d');
@@ -228,11 +233,38 @@
             });
         }
 
+         //Returned Items
+         function createChartDamagedItems(chartId, chartType, label, bgColor, borderColor) {
+            const ctx = document.getElementById(chartId).getContext('2d');
+            new Chart(ctx, {
+                type: chartType,
+                data: {
+                    labels: damagedlabels,
+                    datasets: [{
+                        label: label,
+                        data: damagedItemsdataValues,
+                        backgroundColor: bgColor,
+                        borderColor: borderColor,
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
         // Create Multiple Charts
         createChartEquipment('chart1', 'bar', 'Equipment', 'rgba(54, 162, 235, 0.5)', 'rgba(54, 162, 235, 1)');
         createChartUser('chart2', 'line', 'Users', 'rgba(255, 99, 132, 0.5)', 'rgba(255, 99, 132, 1)');
         createChartReturnedItems('chart3', 'pie', 'Returned Items', ['rgba(75, 192, 192, 0.5)', 'rgba(153, 102, 255, 0.5)', 'rgba(255, 206, 86, 0.5)'], ['rgba(75, 192, 192, 1)', 'rgba(153, 102, 255, 1)', 'rgba(255, 206, 86, 1)']);
-        createChart('chart4', 'doughnut', 'Damaged Items', ['rgba(255, 159, 64, 0.5)', 'rgba(201, 203, 207, 0.5)'], ['rgba(255, 159, 64, 1)', 'rgba(201, 203, 207, 1)']);
+        createChartDamagedItems('chart4', 'doughnut', 'Damaged Items', ['rgba(255, 159, 64, 0.5)', 'rgba(201, 203, 207, 0.5)'], ['rgba(255, 159, 64, 1)', 'rgba(201, 203, 207, 1)']);
     </script>
 
   <style>

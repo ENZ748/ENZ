@@ -89,11 +89,36 @@ class ChartController extends Controller
             $returnedItemsLabels = array_slice($returnedItemsLabels, 0, 5);
             $returnedValues = array_slice($returnedValues, 0, 5);
 
+        //Damaged Items
+        $count_damagedItems = Item::where('equipment_status', 2)->count(); // Count all items
+
+        // Fetch item counts grouped by month
+        $damagedmonthlyCounts = Item::selectRaw('MONTH(updated_at) as month, COUNT(*) as count')
+            ->groupBy('month')
+            ->orderBy('month')
+            ->pluck('count', 'month')
+            ->toArray();
+
+        // Define month labels
+        $damagedlabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+        // Prepare dynamic values
+        $damagedvalues = array_fill(0, 12, 0); // Default to 0 for all months
+        foreach ($damagedmonthlyCounts as $month => $count) {
+            $damagedvalues[$month - 1] = $count; // Adjust index since array is 0-based
+        }
+
+        // Trim to required months if needed
+        $damagedlabels = array_slice($damagedlabels, 0, 5);
+        $damagedvalues = array_slice($damagedvalues, 0, 5);
+
+
+
         $count_items = Item::all()->count();
         $count_categories = Category::all()->count();
         $count_returned_items = AssignedItem::where('item_status', 'returned')->count();
         $count_inStock = Item::where('equipment_status', 0)->count();
 
-        return view('chart', compact('labels', 'values','userLabels', 'userValues','returnedItemsLabels','returnedValues', 'count_items','count_categories','count_returned_items','count_inStock'));
+        return view('chart', compact('labels', 'values','userLabels', 'userValues','returnedItemsLabels','returnedValues','damagedlabels','damagedvalues', 'count_items','count_categories','count_returned_items','count_inStock'));
     }
 }
