@@ -6,6 +6,7 @@
     $brand = Brand::find($brandID);
 @endphp
 
+<div class="container mt-4">
 <h1>All Units for {{ $brand ? $brand->brand_name : 'No Brand Found' }}</h1>
 
 <!-- Add Unit & Navigation Buttons -->
@@ -97,7 +98,7 @@
         </div>
     </div>
 </div>
-
+</div>
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -139,7 +140,7 @@
 
         if (unitExists) {
             Swal.fire({
-                title: "Error!",
+                title: "Duplicate Unit",
                 text: "This unit name already exists.",
                 icon: "error",
                 confirmButtonText: "OK"

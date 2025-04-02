@@ -13,6 +13,7 @@
     </div>
 @endif
 
+<div class="container mt-4">
 <h1>All Units for {{ $category ? $category->category_name : 'No Category Found' }}</h1>
 
 <!-- Add Brand & Categories Buttons -->
@@ -107,7 +108,7 @@
         </div>
     </div>
 </div>
-
+</div>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const editBrandModal = new bootstrap.Modal(document.getElementById('editBrandModal'));
