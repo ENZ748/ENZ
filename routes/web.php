@@ -172,6 +172,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/units/{id}/brand/{brandID}/category/{categoryID}', [UnitController::class, 'edit'])->name('units.edit');
     Route::put('/units/{id}/update/brand/{brandID}/category/{categoryID}', [UnitController::class, 'update'])->name('units.update');
 
+    Route::post('/units/check', [UnitController::class, 'checkUnit'])->name('units.check');
+
     //Delete Unit
     Route::delete('/units/{id}/brand/{brandID}/category/{categoryID}', [UnitController::class, 'destroy'])->name('units.destroy');
 

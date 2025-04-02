@@ -101,7 +101,7 @@
                         <label for="brand_name" class="form-label">Brand Name:</label>
                         <input type="text" id="brand_name" name="brand_name" class="form-control" required>
                     </div>
-                    <button type="submit" class="btn btn-primary">Create Brand</button>
+                    <button type="submit" class="btn btn-success">Create Brand</button>
                 </form>
             </div>
         </div>
@@ -185,7 +185,7 @@
                         confirmButtonColor: "#3085d6",
                         cancelButtonColor: "#d33",
                         confirmButtonText: "Yes, proceed",
-                        cancelButtonText: "Cancel"
+                        cancelButtonText: "Cancel"  
                     }).then((result) => {
                         if (result.isConfirmed) {
                             showLoading("Adding Brand...");

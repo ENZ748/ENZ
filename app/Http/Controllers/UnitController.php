@@ -80,4 +80,10 @@ class UnitController extends Controller
         ->with('success', 'Unit Deleted Successfully');
     }
 
+    public function checkUnit(Request $request)
+    {
+        $exists = Unit::where('unit_name', $request->unit_name)->exists();
+        return response()->json(['exists' => $exists]);
+    }
+
 }
