@@ -159,7 +159,7 @@
             if (result.isConfirmed) {
                 Swal.fire({
                     title: "Processing...",
-                    text: "Please wait while we process your request.",
+                    text: "Please wait while processing your request.",
                     icon: "info",
                     allowOutsideClick: false,
                     showConfirmButton: false,
