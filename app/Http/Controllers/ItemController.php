@@ -102,7 +102,7 @@ class ItemController extends Controller
                 'date_purchased' => $validated['date_purchased'],
                 'date_acquired' => $validated['date_acquired'],
             ]);
-    
+            
             // Redirect back with success message
             return redirect()->route('items')->with('success', 'Item updated successfully!');
             
