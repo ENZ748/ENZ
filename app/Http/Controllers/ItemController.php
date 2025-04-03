@@ -95,9 +95,9 @@ class ItemController extends Controller
     
             // Update the item using mass assignment
             $item->update([
-                'category_id' => $validated['category_id'],
-                'brand_id' => $validated['brand_id'],
-                'unit_id' => $validated['unit_id'],
+                'categoryID' => $validated['category_id'],
+                'brandID' => $validated['brand_id'],
+                'unitID' => $validated['unit_id'],
                 'serial_number' => $validated['serial_number'],
                 'date_purchased' => $validated['date_purchased'],
                 'date_acquired' => $validated['date_acquired'],
@@ -105,6 +105,7 @@ class ItemController extends Controller
     
             // Redirect back with success message
             return redirect()->route('items')->with('success', 'Item updated successfully!');
+            
         } catch (ModelNotFoundException $e) {
             // Catch the exception if the item doesn't exist
             return redirect()->route('items')->with('error', 'Item not found.');

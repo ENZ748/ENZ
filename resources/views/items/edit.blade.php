@@ -63,18 +63,18 @@
             @endforeach
         </select><br><br>
 
-        <!-- Serial Number Input -->
-        <label for="serial_number">Serial Number:</label>
-        <input type="text" id="serial_number" name="serial_number" value="{{ old('serial_number', $item->serial_number) }}" required><br><br>
+            <!-- Serial Number Input -->
+            <label for="serial_number">Serial Number:</label>
+            <input type="text" id="serial_number" name="serial_number" value="{{ old('serial_number', $item->serial_number) }}" required><br><br>
 
-        <!-- Date Purchased Input -->
-        <label for="date_purchased">Date Purchased:</label>
-        <input type="date" id="date_purchased" name="date_purchased" value="{{ old('date_purchased', $item->date_purchased) }}" required><br><br>
+            <!-- Date Purchased Input -->
+            <label for="date_purchased">Date Purchased:</label>
+            <input type="date" id="date_purchased" name="date_purchased" value="{{ old('date_purchased', $item->date_purchased) }}" required><br><br>
 
-        <!-- Date Acquired Input -->
-        <label for="date_acquired">Date Acquired:</label>
-        <input type="date" id="date_acquired" name="date_acquired" value="{{ old('date_acquired', $item->date_acquired) }}" required><br><br>
- 
+            <!-- Date Acquired Input -->
+            <label for="date_acquired">Date Acquired:</label>
+            <input type="date" id="date_acquired" name="date_acquired" value="{{ old('date_acquired', $item->date_acquired) }}" required><br><br>
+    
         <button type="submit">Submit</button>
     </form>
 </div>
