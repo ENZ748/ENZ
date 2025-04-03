@@ -27,19 +27,23 @@
     @endif
     <h2>Items</h2>
 
-    <!-- Category Filter Dropdown -->
-    <form method="GET" action="{{ route('items.index') }}" class="mb-4 flex space-x-2">
-        <select name="category_id" id="category_id" class="px-4 py-2 border rounded-md">
-            <option value="">All Categories</option>
-            @foreach($categories as $category)
-                <option value="{{ $category->id }}" 
-                    {{ request('category_id') == $category->id ? 'selected' : '' }}>
-                    {{ $category->category_name }}
-                </option>
-            @endforeach
-        </select>
-        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md">Filter</button>
-    </form>
+
+    <!-- Search Bar with Equipment Status Dropdown -->
+    <div class="search-container" style="display: flex; justify-content: flex-end;">
+        <form method="GET" action="{{ route('items.search') }}" class="mb-4">
+            <input type="text" name="search" placeholder="Search..." value="{{ request('search') }}" class="px-4 py-2 border rounded-md">
+            
+            <!-- Equipment Status Dropdown -->
+            <select name="equipment_status" class="px-4 py-2 border rounded-md">
+                <option value="3">All Status</option>
+                <option value="0" {{ request('equipment_status') == '0' ? 'selected' : '' }}>Available</option>
+                <option value="1" {{ request('equipment_status') == '1' ? 'selected' : '' }}>In Use</option>
+                <option value="2" {{ request('equipment_status') == '2' ? 'selected' : '' }}>Out of Service</option>
+            </select>
+
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md">Search</button>
+        </form>
+    </div>
 
     <!-- View Toggle Buttons -->
     <div class="flex space-x-2 mb-4">
@@ -51,6 +55,7 @@
     <button class="btn btn-primary mb-4 px-4 py-2 bg-blue-500 text-white rounded-lg" data-toggle="modal" data-target="#addItemModal">Add Item</button>
     <a href="{{ route('categories.index') }}" class="btn btn-primary mb-4">View Categories</a>
 
+ 
     <!-- Table View -->
     <div id="table-view" class="card-body">
         <table class="table table-hover text-center">
@@ -68,20 +73,21 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($items as $item)
+                @forelse ($items as $item) <!-- Make sure $items is being passed correctly -->
                     @php
-                        $category = Category::find($item->categoryID);
-                        $brand = Brand::find($item->brandID);
-                        $unit = Unit::find($item->unitID);
+                        // Getting the related category, brand, and unit from the eager-loaded relationships
+                        $category = $item->category ? $item->category->category_name : 'N/A';
+                        $brand = $item->brand ? $item->brand->brand_name : 'N/A';
+                        $unit = $item->unit ? $item->unit->unit_name : 'N/A';
                         $datePurchased = \Carbon\Carbon::parse($item->date_purchased);
                         $dateAcquired = \Carbon\Carbon::parse($item->date_acquired);
                         $assignedItem = $assigned_items->firstWhere('itemID', $item->id);
                         $user = ($item->equipment_status == 1 && $assignedItem) ? $assignedItem->employee->employee_number : 'None';
                     @endphp
                     <tr>
-                        <td>{{ $category->category_name }}</td>
-                        <td>{{ $brand->brand_name }}</td>
-                        <td>{{ $unit->unit_name }}</td>
+                        <td>{{ $category }}</td>
+                        <td>{{ $brand }}</td>
+                        <td>{{ $unit }}</td>
                         <td>{{ $item->serial_number }}</td>
                         <td>
                             {{ $item->equipment_status == 0 ? 'Available' : ($item->equipment_status == 1 ? 'In Use' : 'Out of Service') }}
@@ -90,19 +96,24 @@
                         <td>{{ $datePurchased->format('Y-m-d') }}</td>
                         <td>{{ $dateAcquired->format('Y-m-d') }}</td>
                         <td>
-                            <!-- Edit Button (Triggers Modal) -->
                             <button class="btn btn-primary btn-sm edit-item-btn" data-toggle="modal" data-target="#editItemModal" data-id="{{ $item->id }}" data-category="{{ $item->categoryID }}" data-brand="{{ $item->brandID }}" data-unit="{{ $item->unitID }}" data-serial="{{ $item->serial_number }}" data-date-purchased="{{ $item->date_purchased }}" data-date-acquired="{{ $item->date_acquired }}">Edit</button>
-
                             <form action="{{ route('items.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Are you sure?');" class="inline">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm delete-btn">Delete</button>
+                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                             </form>
                         </td>
                     </tr>
-                @endforeach
+                @empty
+                    <tr>
+                        <td colspan="9">No Items Found</td>
+                    </tr>
+                @endforelse
             </tbody>
         </table>
+
+
+
     </div>
 
     <!-- Grid View -->
@@ -208,40 +219,47 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form action="{{ route('items.update', $item->id) }}" method="post" id="edit-item-form">
-                    @csrf
-                    @method('PUT')
-                    <input type="hidden" name="id" id="edit-item-id">
+            <form action="" method="POST" id="edit-item-form">
+                @csrf
+                @method('PUT')
+                <input type="hidden" name="id" id="edit-item-id">
 
-                    <label for="edit-category">Category:</label>
-                    <select id="edit-category" name="category_id" class="form-control">
-                        <option value="">Select Category</option>
-                        @foreach ($categories as $category)
-                            <option value="{{ $category->id }}">{{ $category->category_name }}</option>
-                        @endforeach
-                    </select><br><br>
+                <!-- Category Field -->
+                <label for="edit-category">Category:</label>
+                <select id="edit-category" name="category_id" class="form-control">
+                    <option value="">Select Category</option>
+                    @foreach ($categories as $category)
+                        <option value="{{ $category->id }}">{{ $category->category_name }}</option>
+                    @endforeach
+                </select><br><br>
 
-                    <label for="edit-brand">Brand Name:</label>
-                    <select id="edit-brand" name="brand_id" class="form-control">
-                        <option value="">Select Brand</option>
-                    </select><br><br>
+                <!-- Brand Field -->
+                <label for="edit-brand">Brand Name:</label>
+                <select id="edit-brand" name="brand_id" class="form-control">
+                    <option value="">Select Brand</option>
+                </select><br><br>
 
-                    <label for="edit-unit">Unit:</label>
-                    <select id="edit-unit" name="unit_id" class="form-control">
-                        <option value="">Select Unit</option>
-                    </select><br><br>
+                <!-- Unit Field -->
+                <label for="edit-unit">Unit:</label>
+                <select id="edit-unit" name="unit_id" class="form-control">
+                    <option value="">Select Unit</option>
+                </select><br><br>
 
-                    <label for="edit-serial_number">Serial Number:</label>
-                    <input type="text" id="edit-serial_number" name="serial_number" required class="form-control"><br><br>
+                <!-- Serial Number Field -->
+                <label for="edit-serial_number">Serial Number:</label>
+                <input type="text" id="edit-serial_number" name="serial_number" required class="form-control"><br><br>
 
-                    <label for="edit-date_purchased">Date Purchased:</label>
-                    <input type="date" id="edit-date_purchased" name="date_purchased" required class="form-control"><br><br>
+                <!-- Date Purchased Field -->
+                <label for="edit-date_purchased">Date Purchased:</label>
+                <input type="date" id="edit-date_purchased" name="date_purchased" required class="form-control"><br><br>
 
-                    <label for="edit-date_acquired">Date Acquired:</label>
-                    <input type="date" id="edit-date_acquired" name="date_acquired" required class="form-control"><br><br>
+                <!-- Date Acquired Field -->
+                <label for="edit-date_acquired">Date Acquired:</label>
+                <input type="date" id="edit-date_acquired" name="date_acquired" required class="form-control"><br><br>
 
-                    <button type="submit" id="submit-btn" class="btn btn-primary">Submit</button>
-                </form>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+
             </div>
         </div>
     </div>
@@ -256,68 +274,67 @@
         document.getElementById('grid-view').classList.toggle('hidden', view !== 'grid');
     }
 
-    // Handle category change to populate brands in the Add modal
-$('#category').change(function() {
-    var categoryId = $(this).val();
-    $('#brand').empty().append('<option value="">Select Brand</option>');
-    $('#unit').empty().append('<option value="">Select Unit</option>');
+        // Handle category change to populate brands in the Add modal
+    $('#category').change(function() {
+        var categoryId = $(this).val();
+        $('#brand').empty().append('<option value="">Select Brand</option>');
+        $('#unit').empty().append('<option value="">Select Unit</option>');
 
-    if (categoryId) {
-        $.ajax({
-            url: '/get-brands/' + categoryId,
-            type: 'GET',
-            success: function(data) {
-                $.each(data, function(key, brand) {
-                    $('#brand').append('<option value="' + brand.id + '">' + brand.brand_name + '</option>');
-                });
-            }
-        });
-    }
-});
+        if (categoryId) {
+            $.ajax({
+                url: '/get-brands/' + categoryId,
+                type: 'GET',
+                success: function(data) {
+                    $.each(data, function(key, brand) {
+                        $('#brand').append('<option value="' + brand.id + '">' + brand.brand_name + '</option>');
+                    });
+                }
+            });
+        }
+    });
 
-// Handle brand change to populate units in the Add modal
-$('#brand').change(function() {
-    var brandId = $(this).val();
-    $('#unit').empty().append('<option value="">Select Unit</option>');
+    // Handle brand change to populate units in the Add modal
+    $('#brand').change(function() {
+        var brandId = $(this).val();
+        $('#unit').empty().append('<option value="">Select Unit</option>');
 
-    if (brandId) {
-        $.ajax({
-            url: '/get-units/' + brandId,
-            type: 'GET',
-            success: function(data) {
-                $.each(data, function(key, unit) {
-                    $('#unit').append('<option value="' + unit.id + '">' + unit.unit_name + '</option>');
-                });
-            }
-        });
-    }
-});
+        if (brandId) {
+            $.ajax({
+                url: '/get-units/' + brandId,
+                type: 'GET',
+                success: function(data) {
+                    $.each(data, function(key, unit) {
+                        $('#unit').append('<option value="' + unit.id + '">' + unit.unit_name + '</option>');
+                    });
+                }
+            });
+        }
+    });
 
-// Edit Item Modal Population
+    // Edit Item Modal Population
 $('.edit-item-btn').click(function() {
-        var itemId = $(this).data('id'); // Get item ID from the button's data-id attribute
-        var categoryId = $(this).data('category'); // Get category ID from the button's data-category attribute
-        var brandId = $(this).data('brand'); // Get brand ID from the button's data-brand attribute
-        var unitId = $(this).data('unit'); // Get unit ID from the button's data-unit attribute
-        var serialNumber = $(this).data('serial'); // Get serial number from the button's data-serial attribute
-        var datePurchased = $(this).data('date-purchased'); // Get date purchased from the button's data-date-purchased attribute
-        var dateAcquired = $(this).data('date-acquired'); // Get date acquired from the button's data-date-acquired attribute
+    var itemId = $(this).data('id'); // Get item ID from the button's data-id attribute
+    var categoryId = $(this).data('category'); // Get category ID from the button's data-category attribute
+    var brandId = $(this).data('brand'); // Get brand ID from the button's data-brand attribute
+    var unitId = $(this).data('unit'); // Get unit ID from the button's data-unit attribute
+    var serialNumber = $(this).data('serial'); // Get serial number from the button's data-serial attribute
+    var datePurchased = $(this).data('date-purchased'); // Get date purchased from the button's data-date-purchased attribute
+    var dateAcquired = $(this).data('date-acquired'); // Get date acquired from the button's data-date-acquired attribute
 
-        // Set the form action dynamically
-        $('#edit-item-form').attr('action', '/items/update/' + itemId); // Update the form action URL with the item ID
+    // Set the form action dynamically
+    $('#edit-item-form').attr('action', '/items/update/' + itemId); // Update the form action URL with the item ID
 
-        // Populate modal form fields
-        $('#edit-category').val(categoryId); // Set the category dropdown
-        $('#edit-brand').val(brandId);  // Make sure this is correctly setting the selected brand
-        $('#edit-unit').val(unitId);    // Make sure this is correctly setting the selected unit
-        $('#edit-serial_number').val(serialNumber); // Set serial number input
-        $('#edit-date_purchased').val(datePurchased); // Set date purchased input
-        $('#edit-date_acquired').val(dateAcquired); // Set date acquired input
+    // Populate modal form fields
+    $('#edit-category').val(categoryId); // Set the category dropdown
+    $('#edit-brand').val(brandId);  // Set the selected brand
+    $('#edit-unit').val(unitId);    // Set the selected unit
+    $('#edit-serial_number').val(serialNumber); // Set serial number input
+    $('#edit-date_purchased').val(datePurchased); // Set date purchased input
+    $('#edit-date_acquired').val(dateAcquired); // Set date acquired input
 
     // Reset and clear brand, unit, and serial number dropdowns
     $('#edit-brand').empty().append('<option value="">Select Brand</option>');
     $('#edit-unit').empty().append('<option value="">Select Unit</option>');
-    $('#edit-serial_number').empty().append('<option value="">Select Serial</option>');  // Reset Serial Number dropdown
 
     // Populate brands based on selected category
     $.ajax({
@@ -346,59 +363,57 @@ $('.edit-item-btn').click(function() {
 
                     // Set the selected unit in the dropdown
                     $('#edit-unit').val(unitId);
-
-                    // Fetch serial numbers based on selected unit
-                    fetchSerialNumbers(unitId);
                 }
             });
         }
     });
 });
 
-// Handle category change dynamically inside the modal
-$('#edit-category').change(function() {
-    var selectedCategoryId = $(this).val();
 
-    // Reset brand, unit, and serial number dropdowns
-    $('#edit-brand').empty().append('<option value="">Select Brand</option>');
-    $('#edit-unit').empty().append('<option value="">Select Unit</option>');
-    $('#edit-serial_number').empty().append('<option value="">Select Serial</option>');  // Reset Serial Number dropdown
+    // Handle category change dynamically inside the modal
+    $('#edit-category').change(function() {
+        var selectedCategoryId = $(this).val();
 
-    // Fetch brands based on selected category
-    $.ajax({
-        url: '/get-brands/' + selectedCategoryId,
-        type: 'GET',
-        success: function(data) {
-            var brandSelect = $('#edit-brand');
-            brandSelect.empty().append('<option value="">Select Brand</option>');
-            $.each(data, function(key, brand) {
-                brandSelect.append('<option value="' + brand.id + '">' + brand.brand_name + '</option>');
-            });
-        }
+        // Reset brand, unit, and serial number dropdowns
+        $('#edit-brand').empty().append('<option value="">Select Brand</option>');
+        $('#edit-unit').empty().append('<option value="">Select Unit</option>');
+        $('#edit-serial_number').empty().append('<option value="">Select Serial</option>');  // Reset Serial Number dropdown
+
+        // Fetch brands based on selected category
+        $.ajax({
+            url: '/get-brands/' + selectedCategoryId,
+            type: 'GET',
+            success: function(data) {
+                var brandSelect = $('#edit-brand');
+                brandSelect.empty().append('<option value="">Select Brand</option>');
+                $.each(data, function(key, brand) {
+                    brandSelect.append('<option value="' + brand.id + '">' + brand.brand_name + '</option>');
+                });
+            }
+        });
     });
-});
 
-// Handle brand change dynamically inside the modal
-$('#edit-brand').change(function() {
-    var selectedBrandId = $(this).val();
+    // Handle brand change dynamically inside the modal
+    $('#edit-brand').change(function() {
+        var selectedBrandId = $(this).val();
 
-    // Reset unit and serial number dropdowns
-    $('#edit-unit').empty().append('<option value="">Select Unit</option>');
-    $('#edit-serial_number').empty().append('<option value="">Select Serial</option>');  // Reset Serial Number dropdown
+        // Reset unit and serial number dropdowns
+        $('#edit-unit').empty().append('<option value="">Select Unit</option>');
+        $('#edit-serial_number').empty().append('<option value="">Select Serial</option>');  // Reset Serial Number dropdown
 
-    // Fetch units based on selected brand
-    $.ajax({
-        url: '/get-units/' + selectedBrandId,
-        type: 'GET',
-        success: function(data) {
-            var unitSelect = $('#edit-unit');
-            unitSelect.empty().append('<option value="">Select Unit</option>');
-            $.each(data, function(key, unit) {
-                unitSelect.append('<option value="' + unit.id + '">' + unit.unit_name + '</option>');
-            });
-        }
+        // Fetch units based on selected brand
+        $.ajax({
+            url: '/get-units/' + selectedBrandId,
+            type: 'GET',
+            success: function(data) {
+                var unitSelect = $('#edit-unit');
+                unitSelect.empty().append('<option value="">Select Unit</option>');
+                $.each(data, function(key, unit) {
+                    unitSelect.append('<option value="' + unit.id + '">' + unit.unit_name + '</option>');
+                });
+            }
+        });
     });
-});
 
 
 

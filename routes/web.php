@@ -184,7 +184,7 @@ Route::middleware('auth')->group(function () {
 
 
 //Itemsssssssssss
-    Route::get('items/category', [ItemController::class, 'category'])->name('items.index');
+    Route::get('items/category', [ItemController::class, 'search'])->name('items.search');
 
     //Update Itemmm
     Route::get('items/edit/{id}', [ItemController::class, 'edit'])->name('items.edit');

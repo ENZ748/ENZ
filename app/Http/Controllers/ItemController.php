@@ -105,7 +105,7 @@ class ItemController extends Controller
             
             // Redirect back with success message
             return redirect()->route('items')->with('success', 'Item updated successfully!');
-            
+
         } catch (ModelNotFoundException $e) {
             // Catch the exception if the item doesn't exist
             return redirect()->route('items')->with('error', 'Item not found.');
@@ -127,22 +127,58 @@ class ItemController extends Controller
 
 
     //Search Category
-    public function category(Request $request)
-    {
-        // Fetch all categories to populate the select dropdown
-        $categories = Category::all();
+    public function search(Request $request)
+{
+    // Start with a query that eagerly loads related models
+    $itemsQuery = Item::with(['category', 'brand', 'unit']); 
 
-        // Get the selected category id (if any)
-        $categoryId = $request->input('category_id');
+    // Initialize a message variable
+    $message = '';
 
-        // Filter items based on the selected category, if provided
-        $items = Item::when($categoryId, function ($query, $categoryId) {
-            return $query->where('categoryID', $categoryId);
-        })->get();
+    // Apply the search filter based on the "search" term
+    if ($request->has('search') && $request->search !== '') {
+        $itemsQuery->where(function ($query) use ($request) {
+            $query->where('serial_number', 'like', '%' . $request->search . '%')
+                ->orWhereHas('category', function ($query) use ($request) {
+                    $query->where('category_name', 'like', '%' . $request->search . '%');
+                })
+                ->orWhereHas('brand', function ($query) use ($request) {
+                    $query->where('brand_name', 'like', '%' . $request->search . '%');
+                })
+                ->orWhereHas('unit', function ($query) use ($request) {
+                    $query->where('unit_name', 'like', '%' . $request->search . '%');
+                });
+        });
+    } 
 
-        // Return the view with categories and filtered items
-        return view('items.index', compact('items', 'categories'));
+    // Filter by equipment status only if it's not empty or null
+    if ($request->has('equipment_status') && $request->equipment_status !== '3') {
+        $itemsQuery->where('equipment_status', $request->equipment_status);
     }
+
+    // Get the filtered items
+    $items = $itemsQuery->get();
+
+    // Check if no items were found
+    if ($items->isEmpty()) {
+        // If no items were found and there was a search term, set an appropriate message
+        if ($request->has('search') && $request->search !== '') {
+            $message = "No items found for the search term: " . $request->search;
+        } else {
+            $message = "No items found.";
+        }
+    }
+
+    // Get all the other necessary data
+    $assigned_items = AssignedItem::all();
+    $categories = Category::all();
+
+    // Return the view with the necessary data
+    return view('items.index', compact('items', 'categories', 'assigned_items', 'message'));
+}
+
+
+
 
     //Filter add and update
     public function getBrands($categoryId)
