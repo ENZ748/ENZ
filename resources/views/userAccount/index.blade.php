@@ -97,7 +97,6 @@
                                 <th style="background-color: #6daedb; color: white;" class="py-3 px-4 text-left">Serial Number</th>
                                 <th style="background-color: #2892d7; color: white;" class="py-3 px-4 text-left">Assigned Date</th>
                                 <th style="background-color: #1b4353; color: white;" class="py-3 px-4 text-left">Notes</th>
-                                <th style="background-color: #1d70a2; color: white;" class="py-3 px-4 text-left">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -117,7 +116,7 @@
                                         <span class="text-xs text-gray-400">No notes</span>
                                     @endif
                                 </td>
-                                <td style="background-color: rgba(27, 67, 83, 0.1);" class="py-3 px-4">
+                                <td>
                                     <button class="text-blue-500 hover:text-blue-700 mr-2">
                                         <i class="fas fa-eye"></i>
                                     </button>
