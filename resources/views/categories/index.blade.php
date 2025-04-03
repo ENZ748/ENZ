@@ -170,7 +170,9 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         Swal.fire({
-                            title: "Adding Category...",
+                            title: "Proccessing...",
+                            text: "Please wait while processing your request.",
+                            icon: "info",
                             allowOutsideClick: false,
                             didOpen: () => {
                                 Swal.showLoading();
@@ -228,7 +230,9 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         Swal.fire({
-                            title: "Updating...",
+                            title: "Proccessing...",
+                            text: "Please wait while processing your request.",
+                            icon: "info",
                             allowOutsideClick: false,
                             didOpen: () => {
                                 Swal.showLoading();

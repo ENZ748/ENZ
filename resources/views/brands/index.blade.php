@@ -13,6 +13,7 @@
     </div>
 @endif
 
+<div class="container mt-4">
 <h1>All Units for {{ $category ? $category->category_name : 'No Category Found' }}</h1>
 
 <!-- Add Brand & Categories Buttons -->
@@ -107,7 +108,7 @@
         </div>
     </div>
 </div>
-
+</div>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const editBrandModal = new bootstrap.Modal(document.getElementById('editBrandModal'));
@@ -129,24 +130,6 @@
             });
         });
 
-        // Function to show a loading animation with a custom message
-        function showLoading(message) {
-            Swal.fire({
-                title: message,
-                html: `
-                    <div style="display: flex; justify-content: center; align-items: center;">
-                        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
-                    </div>
-                    <p>Please wait...</p>
-                `,
-                showConfirmButton: false,
-                allowOutsideClick: false,
-                allowEscapeKey: false
-            });
-        }
-
         // Function to check if brand name exists
         function checkBrandExists(brandName, categoryID) {
             return fetch("{{ route('brands.check') }}", {
@@ -161,20 +144,33 @@
             .then(data => data.exists);
         }
 
+        // Function to show loading
+        function showLoading(message) {
+            Swal.fire({
+                title: "Processing...",
+                    text: "Please wait while processing your request.",
+                    icon: "info",
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+        }
+
         // Handle Add Brand Form Submission
         document.getElementById('addCategoryForm').addEventListener('submit', function(event) {
             event.preventDefault();
             let form = this;
             let formData = new FormData(form);
             let brandName = formData.get('brand_name');
-            let categoryID = formData.get('categoryID');
+            let categoryID = form.action.split('/').pop();
 
             checkBrandExists(brandName, categoryID).then(exists => {
                 if (exists) {
                     Swal.fire({
-                        title: "Error!",
-                        text: "This brand name already exists in this category.",
-                        icon: "error"
+                    icon: "error",
+                    title: "Duplicate Brand",
+                    text: "This brand already exists!"
                     });
                 } else {
                     Swal.fire({
@@ -189,29 +185,32 @@
                     }).then((result) => {
                         if (result.isConfirmed) {
                             showLoading("Adding Brand...");
-                            fetch(form.action, {
-                                method: 'POST',
-                                body: formData
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.error) {
-                                    Swal.fire({
-                                        title: "Error!",
-                                        text: data.error,
-                                        icon: "error"
-                                    });
-                                } else {
-                                    Swal.fire({
-                                        title: "Success!",
-                                        text: "Brand has been created successfully.",
-                                        icon: "success"
-                                    }).then(() => {
-                                        location.reload();
-                                    });
-                                }
-                            })
-                            .catch(error => console.error("Error:", error));
+                            // Wait 2 seconds before proceeding with the request
+                            setTimeout(() => {
+                                fetch(form.action, {
+                                    method: 'POST',
+                                    body: formData
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.error) {
+                                        Swal.fire({
+                                            title: "Error!",
+                                            text: data.error,
+                                            icon: "error"
+                                        });
+                                    } else {
+                                        Swal.fire({
+                                            title: "Success!",
+                                            text: "Brand has been created successfully.",
+                                            icon: "success"
+                                        }).then(() => {
+                                            location.reload();
+                                        });
+                                    }
+                                })
+                                .catch(error => console.error("Error:", error));
+                            }, 2000); // 2 seconds delay
                         }
                     });
                 }
@@ -229,9 +228,9 @@
             checkBrandExists(brandName, categoryID).then(exists => {
                 if (exists) {
                     Swal.fire({
-                        title: "Error!",
-                        text: "This brand name already exists in this category.",
-                        icon: "error"
+                        icon: "error",
+                        title: "Duplicate Brand",
+                        text: "This brand already exists!"
                     });
                 } else {
                     Swal.fire({
@@ -246,29 +245,32 @@
                     }).then((result) => {
                         if (result.isConfirmed) {
                             showLoading("Updating Brand...");
-                            fetch(form.action, {
-                                method: 'POST',
-                                body: formData
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.error) {
-                                    Swal.fire({
-                                        title: "Error!",
-                                        text: data.error,
-                                        icon: "error"
-                                    });
-                                } else {
-                                    Swal.fire({
-                                        title: "Updated!",
-                                        text: "Brand has been updated successfully.",
-                                        icon: "success"
-                                    }).then(() => {
-                                        location.reload();
-                                    });
-                                }
-                            })
-                            .catch(error => console.error("Error:", error));
+                            // Wait 2 seconds before proceeding with the request
+                            setTimeout(() => {
+                                fetch(form.action, {
+                                    method: 'POST',
+                                    body: formData
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.error) {
+                                        Swal.fire({
+                                            title: "Error!",
+                                            text: data.error,
+                                            icon: "error"
+                                        });
+                                    } else {
+                                        Swal.fire({
+                                            title: "Updated!",
+                                            text: "Brand has been updated successfully.",
+                                            icon: "success"
+                                        }).then(() => {
+                                            location.reload();
+                                        });
+                                    }
+                                })
+                                .catch(error => console.error("Error:", error));
+                            }, 2000); // 2 seconds delay
                         }
                     });
                 }

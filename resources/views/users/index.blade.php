@@ -93,7 +93,7 @@
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Email</label>
-                                <input type="email" name="email" class="form-control" required>
+                                <input type="email" name="email" class="form-control" required oninput="this.value = this.value.toLowerCase()">
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Password</label>
@@ -110,8 +110,6 @@
                 </div>
             </div>
         </div>
-
-
 
 
         <!-- Edit Employee Modal -->

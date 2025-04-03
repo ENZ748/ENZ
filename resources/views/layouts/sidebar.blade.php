@@ -113,8 +113,8 @@
 
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
-        <img src="EnzLogo.png" alt="Enz Logo">
-        <ul class="nav flex-column">
+    <img src="{{ asset('EnzLogo.png') }}" alt="Enz Logo">
+    <ul class="nav flex-column">
             <li class="nav-item">
                 <a class="nav-link" href="{{route('chart')}}">
                     <i class="fas fa-tachometer-alt"></i> Dashboard
