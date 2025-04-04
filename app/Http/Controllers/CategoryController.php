@@ -9,7 +9,7 @@ class CategoryController extends Controller
 
     public function index()
     {
-        $categories = Category::all();
+        $categories = Category::latest()->paginate(10); // Shows 10 items per page
         return view('categories.index', compact('categories'));
     }
     // Display the form to create a new category

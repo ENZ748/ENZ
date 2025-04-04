@@ -161,9 +161,9 @@
 </body>
 
 <style>
-     body {
-            background: linear-gradient(to right,white,rgb(243, 249, 252));
-        }
+      body {
+    background: linear-gradient(to right, #2892d7, rgb(243, 249, 252));
+ }
 
         /* Uniform Icon Styling */
         .icon-wrapper {
