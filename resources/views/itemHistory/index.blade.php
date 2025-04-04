@@ -2,8 +2,7 @@
 
 @section('content')
 
-    <h1>Assigned Items</h1>
-    <a href="{{ route('assigned_items.create') }}" class="btn btn-primary">Assign New Item</a>
+    <h1>Assigned Items History</h1>
 
     <table class="table mt-3">
         <thead>
