@@ -11,7 +11,9 @@ class BrandController extends Controller
 {
     public function index($categoryID)
     {
-        $brands = Brand::where('categoryID', $categoryID)->get();
+        $brands = Brand::latest()
+        ->where('categoryID', $categoryID)->get();
+        
         return view('brands.index', compact('brands', 'categoryID'));
     }
 
