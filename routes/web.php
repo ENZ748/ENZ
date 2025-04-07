@@ -233,8 +233,9 @@ Route::middleware('auth')->group(function () {
 
 //PDF
     use App\Http\Controllers\PDFController;
-
+    
     Route::get('/generate-pdf', [PDFController::class, 'generatePDF'])->name('generatePDF');
+    Route::get('/Asset_historyGenerate-pdf', [PDFController::class, 'AssetHistoryGeneratePDF'])->name('AssetHistoryGeneratePDF');
     
 
 
