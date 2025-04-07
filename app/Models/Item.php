@@ -19,6 +19,7 @@ class Item extends Model
         'equipment_status',
         'date_purchased',
         'date_acquired',
+        'quantity',
     ];
 
     public function category()

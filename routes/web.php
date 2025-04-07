@@ -231,4 +231,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/get-serials/create/{unitId}', [AssignedItemController::class, 'getSerials']);
 
 
-require __DIR__.'/auth.php';    
+//PDF
+    use App\Http\Controllers\PDFController;
+
+    Route::get('/generate-pdf', [PDFController::class, 'generatePDF'])->name('generatePDF');
+    
+
+
+    require __DIR__.'/auth.php';    

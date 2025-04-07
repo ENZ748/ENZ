@@ -74,7 +74,11 @@ class AssignedItemController extends Controller
 
         $itemStatus = Item::where('id',$item->id)->first();
         
-        $itemStatus->equipment_status = 1;
+        $itemStatus->quantity = $itemStatus->quantity - 1;
+        if($itemStatus->quantity == 0)
+        {
+            $itemStatus->equipment_status = 1;  
+        }
         $itemStatus->save();
 
         $assignedItem = Employees::where('id',$validatedData['employeeID'])->first();
@@ -161,7 +165,9 @@ class AssignedItemController extends Controller
     public function getBrands($categoryId)
     {
         $brands = Brand::whereHas('items', function ($query) {
-            $query->where('equipment_status', 0);
+            $query->where('equipment_status', 0)
+            ->where('quantity', '>', 0);  
+
         })->where('categoryID', $categoryId)->get();
 
         return response()->json($brands);
@@ -171,7 +177,8 @@ class AssignedItemController extends Controller
     {
 
         $units = Unit::whereHas('items', function ($query) {
-            $query->where('equipment_status', 0);
+            $query->where('equipment_status', 0)
+                  ->where('quantity', '>', 0);  
         })->where('brandID', $brandId)->get();
 
         return response()->json($units);
@@ -180,6 +187,7 @@ class AssignedItemController extends Controller
     public function getSerials($unitId)
     {
         $serials = Item::where('equipment_status', 0)
+        ->where('quantity', '>', 0)  
         ->where('unitID', $unitId)->get();
 
 
@@ -206,6 +214,8 @@ class AssignedItemController extends Controller
         $itemStatus = Item::where('id',$assignedItem->itemID)->first();
         
         $itemStatus->equipment_status = 0;
+        $itemStatus->quantity = $itemStatus->quantity + 1;
+
         $itemStatus->save();
 
         ItemHistory::create([
