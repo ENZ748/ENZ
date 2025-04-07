@@ -75,6 +75,7 @@
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Brand</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unit</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Serial Number</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assigned To</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date Purchased</th>
@@ -105,6 +106,7 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $brand }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $unit }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono">{{ $item->serial_number }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono">{{ $item->quantity }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <span class="px-2 py-1 text-xs font-semibold rounded-full {{ $statusColor }}">
                                     {{ $item->equipment_status == 0 ? 'Available' : ($item->equipment_status == 1 ? 'In Use' : 'Out of Service') }}
@@ -122,6 +124,7 @@
                                             data-brand="{{ $item->brandID }}" 
                                             data-unit="{{ $item->unitID }}" 
                                             data-serial="{{ $item->serial_number }}" 
+                                            data-quantity="{{ $item->quantity }}" 
                                             data-date-purchased="{{ $item->date_purchased }}" 
                                             data-date-acquired="{{ $item->date_acquired }}">
                                         <i class="fas fa-edit"></i>
@@ -193,6 +196,11 @@
                             <span class="ml-1 font-mono">{{ $item->serial_number }}</span>
                         </div>
                         <div class="flex items-center">
+                            <i class="fas fa-box-open text-gray-400 mr-2 w-4"></i>
+                            <span class="font-medium">Quantity:</span>
+                            <span class="ml-1 font-mono">{{ $item->quantity }}</span>
+                        </div>
+                        <div class="flex items-center">
                             <i class="fas fa-user text-gray-400 mr-2 w-4"></i>
                             <span class="font-medium">Assigned:</span>
                             <span class="ml-1">{{ $user }}</span>
@@ -217,6 +225,7 @@
                                 data-brand="{{ $item->brandID }}" 
                                 data-unit="{{ $item->unitID }}" 
                                 data-serial="{{ $item->serial_number }}" 
+                                data-quantity="{{ $item->quantity }}"
                                 data-date-purchased="{{ $item->date_purchased }}" 
                                 data-date-acquired="{{ $item->date_acquired }}">
                             <i class="fas fa-edit mr-1"></i> Edit
@@ -287,7 +296,15 @@
                             <label for="serial_number" class="block text-sm font-medium text-gray-700 mb-1">Serial Number</label>
                             <input type="text" id="serial_number" name="serial_number" value="{{ old('serial_number') }}" 
                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                        </div>  
+
+                        <div>
+                            <label for="quantity" class="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
+                            <input type="number" id="quantity" name="quantity" value="{{ old('quantity') }}" 
+                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                required min="1">
                         </div>
+
 
                         <!-- Date Purchased Field -->
                         <div>
@@ -362,6 +379,13 @@
                         <div>
                             <label for="edit-serial_number" class="block text-sm font-medium text-gray-700 mb-1">Serial Number</label>
                             <input type="text" id="edit-serial_number" name="serial_number" 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                        </div>
+
+                        <!-- Quantity Field -->
+                        <div>
+                            <label for="edit-quantity" class="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
+                            <input type="number" id="edit-quantity" name="quantity" 
                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
                         </div>
 
@@ -693,6 +717,7 @@ $(document).on('click', '.edit-item-btn', function() {
     var brandId = $(this).data('brand');
     var unitId = $(this).data('unit');
     var serialNumber = $(this).data('serial');
+    var quantity = $(this).data('quantity');
     var datePurchased = $(this).data('date-purchased');
     var dateAcquired = $(this).data('date-acquired');
 
@@ -701,7 +726,8 @@ $(document).on('click', '.edit-item-btn', function() {
     $('#edit-item-id').val(itemId);
     $('#edit-category').val(categoryId);
     $('#edit-serial_number').val(serialNumber);
-    
+    $('#edit-quantity').val(quantity);
+
     // Format dates properly for the date inputs
     $('#edit-date_purchased').val(formatDateForInput(datePurchased));
     $('#edit-date_acquired').val(formatDateForInput(dateAcquired));

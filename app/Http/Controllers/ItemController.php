@@ -45,6 +45,7 @@ public function store(Request $request)
             'brand_id' => 'required|exists:brands,id',
             'unit_id' => 'required|exists:units,id',
             'serial_number' => 'required|unique:items,serial_number',
+            'quantity' => 'required|integer|min:1',
             'date_purchased' => 'required|date',
             'date_acquired' => 'required|date',
         ]);
@@ -55,6 +56,7 @@ public function store(Request $request)
             'brandID'         => $validated['brand_id'],
             'unitID'          => $validated['unit_id'],
             'serial_number'   => $request->serial_number,
+            'quantity'        => $request->quantity,
             'equipment_status'=> 0,
             'date_purchased'  => $request->date_purchased,
             'date_acquired'   => $request->date_acquired,
@@ -101,6 +103,7 @@ public function store(Request $request)
                 'brand_id' => 'required|exists:brands,id',
                 'unit_id' => 'required|exists:units,id',
                 'serial_number' => 'required|unique:items,serial_number,'.$id,
+                'quantity' => 'required|integer',
                 'date_purchased' => 'required|date',
                 'date_acquired' => 'required|date',
             ]);
@@ -113,6 +116,7 @@ public function store(Request $request)
                 'brandID' => $validated['brand_id'],
                 'unitID' => $validated['unit_id'],
                 'serial_number' => $validated['serial_number'],
+                'quantity' => $validated['quantity'],
                 'date_purchased' => $validated['date_purchased'],
                 'date_acquired' => $validated['date_acquired'],
             ];
