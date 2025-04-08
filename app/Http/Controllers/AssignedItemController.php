@@ -21,7 +21,7 @@ class AssignedItemController extends Controller
         // Fetch all assigned items
         $assignedItems = AssignedItem::where('item_status', 'unreturned')
         ->orderBy('created_at', 'desc')
-        ->get();
+        ->paginate(10);
 
         // Return the index view with assigned items
         return view('assigned_items.index', compact('assignedItems'));
@@ -64,12 +64,21 @@ class AssignedItemController extends Controller
             return back()->withErrors(['serial_number' => 'The selected serial number is invalid.']);
         }
 
+
+        // Get the current user ID
+        $user_id = Auth::user()->id;
+
+        // Find the employee associated with the current user
+        $employee = Employees::where('user_id', $user_id)->first();
+
+
         // Create the new assigned item
         AssignedItem::create([
             'employeeID' => $validatedData['employeeID'],
             'itemID' => $item->id,
             'notes' => $validatedData['notes'],
             'assigned_date' => $validatedData['assigned_date'],
+            'assigned_by' => $employee->employee_number,
         ]);
 
         $itemStatus = Item::where('id',$item->id)->first();
@@ -203,6 +212,14 @@ class AssignedItemController extends Controller
 
     public function markAsReturned($id)
     {
+
+        // Get the current user ID
+        $user_id = Auth::user()->id;
+
+        // Find the employee associated with the current user
+        $employee = Employees::where('user_id', $user_id)->first();
+
+        
         // Find the assigned item by its ID
         $assignedItem = AssignedItem::findOrFail($id);
 
@@ -223,6 +240,8 @@ class AssignedItemController extends Controller
             'itemID' => $assignedItem->itemID,
             'notes' => $assignedItem->notes,
             'assigned_date' => $assignedItem->assigned_date,
+            'assigned_by' => $assignedItem->assigned_by,
+            'returned_to' => $employee->employee_number,
         ]);
 
         $user = Auth::user(); 
@@ -240,7 +259,13 @@ class AssignedItemController extends Controller
     }
 
     public function markAsDamaged($id)
-    {
+    {       
+        // Get the current user ID
+        $user_id = Auth::user()->id;
+
+        // Find the employee associated with the current user
+        $employee = Employees::where('user_id', $user_id)->first();
+
         // Find the assigned item by its ID
         $assignedItem = AssignedItem::findOrFail($id);
 
@@ -259,6 +284,9 @@ class AssignedItemController extends Controller
             'itemID' => $assignedItem->itemID,
             'notes' => $assignedItem->notes,
             'assigned_date' => $assignedItem->assigned_date,
+            'assigned_by' => $assignedItem->assigned_by,
+            'returned_to' => $employee->employee_number,
+
         ]);
 
         $user = Auth::user(); 
