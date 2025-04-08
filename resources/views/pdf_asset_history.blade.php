@@ -104,6 +104,7 @@
     <div class="container">
         <div class="header">
             <h2>Asset History for {{ $employee->first_name }} {{ $employee->last_name }}</h2>
+            <p><strong>Name of Item Holder:</strong> {{ $employee->first_name }} {{ $employee->last_name }}</p>
             <p><strong>Department:</strong> {{ $employee->department }}</p>
             <p><strong>Employee Number:</strong> {{ $employee->employee_number }}</p>
             <p><strong>Reason for Returning Assets:</strong> Returned items as per company policy</p>

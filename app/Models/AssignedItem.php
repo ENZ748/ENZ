@@ -19,6 +19,7 @@ class AssignedItem extends Model
         'notes',
         'assigned_date',
         'item_status',
+        'assigned_by'
     ];
 
     // If you want to handle the assigned_date as a date

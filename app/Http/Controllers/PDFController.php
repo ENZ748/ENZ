@@ -58,7 +58,14 @@ class PDFController extends Controller
         // Retrieve the asset history items
         $history_items = ItemHistory::where('employeeID', $employee->id)
             ->orderBy('created_at', 'desc')
+            ->where('status', 0)
             ->get();
+
+            foreach ($history_items as $history_item) {
+                $history_item->status = 1; // Update the status to 1 (you can change this if needed)
+                $history_item->save(); // Save the change to the database
+            }
+    
 
         // Pass data to the PDF view
         $pdf = Pdf::loadView('pdf_asset_history', [
