@@ -213,6 +213,12 @@
                 </a>
             </li>
             <li class="nav-item">
+                <a class="nav-link" href="{{route('assigned_items.forms')}}" onclick="closeSidebarOnMobile()">
+                    <i class="fas fa-file-invoice"></i> 
+                    <span>Forms</span>
+                </a>
+            </li> 
+            <li class="nav-item">
                 <a class="nav-link" href="{{route('item.history')}}" onclick="closeSidebarOnMobile()">
                     <i class="fas fa-history"></i> 
                     <span>History</span>

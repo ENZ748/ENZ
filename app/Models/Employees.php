@@ -32,13 +32,13 @@ class Employees extends Model
 
     public function assigned_items()
     {
-        return $this->hasMany(AssignedItem::class);
+        return $this->hasMany(AssignedItem::class, 'employeeID');
     }
 
     public function item_history()
     {
-        return $this->hasMany(ItemHistory::class);
-    }
+        return $this->hasMany(ItemHistory::class, 'employeeID');
+    }   
 
 
 
