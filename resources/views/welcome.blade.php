@@ -1,474 +1,121 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anime Character Animation</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Laravel</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
+    <!-- Styles / Scripts -->
+    @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @else
+    @endif
+    <!-- Inline Styles -->
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #6e45e2 0%, #88d3ce 100%);
-            overflow: hidden;
-            font-family: 'Arial', sans-serif;
-        }
-
-        .anime-scene {
-            position: relative;
-            width: 300px;
-            height: 400px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-end;
-        }
-
-        .character {
-            position: relative;
-            width: 180px;
-            height: 350px;
-        }
-
-        /* Head */
-        .head {
-            position: absolute;
-            width: 120px;
-            height: 140px;
-            background: #ffdbac;
-            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-            top: 40px;
-            left: 30px;
-            z-index: 10;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-
-        /* Hair */
-        .hair {
-            position: absolute;
-            width: 140px;
-            height: 160px;
-            background: #4a2a12;
-            border-radius: 60% 60% 40% 40% / 70% 70% 30% 30%;
-            top: 30px;
-            left: 20px;
-            z-index: 5;
-            overflow: hidden;
-        }
-
-        .hair-bangs {
-            position: absolute;
-            width: 140px;
-            height: 40px;
-            background: #4a2a12;
-            border-radius: 100% 100% 0 0 / 100%;
-            top: 30px;
-            left: 20px;
-            z-index: 15;
-        }
-
-        /* Hair animation strands */
-        .hair-strand {
-            position: absolute;
-            background: #3a2210;
-            z-index: 6;
-        }
-
-        .hair-strand-1 {
-            width: 15px;
-            height: 60px;
-            border-radius: 50px;
-            top: 40px;
-            left: 25px;
-            transform: rotate(20deg);
-            animation: hair-wave 3s ease-in-out infinite;
-        }
-
-        .hair-strand-2 {
-            width: 12px;
-            height: 50px;
-            border-radius: 50px;
-            top: 45px;
-            left: 45px;
-            transform: rotate(15deg);
-            animation: hair-wave 3.2s ease-in-out infinite 0.2s;
-        }
-
-        .hair-strand-3 {
-            width: 10px;
-            height: 45px;
-            border-radius: 50px;
-            top: 50px;
-            left: 65px;
-            transform: rotate(10deg);
-            animation: hair-wave 3.4s ease-in-out infinite 0.4s;
-        }
-
-        @keyframes hair-wave {
-            0%, 100% { transform: rotate(10deg) translateY(0); }
-            50% { transform: rotate(15deg) translateY(-5px); }
-        }
-
-        /* Eyes */
-        .eyes {
-            position: absolute;
-            width: 60px;
-            height: 20px;
-            top: 85px;
-            left: 30px;
-            display: flex;
-            justify-content: space-between;
-            z-index: 20;
-        }
-
-        .eye {
-            width: 25px;
-            height: 20px;
-            background: white;
-            border-radius: 50%;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-        }
-
-        .eye::before {
-            content: '';
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background: #333;
-            border-radius: 50%;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        .eye::after {
-            content: '';
-            position: absolute;
-            width: 5px;
-            height: 5px;
-            background: white;
-            border-radius: 50%;
-            top: 30%;
-            left: 30%;
-        }
-
-        /* Blinking animation */
-        .eye-lid {
-            position: absolute;
-            width: 25px;
-            height: 20px;
-            background: #ffdbac;
-            border-radius: 0 0 50% 50%;
-            top: -10px;
-            left: 0;
-            z-index: 21;
-            animation: blink 4s infinite;
-            transform-origin: top;
-        }
-
-        @keyframes blink {
-            0%, 45%, 55%, 100% { transform: scaleY(0); }
-            48%, 52% { transform: scaleY(1); }
-        }
-
-        /* Mouth */
-        .mouth {
-            position: absolute;
-            width: 30px;
-            height: 10px;
-            background: #ff9e9e;
-            border-radius: 0 0 50px 50px;
-            top: 120px;
-            left: 45px;
-            z-index: 20;
-            transition: all 0.3s ease;
-        }
-
-        /* Body */
-        .body {
-            position: absolute;
-            width: 100px;
-            height: 150px;
-            background: #e63946;
-            border-radius: 20px;
-            top: 170px;
-            left: 40px;
-            z-index: 8;
-        }
-
-        /* Arms */
-        .arm {
-            position: absolute;
-            width: 30px;
-            height: 80px;
-            background: #ffdbac;
-            border-radius: 15px;
-            z-index: 7;
-        }
-
-        .arm-left {
-            top: 180px;
-            left: 20px;
-            transform-origin: top center;
-            animation: arm-swing 3s ease-in-out infinite;
-        }
-
-        .arm-right {
-            top: 180px;
-            right: 20px;
-            transform-origin: top center;
-            animation: arm-swing 3s ease-in-out infinite 0.1s;
-        }
-
-        @keyframes arm-swing {
-            0%, 100% { transform: rotate(-10deg); }
-            50% { transform: rotate(10deg); }
-        }
-
-        /* Legs */
-        .leg {
-            position: absolute;
-            width: 30px;
-            height: 90px;
-            background: #1d3557;
-            border-radius: 0 0 15px 15px;
-            bottom: 0;
-            z-index: 5;
-        }
-
-        .leg-left {
-            left: 50px;
-            transform-origin: top center;
-            animation: leg-move 3s ease-in-out infinite;
-        }
-
-        .leg-right {
-            right: 50px;
-            transform-origin: top center;
-            animation: leg-move 3s ease-in-out infinite 0.1s;
-        }
-
-        @keyframes leg-move {
-            0%, 100% { transform: rotate(-5deg); }
-            50% { transform: rotate(5deg); }
-        }
-
-        /* Speech bubble */
-        .speech-bubble {
-            position: absolute;
-            background: white;
-            border-radius: 20px;
-            padding: 15px;
-            width: 150px;
-            top: 20px;
-            right: -170px;
-            opacity: 0;
-            transform: translateY(10px);
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .speech-bubble::after {
-            content: '';
-            position: absolute;
-            left: -10px;
-            top: 50%;
-            border: 10px solid transparent;
-            border-right: 10px solid white;
-            transform: translateY(-50%);
-        }
-
-        .speech-text {
-            margin: 0;
-            font-size: 14px;
-            color: #333;
-        }
-
-        /* Interactive elements */
-        .controls {
-            position: fixed;
-            bottom: 20px;
-            left: 0;
-            right: 0;
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .control-btn {
-            padding: 8px 16px;
-            background: rgba(255,255,255,0.8);
-            border: none;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: bold;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            transition: all 0.2s ease;
-        }
-
-        .control-btn:hover {
-            background: white;
-            transform: translateY(-2px);
-        }
-
-        /* Background elements */
-        .sakura {
-            position: absolute;
-            width: 15px;
-            height: 15px;
-            background: #ffb7c5;
-            border-radius: 50% 0 50% 50%;
-            opacity: 0.7;
-            animation: falling linear infinite;
-        }
-
-        @keyframes falling {
-            0% { transform: translateY(-100vh) rotate(0deg); }
-            100% { transform: translateY(100vh) rotate(360deg); }
-        }
+        body { background: linear-gradient(to right, #667eea, #764ba2); background-position: center; background-size: cover; }
+        .flag-selector { space:10; display: flex; justify-content: center; align-items: center; }
+        .flag-button { width: 60px; height: 60px; margin: 0 8px; border-radius: 50%; background-size: cover; background-position: center; cursor: pointer; transition: transform 0.3s ease, box-shadow 0.3s ease; border: 3px solid transparent; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .flag-button:hover { transform: scale(1.1); box-shadow: 0 8px 15px rgba(0,0,0,0.2); }
+        .flag-button.active { border-color: #007bff; box-shadow: 0 0 0 3px #007bff, 0 10px 20px rgba(0,123,255,0.3); }
+        .country-name { text-align: center; width: 100%; margin-bottom: 20px; font-weight: 600; font-size: 1.5rem; }
+        .flag-australia { background-image: url('https://flagcdn.com/w320/au.png'); }
+        .flag-canada { background-image: url('https://flagcdn.com/w320/ca.png'); }
+        .flag-newzealand { background-image: url('https://flagcdn.com/w320/nz.png'); }
+        .flag-germany { background-image: url('https://flagcdn.com/w320/de.png'); }
+        .flag-ireland { background-image: url('https://flagcdn.com/w320/ie.png'); }
+        .flag-unitedkingdom { background-image: url('https://flagcdn.com/w320/gb.png'); }
+        .relative { position: relative; }
+        .led-border-side { position: absolute; top: -4px; left: -4px; right: -4px; bottom: -4px; border-radius: calc(0.5rem + 4px); pointer-events: none; background: linear-gradient(to right, #0000FF 0%, #8A2BE2 25%, #0000FF 50%, #8A2BE2 75%, #0000FF 100%); background-size: 200% 100%; animation: led-border-flow 10s linear infinite; z-index: 1; mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); mask-composite: exclude; padding: 4px; border: 4px solid transparent; }
+        @keyframes led-border-flow { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        .dark .led-border-side { background: linear-gradient(to right, #4169E1 0%, #9932CC 25%, #4169E1 50%, #9932CC 75%, #4169E1 100%); }
+        .content-container { width: 100%; max-width: 900px; margin: 0 auto; padding: 20px; }
     </style>
 </head>
-<body>
-    <div class="anime-scene">
-        <!-- Sakura petals -->
-        <div id="sakura-container"></div>
-        
-        <!-- Character -->
-        <div class="character">
-            <div class="hair"></div>
-            <div class="hair-bangs"></div>
-            <div class="hair-strand hair-strand-1"></div>
-            <div class="hair-strand hair-strand-2"></div>
-            <div class="hair-strand hair-strand-3"></div>
-            
-            <div class="head">
-                <div class="eyes">
-                    <div class="eye">
-                        <div class="eye-lid"></div>
+<body class="bg-[#FDFDFC] dark:bg-[#0a0a0a] text-[#1b1b18] flex p-6 lg:p-8 items-center lg:justify-center min-h-screen flex-col">
+    <!-- Header with Navigation -->
+    <header class="w-full lg:max-w-4xl max-w-[335px] text-sm mb-6 not-has-[nav]:hidden">
+        @if (Route::has('login'))
+            <nav class="flex items-center justify-between">
+                @auth
+                    <a href="{{ url('/home') }}" class="inline-block px-6 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-full hover:from-indigo-600 hover:to-purple-700 transition-all duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 shadow-lg hover:shadow-xl">Dashboard</a>
+                @else
+                    <!-- This div with ml-auto pushes the login button to the right -->
+                    <div class="ml-auto">
+                        <a href="{{ route('login') }}" class="inline-block px-6 py-2 bg-transparent border-2 border-indigo-500 text-emerald-600 dark:text-white dark:border-emerald-300 rounded-full hover:bg-emerald-500 hover:text-white dark:hover:bg-emerald-300 dark:hover:text-white-900 transition-all duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 shadow-md hover:shadow-lg">LOGIN</a>
                     </div>
-                    <div class="eye">
-                        <div class="eye-lid"></div>
+                @endauth
+            </nav>
+        @endif
+    </header>
+
+    <!-- Logo Section - MEDIUM SIZE -->
+    <div>
+        <img src="https://images.leadconnectorhq.com/image/f_webp/q_80/r_1200/u_https://assets.cdn.filesafe.space/cmY5BZBwJOjDMpbqlHkj/media/e31bd3b3-041a-43fd-99ee-474eaeeced24.png" 
+        alt="ENZ Education Consultancy Services Logo" class="w-40 h-40 object-contain flex justify-center" loading="lazy">
+    </div>
+
+    <!-- Main Content Area -->
+    <main class="w-full lg:max-w-4xl max-w-[335px]">
+        <!-- Flag Selector -->
+        <div class="flag-selector mb-6 flex justify-center items-center gap-2">
+            <div class="flag-button flag-australia" data-flag="australia" data-country="Australia" onclick="changeBackground('australia')"></div>
+            <div class="flag-button flag-canada" data-flag="canada" data-country="Canada" onclick="changeBackground('canada')"></div>
+            <div class="flag-button flag-newzealand" data-flag="newzealand" data-country="New Zealand" onclick="changeBackground('newzealand')"></div>
+            <div class="flag-button flag-germany" data-flag="germany" data-country="Germany" onclick="changeBackground('germany')"></div>
+            <div class="flag-button flag-ireland" data-flag="ireland" data-country="Ireland" onclick="changeBackground('ireland')"></div>
+            <div class="flag-button flag-unitedkingdom" data-flag="unitedkingdom" data-country="United Kingdom" onclick="changeBackground('unitedkingdom')"></div>
+        </div>
+
+        <!-- Country Name Display - CENTERED -->
+        <div class="country-name text-xl font-bold text-[#706f6c] dark:text-white text-center" id="countryName">Australia</div>
+
+        <!-- Content Container -->
+        <div class="content-container mx-auto max-w-4xl px-4">
+            <div class="relative">
+                <div class="led-border-side"></div>
+                <div class="border border-[#e3e3e0] dark:border-[#3E3E3A] rounded-lg p-4 shadow-[0px_0px_1px_0px_rgba(0,0,0,0.03),0px_1px_2px_0px_rgba(0,0,0,0.06)] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d] relative z-10">
+                    <div class="flex flex-row items-center gap-4">
+                        <!-- Text Content (Left) -->
+                        <div class="w-full lg:w-3/4 text-left">
+                            <h1 class="text-2xl font-medium mb-2 text-[#1b1b18] dark:text-[#EDEDEC]">EXPANDING ONE'S HORIZON</h1>
+                            <h2 class="text-xl font-medium mb-2 text-[#706f6c] dark:text-white">ENZ Education Consultancy Services: Your Gateway to Global Education</h2>
+                            <p class="text-x1 text-[#1b1b18] dark:text-[#EDEDEC] leading-relaxed">Unlock a world of possibilities with ENZ Education Consultancy Services. We are your one-stop shop for navigating the exciting journey of studying abroad. ENZ is your trusted partner in achieving your educational goals.</p>
+                        </div>
+
+                        <!-- Image (Right) -->
+                        <div class="w-full lg:w-1/4 flex justify-center items-center h-full">
+                            <img src="https://images.leadconnectorhq.com/image/f_webp/q_80/r_640/u_https://assets.cdn.filesafe.space/cmY5BZBwJOjDMpbqlHkj/media/661e6fba6a855b2d7a8658e6.png" class="w-43 h-43 object-contain" loading="lazy" alt="ENZ Education Consultancy">
+                        </div>
                     </div>
                 </div>
-                <div class="mouth" id="mouth"></div>
-            </div>
-            
-            <div class="body"></div>
-            <div class="arm arm-left"></div>
-            <div class="arm arm-right"></div>
-            <div class="leg leg-left"></div>
-            <div class="leg leg-right"></div>
-            
-            <div class="speech-bubble" id="speech-bubble">
-                <p class="speech-text" id="speech-text">Hello there!</p>
             </div>
         </div>
-    </div>
+    </main>
 
-    <div class="controls">
-        <button class="control-btn" id="btn-happy">Happy</button>
-        <button class="control-btn" id="btn-sad">Sad</button>
-        <button class="control-btn" id="btn-surprised">Surprised</button>
-        <button class="control-btn" id="btn-talk">Talk</button>
-    </div>
+    <!-- Footer Spacing Conditional -->
+    @if (Route::has('login'))
+        <div class="h-14.5 hidden lg:block"></div>
+    @endif
 
+    <!-- Background Element -->
+    <div class="flag-background" id="flagBackground"></div>
+
+    <!-- Scripts -->
     <script>
-        // Create sakura petals
-        function createSakura() {
-            const container = document.getElementById('sakura-container');
-            const petalCount = 15;
-            
-            for (let i = 0; i < petalCount; i++) {
-                const petal = document.createElement('div');
-                petal.classList.add('sakura');
-                
-                // Random properties
-                const size = Math.random() * 10 + 5;
-                const left = Math.random() * 100;
-                const animationDuration = Math.random() * 5 + 5;
-                const animationDelay = Math.random() * 5;
-                const rotation = Math.random() * 360;
-                
-                petal.style.width = `${size}px`;
-                petal.style.height = `${size}px`;
-                petal.style.left = `${left}%`;
-                petal.style.animationDuration = `${animationDuration}s`;
-                petal.style.animationDelay = `${animationDelay}s`;
-                petal.style.transform = `rotate(${rotation}deg)`;
-                
-                container.appendChild(petal);
-            }
+        const flagBackground = document.getElementById('flagBackground');
+        const flagButtons = document.querySelectorAll('.flag-button');
+        const countryName = document.getElementById('countryName');
+        function changeBackground(country) {
+            flagButtons.forEach(button => { button.classList.remove('active'); });
+            const selectedButton = document.querySelector(`.flag-${country}`);
+            selectedButton.classList.add('active');
+            flagBackground.style.backgroundImage = window.getComputedStyle(selectedButton).backgroundImage;
+            countryName.textContent = selectedButton.getAttribute('data-country');
         }
-
-        // Character expressions
-        const mouth = document.getElementById('mouth');
-        const speechBubble = document.getElementById('speech-bubble');
-        const speechText = document.getElementById('speech-text');
-        
-        document.getElementById('btn-happy').addEventListener('click', () => {
-            mouth.style.height = '10px';
-            mouth.style.width = '30px';
-            mouth.style.borderRadius = '0 0 50px 50px';
-            mouth.style.backgroundColor = '#ff9e9e';
-            showSpeech('I feel great today!');
-        });
-        
-        document.getElementById('btn-sad').addEventListener('click', () => {
-            mouth.style.height = '5px';
-            mouth.style.width = '40px';
-            mouth.style.borderRadius = '0';
-            mouth.style.backgroundColor = '#b5e2fa';
-            showSpeech('I feel a bit down...');
-        });
-        
-        document.getElementById('btn-surprised').addEventListener('click', () => {
-            mouth.style.height = '20px';
-            mouth.style.width = '20px';
-            mouth.style.borderRadius = '50%';
-            mouth.style.backgroundColor = '#ff9e9e';
-            showSpeech('Wow!');
-        });
-        
-        document.getElementById('btn-talk').addEventListener('click', () => {
-            const messages = [
-                "What's your favorite anime?",
-                "I love coding animations!",
-                "CSS is magical ✨",
-                "Let's create more animations!",
-                "Have a wonderful day!"
-            ];
-            const randomMessage = messages[Math.floor(Math.random() * messages.length)];
-            showSpeech(randomMessage);
-            
-            // Animate mouth while talking
-            let talkInterval = setInterval(() => {
-                mouth.style.height = mouth.style.height === '5px' ? '10px' : '5px';
-            }, 200);
-            
-            setTimeout(() => {
-                clearInterval(talkInterval);
-                mouth.style.height = '10px';
-            }, 2000);
-        });
-        
-        function showSpeech(text) {
-            speechText.textContent = text;
-            speechBubble.style.opacity = '1';
-            speechBubble.style.transform = 'translateY(0)';
-            
-            setTimeout(() => {
-                speechBubble.style.opacity = '0';
-                speechBubble.style.transform = 'translateY(10px)';
-            }, 3000);
-        }
-
-        // Initialize
-        createSakura();
-        showSpeech('Hello there!');
+        changeBackground('australia');
     </script>
 </body>
-</html> 
+
+</html>
