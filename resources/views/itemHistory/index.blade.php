@@ -7,7 +7,33 @@
                 <h1 class="text-primary mb-1">Assigned Items History</h1>
                 <p class="text-muted">Track all equipment assignments and returns</p>
             </div>
+        </div>
 
+        <!-- Search Bar -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <form action="{{ route('assigned-items.history') }}" method="GET">
+                    <div class="input-group">
+                        <input type="text" 
+                               name="search" 
+                               class="form-control border-0" 
+                               placeholder="Search by employee name, item, serial number..." 
+                               value="{{ request('search') }}">
+                        <div class="input-group-append">
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                        @if(request('search'))
+                            <div class="input-group-append">
+                                <a href="{{ route('assigned-items.history') }}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-times"></i>
+                                </a>
+                            </div>
+                        @endif
+                    </div>
+                </form>
+            </div>
         </div>
 
         <div class="card shadow-sm border-0">
@@ -23,7 +49,7 @@
                                 <th class="py-3 px-4 text-left">Assigned By</th>
                                 <th class="py-3 px-4 text-left">Assignment Period</th>
                                 <th class="py-3 px-4 text-left">Notes</th>
-                                <th class="py-3 px-4 text-left">Returned T  o</th>
+                                <th class="py-3 px-4 text-left">Returned To</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -37,7 +63,6 @@
                                         <div class="text-muted small">
                                             {{ $assignedItem->employee->department ?? 'N/A' }}
                                         </div>
-
                                     </td>
                                     <td class="py-3 px-4">
                                         <div class="font-weight-bold">{{ $assignedItem->item->category->category_name }}</div>
@@ -47,32 +72,35 @@
                                     </td>
                                     <td style="color: #212529;">{{ $assignedItem->item->serial_number }}</td>
                                     <td style="color: #212529;">{{ $assignedItem->assigned_by }}</td>
-
                                     <td class="py-3 px-4">
                                         <div class="font-weight-bold text-primary">
                                             {{ \Carbon\Carbon::parse($assignedItem->assigned_date)->format('M d, Y') }}
                                         </div>
-                                        
                                     </td>
                                     <td class="py-3 px-4">
                                         <div class="text-muted small">{{ $assignedItem->notes ?: '—' }}</div>
                                     </td>
                                     <td style="color: #212529;">{{ $assignedItem->returned_to }}</td>
-
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="text-center py-4 text-muted">No assigned items history found</td>
+                                    <td colspan="8" class="text-center py-4 text-muted">
+                                        @if(request('search'))
+                                            No results found for "{{ request('search') }}"
+                                        @else
+                                            No assigned items history found
+                                        @endif
+                                    </td>
                                 </tr>
                             @endforelse
                         </tbody>
                     </table>
                 </div>
             </div>
-          <!-- Pagination (only shown if using paginate()) -->
-          @if(method_exists($assignedItems, 'hasPages') && $assignedItems->hasPages())
+            <!-- Pagination -->
+            @if(method_exists($assignedItems, 'hasPages') && $assignedItems->hasPages())
                 <div class="card-footer bg-white">
-                    {{ $assignedItems->links() }}
+                    {{ $assignedItems->appends(['search' => request('search')])->links() }}
                 </div>
             @endif
         </div>
@@ -91,8 +119,15 @@
         .badge-light {
             background-color: #f8f9fa;
         }
+        .search-card {
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .search-input {
+            border-radius: 8px;
+            padding-left: 15px;
+        }
     </style>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
-    
 @endsection

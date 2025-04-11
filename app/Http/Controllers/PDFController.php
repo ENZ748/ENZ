@@ -25,11 +25,6 @@ class PDFController extends Controller
             ->where('status', 0)
             ->get();
 
-        // Update the status of the assigned items to 1 (or any other status you wish)
-        foreach ($assigned_items as $assigned_item) {
-            $assigned_item->status = 1; // Update the status to 1 (you can change this if needed)
-            $assigned_item->save(); // Save the change to the database
-        }
 
         // Encode the image to base64
         $logo_path = public_path('ENZPDF.png'); // Path to your image
@@ -60,11 +55,8 @@ class PDFController extends Controller
             ->orderBy('created_at', 'desc')
             ->where('status', 0)
             ->get();
+        
 
-            foreach ($history_items as $history_item) {
-                $history_item->status = 1; // Update the status to 1 (you can change this if needed)
-                $history_item->save(); // Save the change to the database
-            }
     
 
         // Pass data to the PDF view

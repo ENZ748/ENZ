@@ -77,7 +77,7 @@
 
         <div class="form-group">
             <label for="notes">Notes</label>
-            <textarea name="notes" id="notes" class="form-control"></textarea>
+            <textarea name="notes" id="notes" class="form-control" required></textarea>
         </div>
 
         <div class="form-group">
