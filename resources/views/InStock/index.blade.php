@@ -13,6 +13,7 @@
                                 <th class="text-nowrap">Employee #</th>
                                 <th class="text-nowrap">Item Details</th>
                                 <th class="text-nowrap">Serial #</th>
+                                <th>Quantity</th>
                                 <th class="text-nowrap">Status</th>
                                 <th class="text-nowrap text-right">Actions</th>
                             </tr>
@@ -34,6 +35,7 @@
                                 
                                  
                                     <td style="color: #212529;">{{ $in_stock->item->serial_number }}</td>
+                                    <td style="color: #212529;">{{ $in_stock->quantity }}</td>
 
 
                                     <td>

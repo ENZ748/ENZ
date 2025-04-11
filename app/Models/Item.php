@@ -51,5 +51,14 @@ class Item extends Model
     {
         return $this->hasMany(InStock::class);
     }
-    
+
+    public function damaged_item()
+    {
+        return $this->hasMany(DamagedItem::class);
+    }
+
+    public function in_use()
+    {
+        return $this->hasMany(InUse::class);
+    }
 }

@@ -13,6 +13,8 @@ use App\Models\ItemHistory;
 use App\Models\ActivityLog;
 use App\Models\User;
 use App\Models\InStock;
+use App\Models\InUse;
+use App\Models\DamagedItem;
 
 use Illuminate\Http\Request;
 
@@ -113,6 +115,13 @@ public function index(Request $request)
         }
         $itemStatus->save();
 
+
+        $accountabilityItem = InStock::where('itemID', $item->id)->first();
+        if ($accountabilityItem) {
+            $accountabilityItem->status = 1;
+            $accountabilityItem->save();
+        }
+
         $assignedItem = Employees::where('id',$validatedData['employeeID'])->first();
 
         $user = Auth::user(); 
@@ -124,6 +133,15 @@ public function index(Request $request)
             'user_id' => $userId,
             'activity_logs' => 'Assigned '. $item->serial_number. ' Item to ' . $assignedItem->employee_number,
         ]);
+
+
+        $inUse = InUse::where('itemID', $assignedItem->itemID)->first();
+
+            // Create new record if doesn't exist
+            InUse::create([
+                'itemID' => $item->id,
+                'employeeID'=>$validatedData['employeeID']
+            ]);
 
         return redirect()->route('assigned_items.index')->with('success', 'Item assigned successfully.');
     }
@@ -147,7 +165,7 @@ public function index(Request $request)
         // Pass the data to the view
         return view('assigned_items.edit', compact('assignedItem', 'categories', 'employees', 'brands', 'units','items'));
     }
-    
+
     // Method to update an existing AssignedItem
     public function update(Request $request, $id)
     {
@@ -275,11 +293,26 @@ public function index(Request $request)
             'user_id' => $userId,
             'activity_logs' => 'Confirmed Item',
         ]);
-        InStock::create([
-            'employeeID' => $employee->id,
-            'itemID' => $assignedItem->itemID,
+        $inStock = InStock::where('itemID', $assignedItem->itemID)
+        ->where('status', 0)->first();
 
-        ]);
+        //In Stock(Accountability for available items)
+        if ($inStock) {
+            // Update quantity if exists
+            $inStock->quantity += 1;
+            $inStock->save();
+        } else {
+            InStock::create([
+                'employeeID' => $employee->id,
+                'itemID' => $assignedItem->itemID,
+    
+            ]);
+        }
+
+        $in_use = InUse::where('itemID',$assignedItem->itemID)->first();
+        
+        $in_use->status = 1;
+        $in_use->save();
 
 
         // Redirect back with a success message
@@ -307,6 +340,21 @@ public function index(Request $request)
         $itemStatus->equipment_status = 2;
         $itemStatus->save();
 
+        $damagedItem = DamagedItem::where('itemID', $assignedItem->itemID)->first();
+
+        if ($damagedItem) {
+            // Update quantity if exists
+            $damagedItem->quantity += 1;
+            $damagedItem->save();
+        } else {
+            // Create new record if doesn't exist
+            DamagedItem::create([
+                'itemID' => $assignedItem->itemID,
+                'quantity' => 1
+            ]);
+        }
+       
+
         ItemHistory::create([
             'employeeID' => $assignedItem->employeeID,
             'itemID' => $assignedItem->itemID,
@@ -331,6 +379,12 @@ public function index(Request $request)
             'itemID' => $assignedItem->itemID,
 
         ]);
+
+        //In Use
+        $in_use = InUse::where('itemID',$assignedItem->itemID)->first();
+        
+        $in_use->status = 1;
+        $in_use->save();
 
 
         // Redirect back with a success message

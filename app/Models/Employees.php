@@ -45,6 +45,11 @@ class Employees extends Model
         return $this->hasMany(InStock::class, 'employeeID');
     }
 
+    public function in_use()
+    {
+        return $this->hasMany(InUse::class, 'employeeID');
+    }
+
 
 
     public function users()
