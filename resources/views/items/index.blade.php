@@ -8,7 +8,7 @@
     use App\Models\Unit;
 @endphp
 
-<div class="container mx-auto px-4 py-6">
+<div class="container mx-auto px-10 py-6">
     <!-- Header Section -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
         <h2 class="text-3xl font-bold text-gray-800 mb-4 md:mb-0">Inventory Management</h2>

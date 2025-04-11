@@ -18,21 +18,44 @@
             </div>
         @endif
 
+        <!-- Search Bar -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <form action="{{ route('assigned_items.index') }}" method="GET">
+                    <div class="input-group">
+                        <input type="text" name="search" class="form-control" 
+                               placeholder="Search by employee, item, serial number..." 
+                               value="{{ request('search') }}">
+                        <div class="input-group-append">
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fas fa-search"></i> Search
+                            </button>
+                            @if(request('search'))
+                                <a href="{{ route('assigned_items.index') }}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-times"></i> Clear
+                                </a>
+                            @endif
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
         <div class="card shadow-sm mb-4">
             <div class="card-header bg-white d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">Assignment Records</h5>
-                <!-- <div class="dropdown">
-                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="filterDropdown" 
-                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="fas fa-filter mr-1"></i>Filter
-                    </button>
-                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="filterDropdown">
-                        <a class="dropdown-item" href="#">Active Assignments</a>
-                        <a class="dropdown-item" href="#">Recently Returned</a>
-                        <a class="dropdown-item" href="#">Damaged Items</a>
-                    </div>
-                </div> -->
+                <div class="d-flex">
+                    <span class="badge badge-light mr-2">
+                        Total Records: {{ $assignedItems->total() }}
+                    </span>
+                    @if(request('search'))
+                        <span class="badge badge-info">
+                            Filtered Results
+                        </span>
+                    @endif
+                </div>
             </div>
+            
             <div class="card-body p-0">
                 <div class="table-responsive">
                     <table class="table table-hover mb-0">

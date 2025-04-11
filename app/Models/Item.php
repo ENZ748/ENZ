@@ -46,5 +46,10 @@ class Item extends Model
     {
         return $this->hasMany(ItemHistory::class);
     }
+
+    public function in_stock()
+    {
+        return $this->hasMany(InStock::class);
+    }
     
 }

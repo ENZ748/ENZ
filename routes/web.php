@@ -16,7 +16,7 @@ use App\Http\Controllers\AssignedItemFormController;
 use App\Http\Controllers\ItemHistoryController;
 use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\SuperAdminDashboardController;
-
+use App\Http\Controllers\InStockController;
 
 use App\Http\Middleware\Admin;
 use App\Http\Middleware\SuperAdmin;
@@ -237,11 +237,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/get-serials/create/{unitId}', [AssignedItemController::class, 'getSerials']);
 
 //Assigned Item Forms
-Route::get('form', [AssignedItemFormController::class, 'index'])->name('assigned_items.forms');
-Route::get('accountability_form/{id}', [AssignedItemFormController::class, 'accountability_form'])->name('form.accountability');
-Route::get('asset_return_form/{id}', [AssignedItemFormController::class, 'asset_return_form'])->name('form.asset_return');
-Route::get('confirm_return/{id}', [AssignedItemFormController::class, 'confirm_History'])->name('form.confirm_return');
-Route::get('confirm_accountability/{id}', [AssignedItemFormController::class, 'confirm_accountability'])->name('form.confirm_accountability');
+    Route::get('form', [AssignedItemFormController::class, 'index'])->name('assigned_items.forms');
+    Route::get('accountability_form/{id}', [AssignedItemFormController::class, 'accountability_form'])->name('form.accountability');
+    Route::get('asset_return_form/{id}', [AssignedItemFormController::class, 'asset_return_form'])->name('form.asset_return');
+    Route::get('confirm_return/{id}', [AssignedItemFormController::class, 'confirm_History'])->name('form.confirm_return');
+    Route::get('confirm_accountability/{id}', [AssignedItemFormController::class, 'confirm_accountability'])->name('form.confirm_accountability');
+
+
+//InStock
+    Route::get('InStock', [InStockController::class, 'index'])->name('instock');
+
 
 //PDF
     use App\Http\Controllers\PDFController;

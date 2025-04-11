@@ -12,20 +12,44 @@ use App\Models\Item;
 use App\Models\ItemHistory;
 use App\Models\ActivityLog;
 use App\Models\User;
+use App\Models\InStock;
+
 use Illuminate\Http\Request;
 
 class AssignedItemController extends Controller
 {
-    public function index()
-    {
-        // Fetch all assigned items
-        $assignedItems = AssignedItem::where('item_status', 'unreturned')
-        ->orderBy('created_at', 'desc')
-        ->paginate(10);
+    // In your controller method
+public function index(Request $request)
+{
+    $query = AssignedItem::with(['employee', 'item.category', 'item.brand', 'item.unit'])
+                ->where('item_status','unreturned')->latest();
 
-        // Return the index view with assigned items
-        return view('assigned_items.index', compact('assignedItems'));
+    if ($request->has('search')) {
+        $search = $request->search;
+        $query->where(function($q) use ($search) {
+            $q->whereHas('employee', function($q) use ($search) {
+                $q->where('first_name', 'like', "%$search%")
+                  ->orWhere('last_name', 'like', "%$search%")
+                  ->orWhere('employee_number', 'like', "%$search%");
+            })
+            ->orWhereHas('item', function($q) use ($search) {
+                $q->where('serial_number', 'like', "%$search%")
+                  ->orWhereHas('category', function($q) use ($search) {
+                      $q->where('category_name', 'like', "%$search%");
+                  })
+                  ->orWhereHas('brand', function($q) use ($search) {
+                      $q->where('brand_name', 'like', "%$search%");
+                  });
+            })
+            ->orWhere('assigned_by', 'like', "%$search%"); // Add this line
+
+        });
     }
+
+    $assignedItems = $query->paginate(15);
+
+    return view('assigned_items.index', compact('assignedItems'));
+}
 
     // Method to show form for creating a new AssignedItem
     // Show the form for assigning an item
@@ -71,7 +95,6 @@ class AssignedItemController extends Controller
         // Find the employee associated with the current user
         $employee = Employees::where('user_id', $user_id)->first();
 
-
         // Create the new assigned item
         AssignedItem::create([
             'employeeID' => $validatedData['employeeID'],
@@ -93,7 +116,7 @@ class AssignedItemController extends Controller
         $assignedItem = Employees::where('id',$validatedData['employeeID'])->first();
 
         $user = Auth::user(); 
-      
+        
         $userId = $user->id;
         
         
@@ -124,7 +147,7 @@ class AssignedItemController extends Controller
         // Pass the data to the view
         return view('assigned_items.edit', compact('assignedItem', 'categories', 'employees', 'brands', 'units','items'));
     }
-
+    
     // Method to update an existing AssignedItem
     public function update(Request $request, $id)
     {
@@ -252,6 +275,11 @@ class AssignedItemController extends Controller
             'user_id' => $userId,
             'activity_logs' => 'Confirmed Item',
         ]);
+        InStock::create([
+            'employeeID' => $employee->id,
+            'itemID' => $assignedItem->itemID,
+
+        ]);
 
 
         // Redirect back with a success message
@@ -296,6 +324,12 @@ class AssignedItemController extends Controller
         ActivityLog::create([
             'user_id' => $userId,
             'activity_logs' => 'Confirmed Item',
+        ]);
+
+        InStock::create([
+            'employeeID' => $employee->id,
+            'itemID' => $assignedItem->itemID,
+
         ]);
 
 

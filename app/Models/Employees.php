@@ -40,6 +40,11 @@ class Employees extends Model
         return $this->hasMany(ItemHistory::class, 'employeeID');
     }   
 
+    public function in_stock()
+    {
+        return $this->hasMany(InStock::class, 'employeeID');
+    }
+
 
 
     public function users()
