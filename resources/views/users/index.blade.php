@@ -445,12 +445,25 @@
                         allowOutsideClick: false
                     });
 
-                    setTimeout(() => {
-                        document.getElementById('editEmployeeForm').submit();
-                    }, 1500);
+                    // Send email notification first
+                    fetch('/send-mail')
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log('Email sent:', data);
+                            // Proceed with form submission
+                            setTimeout(() => {
+                                document.getElementById('editEmployeeForm').submit();
+                            }, 1500);
+                        })
+                        .catch(error => {
+                            console.error('Error sending email:', error);
+                            // Still proceed with form submission even if email fails
+                            document.getElementById('editEmployeeForm').submit();
+                        });
                 }
             });
         }
+
 
         function openAssignedModal(employeeId) {
             fetch(`/employee/items/${employeeId}`)
@@ -564,7 +577,6 @@
             if (!passwordValid) isValid = false;
 
             if (!isValid) {
-                // Scroll to the first invalid input
                 const firstInvalid = document.querySelector('#addEmployeeForm .is-invalid');
                 if (firstInvalid) {
                     firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -590,9 +602,21 @@
                         allowOutsideClick: false
                     });
 
-                    setTimeout(() => {
-                        form.submit();
-                    }, 1500);
+                    // Send email notification first
+                    fetch('/send-mail')
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log('Email sent:', data);
+                            // Proceed with form submission
+                            setTimeout(() => {
+                                form.submit();
+                            }, 1500);
+                        })
+                        .catch(error => {
+                            console.error('Error sending email:', error);
+                            // Still proceed with form submission even if email fails
+                            form.submit();
+                        });
                 }
             });
         }
