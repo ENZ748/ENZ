@@ -7,8 +7,10 @@
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}" class="flex items-center">
-                        <x-application-logo class="h-10 w-10 text-white" />
-                        <span class="ml-2 text-white font-bold text-xl hidden md:block">ENZ Consultancy</span>
+                         <div>
+                            <img src="https://images.leadconnectorhq.com/image/f_webp/q_80/r_1200/u_https://assets.cdn.filesafe.space/cmY5BZBwJOjDMpbqlHkj/media/e31bd3b3-041a-43fd-99ee-474eaeeced24.png" 
+                            alt="ENZ Education Consultancy Services Logo" class="w-40 h-40 object-contain flex justify-center" loading="lazy">
+                        </div>
                     </a>
                 </div>
             </div>
