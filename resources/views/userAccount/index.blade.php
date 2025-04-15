@@ -1,6 +1,19 @@
 @extends('layouts.userApp')
 @section('content')
 <body>
+<!-- Add this right after the profile header section -->
+<div class="absolute top-4 right-4">
+    <button id="theme-toggle" class="p-2 rounded-full bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl transition-all">
+        <svg id="theme-toggle-dark-icon" class="w-5 h-5 text-gray-700 dark:text-gray-300 hidden" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+        </svg>
+        <svg id="theme-toggle-light-icon" class="w-5 h-5 text-gray-700 dark:text-gray-300 hidden" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path>
+        </svg>
+    </button>
+</div>
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900 dark:to-indigo-900">
+
 <div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
     <div class="container mx-auto px-4 py-8 max-w-7xl">
         <!-- Profile Header -->
@@ -20,7 +33,7 @@
                 </h1>
                 <p class="text-lg text-gray-600 max-w-2xl">
                     Manage and track all your assigned company equipment in one place. 
-                    <span class="block text-sm text-gray-500 mt-1">Last updated: {{ now()->format('M j, Y g:i A') }}</span>
+                    <span class="block text-sm text-gray-500 mt-1">Date and Time Now: {{ now()->setTimezone('Asia/Manila')->format('l, F j, Y h:i A') }}</span>
                 </p>
             </div>
         </div>
@@ -371,6 +384,71 @@
 </div>
 
 <style>
+    /* Dark mode styles */
+    .dark .bg-gradient-to-br {
+        background-image: linear-gradient(to bottom right, #1e3a8a, #1e1b4b);
+    }
+    
+    .dark .bg-white {
+        background-color: #1f2937 !important;
+    }
+    
+    .dark .text-gray-800 {
+        color: #f3f4f6 !important;
+    }
+    
+    .dark .text-gray-600 {
+        color: #d1d5db !important;
+    }
+    
+    .dark .text-gray-500 {
+        color: #9ca3af !important;
+    }
+    
+    .dark .bg-gray-50 {
+        background-color: #374151 !important;
+    }
+    
+    .dark .divide-gray-200 {
+        border-color: #4b5563 !important;
+    }
+    
+    .dark .border-gray-100 {
+        border-color: #374151 !important;
+    }
+    
+    .dark .hover\:bg-gray-50:hover {
+        background-color: #4b5563 !important;
+    }
+    
+    .dark .text-gray-900 {
+        color: #f9fafb !important;
+    }
+    
+    .dark .text-gray-700 {
+        color: #e5e7eb !important;
+    }
+    
+    .dark .bg-blue-100 {
+        background-color: #1e40af !important;
+    }
+    
+    .dark .text-blue-600 {
+        color: #93c5fd !important;
+    }
+    
+    .dark .bg-green-100 {
+        background-color: #065f46 !important;
+    }
+    
+    .dark .text-green-600 {
+        color: #6ee7b7 !important;
+    }
+    
+    .dark .border {
+        border-color: #4b5563 !important;
+    }
+
     /* Smooth transitions for all interactive elements */
     button, a, .transition-all {
         transition: all 0.2s ease-in-out;
@@ -424,6 +502,35 @@
 </style>
 
 <script>
+    // Add this to your existing script section
+const themeToggle = document.getElementById('theme-toggle');
+const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+
+// Check for saved theme preference or use system preference
+if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    document.documentElement.classList.add('dark');
+    themeToggleLightIcon.classList.remove('hidden');
+} else {
+    document.documentElement.classList.remove('dark');
+    themeToggleDarkIcon.classList.remove('hidden');
+}
+
+// Toggle button click handler
+themeToggle.addEventListener('click', function() {
+    // Toggle icons
+    themeToggleDarkIcon.classList.toggle('hidden');
+    themeToggleLightIcon.classList.toggle('hidden');
+    
+    // Update localStorage and apply theme
+    if (document.documentElement.classList.contains('dark')) {
+        document.documentElement.classList.remove('dark');
+        localStorage.setItem('color-theme', 'light');
+    } else {
+        document.documentElement.classList.add('dark');
+        localStorage.setItem('color-theme', 'dark');
+    }
+});
 document.addEventListener('DOMContentLoaded', function() {
     // Current Assets View Toggle
     const gridViewBtn = document.getElementById('grid-view-btn');
