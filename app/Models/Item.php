@@ -19,6 +19,7 @@ class Item extends Model
         'equipment_status',
         'date_purchased',
         'date_acquired',
+        'quantity',
     ];
 
     public function category()
@@ -45,5 +46,19 @@ class Item extends Model
     {
         return $this->hasMany(ItemHistory::class);
     }
-    
+
+    public function in_stock()
+    {
+        return $this->hasMany(InStock::class);
+    }
+
+    public function damaged_item()
+    {
+        return $this->hasMany(DamagedItem::class);
+    }
+
+    public function in_use()
+    {
+        return $this->hasMany(InUse::class);
+    }
 }

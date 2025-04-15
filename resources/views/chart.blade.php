@@ -114,126 +114,232 @@
    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px;">
-        <div style="width: 45%; padding: 15px; border: 1px solid #ccc; border-radius: 8px; box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1); background: #fff; position: relative;">
-            <h3 style="position: absolute; top: 10px; left: 15px; margin: 0; font-size: 14px; color: #333;">Equipment</h3>
-            <canvas id="chart1" style="margin-top: 25px;"></canvas>
+    <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;">
+    <!-- Equipment Chart -->
+    <div style="width: 45%; min-width: 300px; padding: 20px; border: 1px solid #e0e0e0; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); background: #fff;">
+        <h3 style="margin: 0 0 15px 0; font-size: 16px; color: #444; font-weight: 600; display: flex; align-items: center;">
+            <span style="display: inline-block; width: 12px; height: 12px; background: #3a7bd5; margin-right: 8px; border-radius: 3px;"></span>
+            Equipment Status
+        </h3>
+        <div style="height: 300px; position: relative;">
+            <canvas id="chart1"></canvas>
         </div>
-        <div style="width: 45%; padding: 15px; border: 1px solid #ccc; border-radius: 8px; box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1); background: #fff; position: relative;">
-            <h3 style="position: absolute; top: 10px; left: 15px; margin: 0; font-size: 14px; color: #333;">Users</h3>
-            <canvas id="chart2" style="margin-top: 25px;"></canvas>
-        </div>
-        <div style="width: 45%; padding: 15px; border: 1px solid #ccc; border-radius: 8px; box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1); background: #fff; position: relative;">
-            <h3 style="position: absolute; top: 10px; left: 15px; margin: 0; font-size: 14px; color: #333;">Returned Items</h3>
-            <canvas id="chart3" style="margin-top: 25px;"></canvas>
-        </div>
-        <div style="width: 45%; padding: 15px; border: 1px solid #ccc; border-radius: 8px; box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1); background: #fff; position: relative;">
-            <h3 style="position: absolute; top: 10px; left: 15px; margin: 0; font-size: 14px; color: #333;">Damaged Items</h3>
-            <canvas id="chart4" style="margin-top: 25px;"></canvas>
+        <div style="text-align: right; margin-top: 8px; font-size: 12px; color: #777;">
+            Last updated: <?php echo date('M d, Y'); ?>
         </div>
     </div>
+    
+    <!-- User Chart -->
+    <div style="width: 45%; min-width: 300px; padding: 20px; border: 1px solid #e0e0e0; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); background: #fff;">
+        <h3 style="margin: 0 0 15px 0; font-size: 16px; color: #444; font-weight: 600; display: flex; align-items: center;">
+            <span style="display: inline-block; width: 12px; height: 12px; background: #ff6b6b; margin-right: 8px; border-radius: 3px;"></span>
+            User Activity
+        </h3>
+        <div style="height: 300px; position: relative;">
+            <canvas id="chart2"></canvas>
+        </div>
+        <div style="text-align: right; margin-top: 8px; font-size: 12px; color: #777;">
+            Last updated: <?php echo date('M d, Y'); ?>
+        </div>
+    </div>
+    
+    <!-- Returned Items Chart -->
+    <div style="width: 45%; min-width: 300px; padding: 20px; border: 1px solid #e0e0e0; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); background: #fff;">
+        <h3 style="margin: 0 0 15px 0; font-size: 16px; color: #444; font-weight: 600; display: flex; align-items: center;">
+            <span style="display: inline-block; width: 12px; height: 12px; background: #4ecdc4; margin-right: 8px; border-radius: 3px;"></span>
+            Returned Items
+        </h3>
+        <div style="height: 300px; position: relative;">
+            <canvas id="chart3"></canvas>
+        </div>
+        <div style="text-align: right; margin-top: 8px; font-size: 12px; color: #777;">
+            Last updated: <?php echo date('M d, Y'); ?>
+        </div>
+    </div>
+    
+    <!-- Damaged Items Chart -->
+    <div style="width: 45%; min-width: 300px; padding: 20px; border: 1px solid #e0e0e0; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); background: #fff;">
+        <h3 style="margin: 0 0 15px 0; font-size: 16px; color: #444; font-weight: 600; display: flex; align-items: center;">
+            <span style="display: inline-block; width: 12px; height: 12px; background: #ffa502; margin-right: 8px; border-radius: 3px;"></span>
+            Damaged Items
+        </h3>
+        <div style="height: 300px; position: relative;">
+            <canvas id="chart4"></canvas>
+        </div>
+        <div style="text-align: right; margin-top: 8px; font-size: 12px; color: #777;">
+            Last updated: <?php echo date('M d, Y'); ?>
+        </div>
+    </div>
+</div>
 
-    <script>
+<script>
+    // Preserve all original data variables
+    // Equipments
+    const labels = @json($labels);
+    const dataValues = @json($values);
 
-        // Equipments
-        const labels = @json($labels);
-        const dataValues = @json($values);
+    // Users
+    const userLabels = @json($userLabels);
+    const userdataValues = @json($userValues);
 
-        //Users
-        const userLabels = @json($userLabels);
-        const userdataValues = @json($userValues);
+    // Returned Items
+    const returnedItemsLabels = @json($returnedItemsLabels);
+    const returnedItemsdataValues = @json($returnedValues);
 
-        //Returned Items
-        const returnedItemsLabels = @json($returnedItemsLabels);
-        const returnedItemsdataValues = @json($returnedValues);
+    // Damaged Items
+    const damagedlabels = @json($damagedlabels);
+    const damagedItemsdataValues = @json($damagedvalues);
 
-        //Equipment
-        function createChartEquipment(chartId, chartType, label, bgColor, borderColor) {
-            const ctx = document.getElementById(chartId).getContext('2d');
-            new Chart(ctx, {
-                type: chartType,
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: label,
-                        data: dataValues,
-                        backgroundColor: bgColor,
-                        borderColor: borderColor,
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true
+    // Modern color palette
+    const colors = {
+        blue: { bg: 'rgba(58, 123, 213, 0.7)', border: 'rgba(58, 123, 213, 1)' },
+        red: { bg: 'rgba(255, 107, 107, 0.7)', border: 'rgba(255, 107, 107, 1)' },
+        teal: { bg: 'rgba(78, 205, 196, 0.7)', border: 'rgba(78, 205, 196, 1)' },
+        orange: { bg: 'rgba(255, 165, 2, 0.7)', border: 'rgba(255, 165, 2, 1)' },
+        purple: { bg: 'rgba(136, 84, 208, 0.7)', border: 'rgba(136, 84, 208, 1)' },
+        green: { bg: 'rgba(46, 204, 113, 0.7)', border: 'rgba(46, 204, 113, 1)' }
+    };
+
+    // Chart configuration with fixed height
+    const chartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                display: false
+            },
+            tooltip: {
+                backgroundColor: '#333',
+                titleFont: { size: 14 },
+                bodyFont: { size: 12 },
+                padding: 12,
+                displayColors: false
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                grid: {
+                    color: 'rgba(0, 0, 0, 0.05)'
+                }
+            },
+            x: {
+                grid: {
+                    display: false
+                }
+            }
+        }
+    };
+
+    // Initialize all charts with consistent height
+    function initializeCharts() {
+        // Equipment Chart
+        new Chart(document.getElementById('chart1'), {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Equipment Count',
+                    data: dataValues,
+                    backgroundColor: colors.blue.bg,
+                    borderColor: colors.blue.border,
+                    borderWidth: 1,
+                    borderRadius: 4
+                }]
+            },
+            options: chartOptions
+        });
+
+        // User Chart
+        new Chart(document.getElementById('chart2'), {
+            type: 'line',
+            data: {
+                labels: userLabels,
+                datasets: [{
+                    label: 'Active Users',
+                    data: userdataValues,
+                    backgroundColor: colors.red.bg,
+                    borderColor: colors.red.border,
+                    borderWidth: 2,
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+            options: chartOptions
+        });
+
+        // Returned Items Chart
+        new Chart(document.getElementById('chart3'), {
+            type: 'pie',
+            data: {
+                labels: returnedItemsLabels,
+                datasets: [{
+                    label: 'Returned Items',
+                    data: returnedItemsdataValues,
+                    backgroundColor: [
+                        colors.teal.bg,
+                        colors.purple.bg,
+                        colors.orange.bg
+                    ],
+                    borderColor: '#fff',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                ...chartOptions,
+                plugins: {
+                    ...chartOptions.plugins,
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            boxWidth: 12,
+                            padding: 20,
+                            usePointStyle: true,
+                            pointStyle: 'circle'
                         }
                     }
                 }
-            });
-        }
+            }
+        });
 
-        //User
-        function createChartUser(chartId, chartType, label, bgColor, borderColor) {
-            const ctx = document.getElementById(chartId).getContext('2d');
-            new Chart(ctx, {
-                type: chartType,
-                data: {
-                    labels: userLabels,
-                    datasets: [{
-                        label: label,
-                        data: userdataValues,
-                        backgroundColor: bgColor,
-                        borderColor: borderColor,
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true
+        // Damaged Items Chart
+        new Chart(document.getElementById('chart4'), {
+            type: 'doughnut',
+            data: {
+                labels: damagedlabels,
+                datasets: [{
+                    label: 'Damaged Items',
+                    data: damagedItemsdataValues,
+                    backgroundColor: [
+                        colors.orange.bg,
+                        'rgba(201, 203, 207, 0.7)'
+                    ],
+                    borderColor: '#fff',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                ...chartOptions,
+                plugins: {
+                    ...chartOptions.plugins,
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            boxWidth: 12,
+                            padding: 20,
+                            usePointStyle: true,
+                            pointStyle: 'circle'
                         }
                     }
-                }
-            });
-        }
-
-         //Returned Items
-         function createChartReturnedItems(chartId, chartType, label, bgColor, borderColor) {
-            const ctx = document.getElementById(chartId).getContext('2d');
-            new Chart(ctx, {
-                type: chartType,
-                data: {
-                    labels: returnedItemsLabels,
-                    datasets: [{
-                        label: label,
-                        data: returnedItemsdataValues,
-                        backgroundColor: bgColor,
-                        borderColor: borderColor,
-                        borderWidth: 2
-                    }]
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-        }
+                cutout: '70%'
+            }
+        });
+    }
 
-        // Create Multiple Charts
-        createChartEquipment('chart1', 'bar', 'Equipment', 'rgba(54, 162, 235, 0.5)', 'rgba(54, 162, 235, 1)');
-        createChartUser('chart2', 'line', 'Users', 'rgba(255, 99, 132, 0.5)', 'rgba(255, 99, 132, 1)');
-        createChartReturnedItems('chart3', 'pie', 'Returned Items', ['rgba(75, 192, 192, 0.5)', 'rgba(153, 102, 255, 0.5)', 'rgba(255, 206, 86, 0.5)'], ['rgba(75, 192, 192, 1)', 'rgba(153, 102, 255, 1)', 'rgba(255, 206, 86, 1)']);
-        createChart('chart4', 'doughnut', 'Damaged Items', ['rgba(255, 159, 64, 0.5)', 'rgba(201, 203, 207, 0.5)'], ['rgba(255, 159, 64, 1)', 'rgba(201, 203, 207, 1)']);
-    </script>
+    // Initialize charts when DOM is loaded
+    document.addEventListener('DOMContentLoaded', initializeCharts);
+</script> 
 
   <style>
     
@@ -452,7 +558,7 @@
     .modal-details {
       margin-bottom: 20px;
     } 
-    </style>
+  </style>
     
     <script>
      function showModal(type) {

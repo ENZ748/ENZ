@@ -43,10 +43,13 @@ class HomeController extends Controller
     
                 // Retrieve all assigned items for the employee
                 $assigned_items = AssignedItem::where('employeeID', $employee->id)
+                ->orderBy('created_at', 'desc')
                 ->where('item_status', 'unreturned')->get();
      
                 //Historyyyy
-                $history_items = ItemHistory::where('employeeID', $employee->id)->get();
+                $history_items = ItemHistory::where('employeeID', $employee->id)
+                ->orderBy('created_at', 'desc')
+                ->get();
 
                 return view('userAccount.index', compact('assigned_items','history_items'));
 
@@ -55,7 +58,7 @@ class HomeController extends Controller
                 return redirect('chart');
 
             } elseif ($usertype == 'superAdmin') {
-                return view('superAdminDashboard.index');
+                return redirect('/superAdmin/Dashboard');
 
             } else {
 

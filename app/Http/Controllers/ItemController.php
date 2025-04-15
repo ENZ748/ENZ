@@ -16,7 +16,10 @@ class ItemController extends Controller
     public function index()
     {
     
-        $items = Item::all();
+        $items = Item::with(['category', 'brand', 'unit'])
+        ->orderBy('created_at', 'DESC')
+        ->paginate(10);
+
         $assigned_items = AssignedItem::all();
 
         $categories = Category::all();
@@ -33,36 +36,51 @@ class ItemController extends Controller
     }
 
     // Store the new item
-    public function store(Request $request)
-    {
-        \Log::info($request->all());
-        $categoryId = intval($request->category_id);
-
-        // Validate the form data
-        $request->validate([
-            'category_id'    => 'required|exists:categories,id', 
-            'brand_id'       => 'required|exists:brands,id', 
-            'unit_id'        => 'required|exists:units,id', 
-            'serial_number'  => 'required|unique:items,serial_number', 
-            'equipment_status' => 'required|in:0,1,2', 
+    // In your controller (e.g., ItemController.php)
+public function store(Request $request)
+{
+    try {
+        $validated = $request->validate([
+            'category_id' => 'required|exists:categories,id',
+            'brand_id' => 'required|exists:brands,id',
+            'unit_id' => 'required|exists:units,id',
+            'serial_number' => 'required|unique:items,serial_number',
+            'quantity' => 'required|integer|min:1',
             'date_purchased' => 'required|date',
-            'date_acquired'  => 'required|date',
+            'date_acquired' => 'required|date',
         ]);
 
-        // Create the new item in the database
-        Item::create([
-            'categoryID'      => $request->category_id,
-            'brandID'         => $request->brand_id,
-            'unitID'          => $request->unit_id,
+    
+        $item = Item::create([
+            'categoryID'      => $validated['category_id'],
+            'brandID'         => $validated['brand_id'],
+            'unitID'          => $validated['unit_id'],
             'serial_number'   => $request->serial_number,
-            'equipment_status'=> $request->equipment_status,
+            'quantity'        => $request->quantity,
+            'equipment_status'=> 0,
             'date_purchased'  => $request->date_purchased,
             'date_acquired'   => $request->date_acquired,
         ]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Item added successfully',
+            'data' => $item
+        ]);
 
-        // Redirect back to the form with a success message
-        return redirect()->route('items')->with('success', 'Item added successfully!');
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Validation error',
+            'errors' => $e->errors()
+        ], 422);
+        
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Server error: '.$e->getMessage()
+        ], 500);
     }
+}
 
     //Update Item
     public function edit($id)
@@ -77,67 +95,136 @@ class ItemController extends Controller
         return view('items.edit', compact('item', 'categories', 'brands', 'units'));
     }
     
-
     public function update(Request $request, $id)
     {
-        // Validate the incoming data
-        $validated = $request->validate([
-            'category_id' => 'required|exists:categories,id',
-            'brand_id' => 'required|exists:brands,id',
-            'unit_id' => 'required|exists:units,id',
-            'serial_number' => 'required|string|max:255',
-            'equipment_status' => 'required|in:0,1,2',
-            'date_purchased' => 'required|date',
-            'date_acquired' => 'required|date',
-        ]);
-
-        // Retrieve the item from the database
-        $item = Item::findOrFail($id);
-
-        // Update the item with the validated data
-        $item->categoryID = $validated['category_id'];
-        $item->brandID = $validated['brand_id'];
-        $item->unitID = $validated['unit_id'];
-        $item->serial_number = $validated['serial_number'];
-        $item->equipment_status = $validated['equipment_status'];
-        $item->date_purchased = $validated['date_purchased'];
-        $item->date_acquired = $validated['date_acquired'];
-
-        // Save the updated item
-        
-
-        // Redirect back to the edit page with a success message
-        return redirect()->route('items', $item->id)
-            ->with('success', 'Item updated successfully!');
+        try {
+            $validated = $request->validate([
+                'category_id' => 'required|exists:categories,id',
+                'brand_id' => 'required|exists:brands,id',
+                'unit_id' => 'required|exists:units,id',
+                'serial_number' => 'required|unique:items,serial_number,'.$id,
+                'quantity' => 'required|integer',
+                'date_purchased' => 'required|date',
+                'date_acquired' => 'required|date',
+            ]);
+    
+            $item = Item::findOrFail($id);
+            
+            // Map the validated data to your model's field names
+            $updateData = [
+                'categoryID' => $validated['category_id'],
+                'brandID' => $validated['brand_id'],
+                'unitID' => $validated['unit_id'],
+                'serial_number' => $validated['serial_number'],
+                'quantity' => $validated['quantity'],
+                'date_purchased' => $validated['date_purchased'],
+                'date_acquired' => $validated['date_acquired'],
+            ];
+    
+            $item->update($updateData);
+    
+            return response()->json([
+                'success' => true,
+                'message' => 'Item updated successfully',
+                'data' => $item
+            ]);
+    
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Server error: '.$e->getMessage()
+            ], 500);
+        }
     }
+
+    
    
     //Delete Item
     public function destroy($id)
     {
-        Item::where('id', $id)->delete();
+        try {
+            $item = Item::findOrFail($id);
+            $item->delete();
 
-        return redirect()-> route('items')->with('success', 'Item deleted successfully');  
+            return response()->json([
+                'success' => true,
+                'message' => 'Item deleted successfully'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error deleting item: '.$e->getMessage()
+            ], 500);
+        }
     }
+    
 
 
-
-    //Search Category
-    public function category(Request $request)
+    public function search(Request $request)
     {
-        // Fetch all categories to populate the select dropdown
+        // Start with a query that eagerly loads related models and orders by latest
+        $itemsQuery = Item::with(['category', 'brand', 'unit'])
+                        ->orderBy('created_at', 'DESC');
+
+        // Initialize a message variable
+        $message = '';
+
+        // Apply the search filter based on the "search" term
+        if ($request->has('search') && $request->search !== '') {
+            $searchTerm = $request->search;
+            $itemsQuery->where(function ($query) use ($searchTerm) {
+                $query->where('serial_number', 'like', '%' . $searchTerm . '%')
+                    ->orWhereHas('category', function ($query) use ($searchTerm) {
+                        $query->where('category_name', 'like', '%' . $searchTerm . '%');
+                    })
+                    ->orWhereHas('brand', function ($query) use ($searchTerm) {
+                        $query->where('brand_name', 'like', '%' . $searchTerm . '%');
+                    })
+                    ->orWhereHas('unit', function ($query) use ($searchTerm) {
+                        $query->where('unit_name', 'like', '%' . $searchTerm . '%');
+                    });
+            });
+        } 
+
+        // Filter by equipment status only if it's not empty or null and not '3' (All Status)
+        if ($request->filled('equipment_status') && $request->equipment_status !== '3') {
+            $itemsQuery->where('equipment_status', $request->equipment_status);
+        }
+
+        // Paginate the results (15 items per page by default)
+        $items = $itemsQuery->paginate($request->per_page ?? 10);
+
+        // Check if no items were found
+        if ($items->isEmpty()) {
+            $message = $request->has('search') && $request->search !== '' 
+                ? "No items found for the search term: " . $request->search
+                : "No items found matching your criteria.";
+        }
+
+        // Get all the other necessary data
+        $assigned_items = AssignedItem::all();
         $categories = Category::all();
 
-        // Get the selected category id (if any)
-        $categoryId = $request->input('category_id');
-
-        // Filter items based on the selected category, if provided
-        $items = Item::when($categoryId, function ($query, $categoryId) {
-            return $query->where('categoryID', $categoryId);
-        })->get();
-
-        // Return the view with categories and filtered items
-        return view('items.index', compact('items', 'categories'));
+        // Return the view with the necessary data
+        return view('items.index', [
+            'items' => $items,
+            'categories' => $categories,
+            'assigned_items' => $assigned_items,
+            'message' => $message,
+            'search_term' => $request->search ?? '',
+            'selected_status' => $request->equipment_status ?? '3'
+        ]);
     }
+
+
+
 
     //Filter add and update
     public function getBrands($categoryId)

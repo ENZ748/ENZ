@@ -12,18 +12,46 @@ use App\Models\Item;
 use App\Models\ItemHistory;
 use App\Models\ActivityLog;
 use App\Models\User;
+use App\Models\InStock;
+use App\Models\InUse;
+use App\Models\DamagedItem;
+
 use Illuminate\Http\Request;
 
 class AssignedItemController extends Controller
 {
-    public function index()
-    {
-        // Fetch all assigned items
-        $assignedItems = AssignedItem::where('item_status', 'unreturned')->get();
+    // In your controller method
+public function index(Request $request)
+{
+    $query = AssignedItem::with(['employee', 'item.category', 'item.brand', 'item.unit'])
+                ->where('item_status','unreturned')->latest();
 
-        // Return the index view with assigned items
-        return view('assigned_items.index', compact('assignedItems'));
+    if ($request->has('search')) {
+        $search = $request->search;
+        $query->where(function($q) use ($search) {
+            $q->whereHas('employee', function($q) use ($search) {
+                $q->where('first_name', 'like', "%$search%")
+                  ->orWhere('last_name', 'like', "%$search%")
+                  ->orWhere('employee_number', 'like', "%$search%");
+            })
+            ->orWhereHas('item', function($q) use ($search) {
+                $q->where('serial_number', 'like', "%$search%")
+                  ->orWhereHas('category', function($q) use ($search) {
+                      $q->where('category_name', 'like', "%$search%");
+                  })
+                  ->orWhereHas('brand', function($q) use ($search) {
+                      $q->where('brand_name', 'like', "%$search%");
+                  });
+            })
+            ->orWhere('assigned_by', 'like', "%$search%"); // Add this line
+
+        });
     }
+
+    $assignedItems = $query->paginate(15);
+
+    return view('assigned_items.index', compact('assignedItems'));
+}
 
     // Method to show form for creating a new AssignedItem
     // Show the form for assigning an item
@@ -62,23 +90,42 @@ class AssignedItemController extends Controller
             return back()->withErrors(['serial_number' => 'The selected serial number is invalid.']);
         }
 
+
+        // Get the current user ID
+        $user_id = Auth::user()->id;
+
+        // Find the employee associated with the current user
+        $employee = Employees::where('user_id', $user_id)->first();
+
         // Create the new assigned item
         AssignedItem::create([
             'employeeID' => $validatedData['employeeID'],
             'itemID' => $item->id,
             'notes' => $validatedData['notes'],
             'assigned_date' => $validatedData['assigned_date'],
+            'assigned_by' => $employee->employee_number,
         ]);
 
         $itemStatus = Item::where('id',$item->id)->first();
         
-        $itemStatus->equipment_status = 1;
+        $itemStatus->quantity = $itemStatus->quantity - 1;
+        if($itemStatus->quantity == 0)
+        {
+            $itemStatus->equipment_status = 1;  
+        }
         $itemStatus->save();
+
+
+        $accountabilityItem = InStock::where('itemID', $item->id)->first();
+        if ($accountabilityItem) {
+            $accountabilityItem->status = 1;
+            $accountabilityItem->save();
+        }
 
         $assignedItem = Employees::where('id',$validatedData['employeeID'])->first();
 
         $user = Auth::user(); 
-      
+        
         $userId = $user->id;
         
         
@@ -86,6 +133,15 @@ class AssignedItemController extends Controller
             'user_id' => $userId,
             'activity_logs' => 'Assigned '. $item->serial_number. ' Item to ' . $assignedItem->employee_number,
         ]);
+
+
+        $inUse = InUse::where('itemID', $assignedItem->itemID)->first();
+
+            // Create new record if doesn't exist
+            InUse::create([
+                'itemID' => $item->id,
+                'employeeID'=>$validatedData['employeeID']
+            ]);
 
         return redirect()->route('assigned_items.index')->with('success', 'Item assigned successfully.');
     }
@@ -159,7 +215,9 @@ class AssignedItemController extends Controller
     public function getBrands($categoryId)
     {
         $brands = Brand::whereHas('items', function ($query) {
-            $query->where('equipment_status', 0);
+            $query->where('equipment_status', 0)
+            ->where('quantity', '>', 0);  
+
         })->where('categoryID', $categoryId)->get();
 
         return response()->json($brands);
@@ -169,7 +227,8 @@ class AssignedItemController extends Controller
     {
 
         $units = Unit::whereHas('items', function ($query) {
-            $query->where('equipment_status', 0);
+            $query->where('equipment_status', 0)
+                  ->where('quantity', '>', 0);  
         })->where('brandID', $brandId)->get();
 
         return response()->json($units);
@@ -178,16 +237,30 @@ class AssignedItemController extends Controller
     public function getSerials($unitId)
     {
         $serials = Item::where('equipment_status', 0)
+        ->where('quantity', '>', 0)  
         ->where('unitID', $unitId)->get();
 
 
         return response()->json($serials);
     }
 
+    public function itemStatus($id)
+    {
+        $assignedItem = AssignedItem::findOrFail($id); // Find the assigned item to edit
 
+        return view('assigned_items.itemStatus', compact('assignedItem'));
+    }
 
     public function markAsReturned($id)
     {
+
+        // Get the current user ID
+        $user_id = Auth::user()->id;
+
+        // Find the employee associated with the current user
+        $employee = Employees::where('user_id', $user_id)->first();
+
+        
         // Find the assigned item by its ID
         $assignedItem = AssignedItem::findOrFail($id);
 
@@ -199,6 +272,8 @@ class AssignedItemController extends Controller
         $itemStatus = Item::where('id',$assignedItem->itemID)->first();
         
         $itemStatus->equipment_status = 0;
+        $itemStatus->quantity = $itemStatus->quantity + 1;
+
         $itemStatus->save();
 
         ItemHistory::create([
@@ -206,6 +281,8 @@ class AssignedItemController extends Controller
             'itemID' => $assignedItem->itemID,
             'notes' => $assignedItem->notes,
             'assigned_date' => $assignedItem->assigned_date,
+            'assigned_by' => $assignedItem->assigned_by,
+            'returned_to' => $employee->employee_number,
         ]);
 
         $user = Auth::user(); 
@@ -216,6 +293,98 @@ class AssignedItemController extends Controller
             'user_id' => $userId,
             'activity_logs' => 'Confirmed Item',
         ]);
+        $inStock = InStock::where('itemID', $assignedItem->itemID)
+        ->where('status', 0)->first();
+
+        //In Stock(Accountability for available items)
+        if ($inStock) {
+            // Update quantity if exists
+            $inStock->quantity += 1;
+            $inStock->save();
+        } else {
+            InStock::create([
+                'employeeID' => $employee->id,
+                'itemID' => $assignedItem->itemID,
+    
+            ]);
+        }
+
+        $in_use = InUse::where('itemID',$assignedItem->itemID)->first();
+        
+        $in_use->status = 1;
+        $in_use->save();
+
+
+        // Redirect back with a success message
+        return redirect()->route('assigned_items.index')->with('success', 'Item marked as returned.');
+    }
+
+    public function markAsDamaged($id)
+    {       
+        // Get the current user ID
+        $user_id = Auth::user()->id;
+
+        // Find the employee associated with the current user
+        $employee = Employees::where('user_id', $user_id)->first();
+
+        // Find the assigned item by its ID
+        $assignedItem = AssignedItem::findOrFail($id);
+
+      
+        // Update the item status to "returned"
+        $assignedItem->item_status = 'returned';
+        $assignedItem->save();
+
+        $itemStatus = Item::where('id',$assignedItem->itemID)->first();
+        
+        $itemStatus->equipment_status = 2;
+        $itemStatus->save();
+
+        $damagedItem = DamagedItem::where('itemID', $assignedItem->itemID)->first();
+
+        if ($damagedItem) {
+            // Update quantity if exists
+            $damagedItem->quantity += 1;
+            $damagedItem->save();
+        } else {
+            // Create new record if doesn't exist
+            DamagedItem::create([
+                'itemID' => $assignedItem->itemID,
+                'quantity' => 1
+            ]);
+        }
+       
+
+        ItemHistory::create([
+            'employeeID' => $assignedItem->employeeID,
+            'itemID' => $assignedItem->itemID,
+            'notes' => $assignedItem->notes,
+            'assigned_date' => $assignedItem->assigned_date,
+            'assigned_by' => $assignedItem->assigned_by,
+            'returned_to' => $employee->employee_number,
+
+        ]);
+
+        $user = Auth::user(); 
+      
+        $userId = $user->id;  
+        
+        ActivityLog::create([
+            'user_id' => $userId,
+            'activity_logs' => 'Confirmed Item',
+        ]);
+
+        InStock::create([
+            'employeeID' => $employee->id,
+            'itemID' => $assignedItem->itemID,
+
+        ]);
+
+        //In Use
+        $in_use = InUse::where('itemID',$assignedItem->itemID)->first();
+        
+        $in_use->status = 1;
+        $in_use->save();
 
 
         // Redirect back with a success message

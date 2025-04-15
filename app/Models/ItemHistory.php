@@ -18,6 +18,9 @@ class ItemHistory extends Model
         'itemID',
         'notes',
         'assigned_date',
+        'status',
+        'assigned_by',
+        'returned_to'
     ];
 
     // If you want to handle the assigned_date as a date

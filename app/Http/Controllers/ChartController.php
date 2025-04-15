@@ -67,33 +67,65 @@ class ChartController extends Controller
             $userValues = array_slice($userValues, 0, 5);
 
         //Returned Items
-            $count_returned_items = AssignedItem::where('item_status','returned')->count();
-            // Fetch employee counts grouped by month and year
-            $returnedItemsmonthlyCounts = AssignedItem::selectRaw('YEAR(updated_at) as year, MONTH(updated_at) as month, COUNT(*) as count')
+        $count_returned_items = AssignedItem::where('item_status', 'returned')->count();
+
+        // Fetch employee counts grouped by month and year, only where 'item_status' is 'returned'
+        $returnedItemsmonthlyCounts = AssignedItem::selectRaw('YEAR(updated_at) as year, MONTH(updated_at) as month, COUNT(*) as count')
+            ->where('item_status', 'returned')  // Make sure to filter by 'returned' status
             ->groupBy('year', 'month')
             ->orderBy('year')
             ->orderBy('month')
             ->pluck('count', 'month')
             ->toArray();
+        
+        // Define month labels
+        $returnedItemsLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        
+        // Prepare dynamic values with default to 0 for all months
+        $returnedValues = array_fill(0, 12, 0); // Default to 0 for all months
+        
+        // Fill the returnedValues array based on the fetched counts
+        foreach ($returnedItemsmonthlyCounts as $month => $count) {
+            // Month comes from 1 (January) to 12 (December), adjust to 0-indexed array
+            $returnedValues[$month - 1] = $count;
+        }
+        
+        // Trim to the required months if needed (for example, only the first 5 months)
+        $returnedItemsLabels = array_slice($returnedItemsLabels, 0, 5);
+        $returnedValues = array_slice($returnedValues, 0, 5);
+        
 
-            // Define month labels
-            $returnedItemsLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        //Damaged Items
+        $count_damagedItems = Item::where('equipment_status', 2)->count(); // Count all items
 
-            // Prepare dynamic values
-            $returnedValues = array_fill(0, 12, 0); // Default to 0 for all months
-            foreach ($returnedItemsmonthlyCounts as $month => $count) {
-            $returnedValues[$month - 1] = $count; // Adjust index since array is 0-based
-            }
+        // Fetch item counts grouped by month
+        $damagedmonthlyCounts = Item::selectRaw('MONTH(updated_at) as month, COUNT(*) as count')
+            ->where('equipment_status', 2)
+            ->groupBy('month')
+            ->orderBy('month')
+            ->pluck('count', 'month')   
+            ->toArray();
 
-            // Trim to required months if needed
-            $returnedItemsLabels = array_slice($returnedItemsLabels, 0, 5);
-            $returnedValues = array_slice($returnedValues, 0, 5);
+        // Define month labels
+        $damagedlabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+        // Prepare dynamic values
+        $damagedvalues = array_fill(0, 12, 0); // Default to 0 for all months
+        foreach ($damagedmonthlyCounts as $month => $count) {
+            $damagedvalues[$month - 1] = $count; // Adjust index since array is 0-based
+        }
+
+        // Trim to required months if needed
+        $damagedlabels = array_slice($damagedlabels, 0, 5);
+        $damagedvalues = array_slice($damagedvalues, 0, 5);
+
+         
 
         $count_items = Item::all()->count();
         $count_categories = Category::all()->count();
         $count_returned_items = AssignedItem::where('item_status', 'returned')->count();
         $count_inStock = Item::where('equipment_status', 0)->count();
 
-        return view('chart', compact('labels', 'values','userLabels', 'userValues','returnedItemsLabels','returnedValues', 'count_items','count_categories','count_returned_items','count_inStock'));
+        return view('chart', compact('labels', 'values','userLabels', 'userValues','returnedItemsLabels','returnedValues','damagedlabels','damagedvalues', 'count_items','count_categories','count_returned_items','count_inStock'));
     }
 }

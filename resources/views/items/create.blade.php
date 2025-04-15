@@ -43,13 +43,6 @@
         <label for="serial_number">Serial Number:</label>
         <input type="text" id="serial_number" name="serial_number" value="{{ old('serial_number') }}" required><br><br>
 
-        <label for="equipment_status">Equipment Status:</label>
-        <select id="equipment_status" name="equipment_status">
-            <option value="0" {{ old('equipment_status') == '0' ? 'selected' : '' }}>Available</option>
-            <option value="1" {{ old('equipment_status') == '1' ? 'selected' : '' }}>In Use</option>
-            <option value="2" {{ old('equipment_status') == '2' ? 'selected' : '' }}>Out of Service</option>
-        </select><br><br>
-
         <label for="date_purchased">Date Purchased:</label>
         <input type="date" id="date_purchased" name="date_purchased" value="{{ old('date_purchased') }}" required><br><br>
 

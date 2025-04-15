@@ -12,9 +12,12 @@ use App\Http\Controllers\BrandController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\AssignedItemController;
+use App\Http\Controllers\AssignedItemFormController;
 use App\Http\Controllers\ItemHistoryController;
 use App\Http\Controllers\SuperAdminController;
-
+use App\Http\Controllers\SuperAdminDashboardController;
+use App\Http\Controllers\InStockController;
+use App\Http\Controllers\MailController;
 
 use App\Http\Middleware\Admin;
 use App\Http\Middleware\SuperAdmin;
@@ -82,6 +85,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
 //Super Adminnnn
+    //Dashboard
+    Route::middleware([SuperAdmin::class])->get('/superAdmin/Dashboard', [SuperAdminDashboardController::class, 'index'])->name('superAdmin.dashboard');
+
     Route::middleware([SuperAdmin::class])->get('/superAdmin', [SuperAdminController::class, 'index'])->name('superAdmin.index');
     Route::get('admin/create', [SuperAdminController::class, 'create'])->name('admin.create');
     Route::post('admin/store', [SuperAdminController::class, 'store'])->name('admin.store');
@@ -110,6 +116,11 @@ Route::middleware('auth')->group(function () {
         return app('App\Http\Controllers\ChartController')->showChart();
     })->middleware(['auth', 'verified'])->name('chart');
 
+
+    Route::middleware([Admin::class])->get('assigned_items', function () {
+        return app('App\Http\Controllers\AssignedItemController')->index();
+    })->middleware(['auth', 'verified'])->name('assigned_items.index');
+
     // Historyyyyy
     Route::middleware([Admin::class])->get('/history', function () {
         return app('App\Http\Controllers\HistoryController')->index();
@@ -119,6 +130,8 @@ Route::middleware('auth')->group(function () {
         return app('App\Http\Controllers\ItemHistoryController')->index();
     })->middleware(['auth', 'verified'])->name('item.history');
 
+    Route::get('/assigned-items/history', [ItemHistoryController::class, 'history'])
+    ->name('assigned-items.history');
 });
 
 
@@ -180,11 +193,11 @@ Route::middleware('auth')->group(function () {
 
 
 //Itemsssssssssss
-    Route::get('items/category', [ItemController::class, 'category'])->name('items.index');
+    Route::get('items/category', [ItemController::class, 'search'])->name('items.search');
 
     //Update Itemmm
     Route::get('items/edit/{id}', [ItemController::class, 'edit'])->name('items.edit');
-    Route::put('items/update/{id}', [ItemController::class, 'update'])->name('items.update');
+    Route::put('items/{id}', [ItemController::class, 'update'])->name('items.update');
 
     //Delete Itemmm
     Route::delete('/items/{id}', [ItemController::class, 'destroy'])->name('items.destroy');
@@ -208,19 +221,41 @@ Route::middleware('auth')->group(function () {
 //Assiagned Itemssss(Accountability) 
     Route::resource('assigned_items', AssignedItemController::class);
     //View Accountability
-    Route::middleware([Admin::class])->get('assigned_items', function () {
-        return app('App\Http\Controllers\AssignedItemController')->index();
-    })->middleware(['auth', 'verified'])->name('assigned_items.index');
 
     Route::get('assigned_items/create', [AssignedItemController::class, 'create'])->name('assigned_items.create');
     Route::post('assigned_items', [AssignedItemController::class, 'store'])->name('assigned_items.store');
     Route::get('assigned_items/{id}/edit', [AssignedItemController::class, 'edit'])->name('assigned_items.edit');
     Route::put('assigned_items/{id}', [AssignedItemController::class, 'update'])->name('assigned_items.update');
 
-    Route::post('assigned-items/{id}/return', [AssignedItemController::class, 'markAsReturned'])->name('assigned_items.return');
+    
+    //Item Status Button
+    Route::get('assigned-items/{id}/return', [AssignedItemController::class, 'itemStatus'])->name('assigned_items.itemStatus');
+    Route::post('assigned-items/{id}/returned', [AssignedItemController::class, 'markAsReturned'])->name('assigned_items.good');
+    Route::post('assigned-items/{id}/damaged', [AssignedItemController::class, 'markAsDamaged'])->name('assigned_items.damaged');
+
     Route::get('/get-brands/create/{categoryId}', [AssignedItemController::class, 'getBrands']);
     Route::get('/get-units/create/{brandId}', [AssignedItemController::class, 'getUnits']);
     Route::get('/get-serials/create/{unitId}', [AssignedItemController::class, 'getSerials']);
 
+//Assigned Item Forms
+    Route::get('form', [AssignedItemFormController::class, 'index'])->name('assigned_items.forms');
+    Route::get('accountability_form/{id}', [AssignedItemFormController::class, 'accountability_form'])->name('form.accountability');
+    Route::get('asset_return_form/{id}', [AssignedItemFormController::class, 'asset_return_form'])->name('form.asset_return');
+    Route::get('confirm_return/{id}', [AssignedItemFormController::class, 'confirm_History'])->name('form.confirm_return');
+    Route::get('confirm_accountability/{id}', [AssignedItemFormController::class, 'confirm_accountability'])->name('form.confirm_accountability');
 
-require __DIR__.'/auth.php';    
+
+//InStock
+    Route::get('InStock', [InStockController::class, 'index'])->name('instock');
+
+
+//PDF
+    use App\Http\Controllers\PDFController;
+    
+    Route::get('/generate-pdf', [PDFController::class, 'generatePDF'])->name('generatePDF');
+    Route::get('/Asset_historyGenerate-pdf', [PDFController::class, 'AssetHistoryGeneratePDF'])->name('AssetHistoryGeneratePDF');
+    
+    Route::get('send-mail', [MailController::class, 'index']);
+
+
+    require __DIR__.'/auth.php';    

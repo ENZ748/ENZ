@@ -9,7 +9,9 @@ class UnitController extends Controller
 {
     public function index($brandID,$categoryID)
     {
-        $units = Unit::where('brandID', $brandID)->get();
+        $units = Unit::latest()
+        ->where('brandID', $brandID)->get();
+        
         return view('units.index', compact('units','brandID','categoryID'));
     }
     // Display the form to create a new category
