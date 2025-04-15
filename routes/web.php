@@ -17,6 +17,7 @@ use App\Http\Controllers\ItemHistoryController;
 use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\SuperAdminDashboardController;
 use App\Http\Controllers\InStockController;
+use App\Http\Controllers\MailController;
 
 use App\Http\Middleware\Admin;
 use App\Http\Middleware\SuperAdmin;
@@ -254,6 +255,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/generate-pdf', [PDFController::class, 'generatePDF'])->name('generatePDF');
     Route::get('/Asset_historyGenerate-pdf', [PDFController::class, 'AssetHistoryGeneratePDF'])->name('AssetHistoryGeneratePDF');
     
+    Route::get('send-mail', [MailController::class, 'index']);
 
 
     require __DIR__.'/auth.php';    
