@@ -4,6 +4,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <style>
         .card-header {
             background: linear-gradient(135deg, #0074e8, #005ab4);
@@ -445,21 +446,36 @@
                         allowOutsideClick: false
                     });
 
-                    // Send email notification first
-                    fetch('/send-mail')
-                        .then(response => response.json())
-                        .then(data => {
-                            console.log('Email sent:', data);
-                            // Proceed with form submission
-                            setTimeout(() => {
-                                document.getElementById('editEmployeeForm').submit();
-                            }, 1500);
-                        })
-                        .catch(error => {
-                            console.error('Error sending email:', error);
-                            // Still proceed with form submission even if email fails
+                    // Send email notification with CSRF protection
+                    fetch('/send-mail', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Email sent:', data);
+                        // Show success message if needed
+                        if (data.message) {
+                            Swal.showValidationMessage(data.message);
+                        }
+                        // Proceed with form submission
+                        setTimeout(() => {
                             document.getElementById('editEmployeeForm').submit();
-                        });
+                        }, 1500);
+                    })
+                    .catch(error => {
+                        console.error('Error sending email:', error);
+                        document.getElementById('editEmployeeForm').submit();
+                    });
                 }
             });
         }
@@ -602,21 +618,36 @@
                         allowOutsideClick: false
                     });
 
-                    // Send email notification first
-                    fetch('/send-mail')
-                        .then(response => response.json())
-                        .then(data => {
-                            console.log('Email sent:', data);
-                            // Proceed with form submission
-                            setTimeout(() => {
-                                form.submit();
-                            }, 1500);
-                        })
-                        .catch(error => {
-                            console.error('Error sending email:', error);
-                            // Still proceed with form submission even if email fails
+                    // Send email notification with CSRF protection
+                    fetch('/send-mail', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Email sent:', data);
+                        // Show success message if needed
+                        if (data.message) {
+                            Swal.showValidationMessage(data.message);
+                        }
+                        // Proceed with form submission
+                        setTimeout(() => {
                             form.submit();
-                        });
+                        }, 1500);
+                    })
+                    .catch(error => {
+                        console.error('Error sending email:', error);
+                        form.submit();
+                    });
                 }
             });
         }
