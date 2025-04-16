@@ -36,20 +36,18 @@
             </div>
         </div>
 
-        <div class="card shadow-sm border-0">
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover mb-0">
-                        <thead class="bg-gradient-primary text-white">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
                             <tr>
-                                <th class="py-3 px-4 text-left">Employee</th>
-                                <th class="py-3 px-4 text-left">Employee Details</th>
-                                <th class="py-3 px-4 text-left">Item Information</th>
-                                <th class="py-3 px-4 text-left">Serial Number</th>
-                                <th class="py-3 px-4 text-left">Assigned By</th>
-                                <th class="py-3 px-4 text-left">Assignment Period</th>
-                                <th class="py-3 px-4 text-left">Notes</th>
-                                <th class="py-3 px-4 text-left">Returned To</th>
+                                <th>Employee</th>
+                                <th>Employee Details</th>
+                                <th>Item Information</th>
+                                <th>Serial Number</th>
+                                <th>Assigned By</th>
+                                <th>Assignment Period</th>
+                                <th>Notes</th>
+                                <th>Returned To</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -95,8 +93,7 @@
                             @endforelse
                         </tbody>
                     </table>
-                </div>
-            </div>
+            
             <!-- Pagination -->
             @if(method_exists($assignedItems, 'hasPages') && $assignedItems->hasPages())
                 <div class="card-footer bg-white">
