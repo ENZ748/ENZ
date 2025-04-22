@@ -60,37 +60,37 @@
     </style>
 
     <div class="container py-4">
-        <div class="card shadow-sm">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h2 class="mb-0"><i class="bi bi-people-fill me-2"></i>Employee Management</h2>
-                <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#addEmployeeModal">
+        
+            <div class=" d-flex justify-content-between align-items-center mb-5">
+                <h1 class="mb-0">Employee Management</h1>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addEmployeeModal">
                     <i class="bi bi-plus-lg me-1"></i> Add Employee
                 </button>
             </div>
             
-            <div class="card-body">
                 @if($employees->isEmpty())
                     <div class="alert alert-info d-flex align-items-center">
                         <i class="bi bi-info-circle-fill me-2"></i>
                         No employees found in the system.
                     </div>
                 @else
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle">
-                            <thead class="table-light">
+                <div id="table-view" class="bg-white rounded-xl shadow-md overflow-hidden mb-8">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
                                 <tr>
-                                    <th>Employee</th>
-                                    <th>Employee Number</th>
-                                    <th>Department</th>
-                                    <th>Hire Date</th>
-                                    <th>Status</th>
-                                    <th class="text-center">Actions</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employee</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employee Number</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hire Date</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider text-center">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody class="bg-white divide-y divide-gray-200">
                                 @foreach ($employees as $employee)
-                                    <tr>
-                                        <td>
+                                    <tr class="hover:bg-gray-50 transition duration-150">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                             <div class="d-flex align-items-center">
                                                 <div class="avatar-placeholder">
                                                     {{ substr($employee->first_name, 0, 1) }}{{ substr($employee->last_name, 0, 1) }}
@@ -101,10 +101,10 @@
                                                 </div>
                                             </div>
                                         </td>
-                                        <td>{{ $employee->employee_number }}</td>
-                                        <td>{{ $employee->department }}</td>
-                                        <td>{{ date('M d, Y', strtotime($employee->hire_date)) }}</td>
-                                        <td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-500">{{ $employee->employee_number }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-500">{{ $employee->department }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-500">{{ date('M d, Y', strtotime($employee->hire_date)) }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-500">
                                             <form action="{{ route('employee.toggleStatus', $employee->id) }}" method="POST" class="status-form">
                                                 @csrf
                                                 @method('PATCH')
@@ -115,7 +115,7 @@
                                                 </button>
                                             </form>
                                         </td>
-                                        <td class="text-center">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-500 text-center">
                                             <div class="d-flex justify-content-center gap-2">
                                                 <button class="btn btn-sm btn-outline-primary action-btn" onclick="openEditModal({{ $employee }})">
                                                     <i class="bi bi-pencil-square"></i> Edit
@@ -129,10 +129,10 @@
                                 @endforeach
                             </tbody>
                         </table>
+                        </div>
                     </div>
                 @endif
             </div>
-        </div>
     </div>
 
     <!-- Add Employee Modal -->

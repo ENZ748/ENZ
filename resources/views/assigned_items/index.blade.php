@@ -1,11 +1,12 @@
 @extends('layouts.app')
 
 @section('content')
+
     <div class="container-fluid px-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1 class="mb-0">Assigned Items</h1>
             <a href="{{ route('assigned_items.create') }}" class="btn btn-primary">
-                <i class="fas fa-plus-circle mr-2"></i>Assign New Item
+                <i class="fas fa-plus mr-1"></i>Assign New Item
             </a>
         </div>
 
@@ -19,10 +20,10 @@
         @endif
 
         <!-- Search Bar -->
-        <div class="card shadow-sm mb-4">
+        
             <div class="card-body">
                 <form action="{{ route('assigned_items.index') }}" method="GET">
-                    <div class="input-group">
+                    <div class="input-group w-50">
                         <input type="text" name="search" class="form-control" 
                                placeholder="Search by employee, item, serial number..." 
                                value="{{ request('search') }}">
@@ -39,47 +40,50 @@
                     </div>
                 </form>
             </div>
-        </div>
 
-        <div class="card shadow-sm mb-4">
-            <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Assignment Records</h5>
-                <div class="d-flex">
-                    <span class="badge badge-light mr-2">
-                        Total Records: {{ $assignedItems->total() }}
+        
+            
+        <div class="mb-4">
+            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                <h5 class="mb-2"><i class="bi bi-journal-text me-2"></i>Assignment Records</h5>
+                <div class="d-flex flex-wrap gap-2">
+                <span class="badge bg-light text-dark border">
+                    <i class="bi bi-collection me-1"></i> Total Records: {{ $assignedItems->total() }}
+                </span>
+                @if(request('search'))
+                    <span class="badge bg-info text-white">
+                    <i class="bi bi-filter-circle me-1"></i> Filtered Results
                     </span>
-                    @if(request('search'))
-                        <span class="badge badge-info">
-                            Filtered Results
-                        </span>
-                    @endif
+                @endif
                 </div>
             </div>
+        </div>
+
             
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover mb-0">
-                        <thead class="thead-light">
+            <div id="table-view" class="bg-white rounded-xl shadow-md overflow-hidden mb-8">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
                             <tr>
-                                <th class="text-nowrap">Employee</th>
-                                <th class="text-nowrap">Employee #</th>
-                                <th class="text-nowrap">Item Details</th>
-                                <th class="text-nowrap">Serial #</th>
-                                <th class="text-nowrap">Assigned By</th>
-                                <th class="text-nowrap">Assigned Date</th>
-                                <th class="text-nowrap">Status</th>
-                                <th class="text-nowrap text-right">Actions</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employee</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employee #</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item Details</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Serial #</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assigned By</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assigned Date</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="bg-white divide-y divide-gray-200">
                             @forelse($assignedItems as $assignedItem)
-                                <tr>
-                                    <td>
+                                <tr class="hover:bg-gray-50 transition duration-150">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                         <div class="font-weight-bold">{{ $assignedItem->employee->first_name }} {{ $assignedItem->employee->last_name }}</div>
                                         <small class="text-muted">{{ $assignedItem->employee->department ?? 'N/A' }}</small>
                                     </td>
-                                    <td>{{ $assignedItem->employee->employee_number }}</td>
-                                    <td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-500">{{ $assignedItem->employee->employee_number }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-500">
                                         <div class="font-weight-bold">{{ $assignedItem->item->category->category_name }}</div>
                                         <div class="text-muted small">
                                             {{ $assignedItem->item->brand->brand_name }} • {{ $assignedItem->item->unit->unit_name }}
@@ -87,18 +91,18 @@
                                     </td>
                                 
                                  
-                                    <td style="color: #212529;">{{ $assignedItem->item->serial_number }}</td>
-                                    <td style="color: #212529;">{{ $assignedItem->assigned_by }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-500" style="color: #212529;">{{ $assignedItem->item->serial_number }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-500" style="color: #212529;">{{ $assignedItem->assigned_by }}</td>
 
-                                    <td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-500">
                                         {{ \Carbon\Carbon::parse($assignedItem->assigned_date)->format('M d, Y') }}
                                     </td>
 
 
-                                    <td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-500">
                                         <span class="badge badge-success text-dark">Active</span>
                                     </td>
-                                    <td class="text-right">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-500" class="text-right">
                                         <div class="btn-group btn-group-sm" role="group">
                                             <a href="{{ route('assigned_items.edit', $assignedItem->id) }}" 
                                                class="btn btn-outline-primary" title="Edit">
@@ -118,7 +122,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="text-center py-4">No assigned items found.</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-500" colspan="7" class="text-center py-4">No assigned items found.</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -130,7 +134,6 @@
                     {{ $assignedItems->links() }}
                 </div>
             @endif
-        </div>
     </div>
 
     <!-- Return Modal -->

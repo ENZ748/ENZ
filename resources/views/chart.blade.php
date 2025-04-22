@@ -4,7 +4,7 @@
 <!-- From Uiverse.io by Lokesh1379 -->
 <body> 
 <div class="container">
-    <h1 class="dashboard-title">Inventory Overview</h1>
+    <h1 class="dashboard-title ">Inventory Overview</h1>
     <div class="cards">
       <!-- TOTAL ITEMS Card -->
       <div class="card card-items" onclick="showModal('items')">
