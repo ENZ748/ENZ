@@ -84,66 +84,68 @@
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
-                    @forelse ($items as $item)
-                        @php
-                            $category = $item->category ? $item->category->category_name : 'N/A';
-                            $brand = $item->brand ? $item->brand->brand_name : 'N/A';
-                            $unit = $item->unit ? $item->unit->unit_name : 'N/A';
-                            $datePurchased = \Carbon\Carbon::parse($item->date_purchased);
-                            $dateAcquired = \Carbon\Carbon::parse($item->date_acquired);
-                            $assignedItem = $assigned_items->firstWhere('itemID', $item->id);
-                            $user = ($item->equipment_status == 1 && $assignedItem) ? $assignedItem->employee->employee_number : 'None';
-                            
-                            // Status colors
-                            $statusColor = [
-                                0 => 'bg-green-100 text-green-800',
-                                1 => 'bg-yellow-100 text-yellow-800',
-                                2 => 'bg-red-100 text-red-800'
-                            ][$item->equipment_status];
-                        @endphp
-                        <tr class="hover:bg-gray-50 transition duration-150">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $category }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $brand }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $unit }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono">{{ $item->serial_number }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono">{{ $item->quantity }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="px-2 py-1 text-xs font-semibold rounded-full {{ $statusColor }}">
-                                    {{ $item->equipment_status == 0 ? 'Available' : ($item->equipment_status == 1 ? 'In Use' : 'Out of Service') }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $user }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $datePurchased->format('Y-m-d') }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $dateAcquired->format('Y-m-d') }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <div class="flex space-x-2">
-                                    <button class="edit-item-btn text-blue-600 hover:text-blue-900 transition duration-200"
-                                            data-toggle="modal" data-target="#editItemModal" 
-                                            data-id="{{ $item->id }}" 
-                                            data-category="{{ $item->categoryID }}" 
-                                            data-brand="{{ $item->brandID }}" 
-                                            data-unit="{{ $item->unitID }}" 
-                                            data-serial="{{ $item->serial_number }}" 
-                                            data-quantity="{{ $item->quantity }}" 
-                                            data-date-purchased="{{ $item->date_purchased }}" 
-                                            data-date-acquired="{{ $item->date_acquired }}">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <form action="{{ route('items.destroy', $item->id) }}" method="POST" class="delete-item-form">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="button" class="text-red-600 hover:text-red-900 transition duration-200 delete-item-btn">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="9" class="px-6 py-4 text-center text-sm text-gray-500">No items found</td>
-                        </tr>
-                    @endforelse
+                @forelse ($inUses as $inUse)
+    @php
+        // Access the item and employee data
+        $item = $inUse->item;  // Related item
+        $employee = $inUse->employee;  // Related employee
+        
+        // If item exists, get its details, otherwise 'N/A'
+        $category = $item ? $item->category->category_name : 'N/A';
+        $brand = $item ? $item->brand->brand_name : 'N/A';
+        $unit = $item ? $item->unit->unit_name : 'N/A';
+        $serialNumber = $item ? $item->serial_number : 'N/A';
+        $quantity = $item ? $item->quantity : 'N/A';
+
+        // Employee information
+        $employeeNumber = $employee ? $employee->employee_number : 'N/A';
+        $employeeName = $employee ? $employee->name : 'N/A';
+
+        // Status and date formatting
+        $statusColor = [
+            1 => 'bg-green-100 text-green-800',
+            0 => 'bg-yellow-100 text-yellow-800',
+            2 => 'bg-red-100 text-red-800'
+        ][$inUse->status];
+    @endphp
+
+    <tr class="hover:bg-gray-50 transition duration-150">
+        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $category }}</td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $brand }}</td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $unit }}</td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono">{{ $serialNumber }}</td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono">{{ $quantity }}</td>
+        <td class="px-6 py-4 whitespace-nowrap">
+            <span class="px-2 py-1 text-xs font-semibold rounded-full {{ $statusColor }}">
+                {{ $inUse->status == 1 ? 'Available' : ($inUse->status == 0 ? 'In Use' : 'Out of Service') }}
+            </span>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $employeeNumber }}</td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $employeeName }}</td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ \Carbon\Carbon::parse($inUse->created_at)->format('Y-m-d') }}</td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+            <div class="flex space-x-2">
+                <button class="edit-item-btn text-blue-600 hover:text-blue-900 transition duration-200"
+                        data-toggle="modal" data-target="#editItemModal" 
+                        data-id="{{ $inUse->id }}">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <form action="{{ route('items.destroy', $inUse->item->id) }}" method="POST" class="delete-item-form">
+                    @csrf
+                    @method('DELETE')
+                    <button type="button" class="text-red-600 hover:text-red-900 transition duration-200 delete-item-btn">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </form>
+            </div>
+        </td>
+    </tr>
+@empty
+    <tr>
+        <td colspan="9" class="px-6 py-4 text-center text-sm text-gray-500">No items in use</td>
+    </tr>
+@endforelse
+
                 </tbody>
             </table>
         </div>

@@ -49,16 +49,16 @@ class Item extends Model
 
     public function in_stock()
     {
-        return $this->hasMany(InStock::class);
+        return $this->hasMany(InStock::class, 'itemID');
     }
 
     public function damaged_item()
     {
-        return $this->hasMany(DamagedItem::class);
+        return $this->hasMany(DamagedItem::class, 'itemID');
     }
 
-    public function in_use()
+    public function inUses()
     {
-        return $this->hasMany(InUse::class);
+        return $this->hasMany(InUse::class, 'itemID');
     }
 }
