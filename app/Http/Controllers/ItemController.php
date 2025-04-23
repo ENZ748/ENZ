@@ -6,7 +6,7 @@ use App\Models\Brand;
 use App\Models\Unit;
 use App\Models\Item;
 use App\Models\Employees;
-use App\Models\InUse;
+
 use App\Models\AssignedItem;
 
 use Illuminate\Http\Request;
@@ -14,22 +14,18 @@ use Illuminate\Http\Request;
 class ItemController extends Controller
 {
     public function index()
-{
-    // Eager load relationships for items
-    $items = Item::with(['category', 'brand', 'unit'])
+    {
+    
+        $items = Item::with(['category', 'brand', 'unit'])
         ->orderBy('created_at', 'DESC')
-        ->get();
+        ->paginate(12);
 
-    // Get assigned items and in-uses
-    $assigned_items = AssignedItem::all();
-    $categories = Category::all();
-    $inUses = InUse::where('status', 0)
-    ->with(['item', 'employee'])
-    ->orderBy('created_at', 'desc')->get(); // Load item and employee for inUses
+        $assigned_items = AssignedItem::all();
 
-    return view('items.index', compact('items', 'categories', 'assigned_items', 'inUses'));
-}
+        $categories = Category::all();
 
+        return view('items.index', compact('items', 'categories','assigned_items'));
+    }
 
     // Show the item creation form
     public function create()
@@ -41,50 +37,50 @@ class ItemController extends Controller
 
     // Store the new item
     // In your controller (e.g., ItemController.php)
-    public function store(Request $request)
-    {
-        try {
-            $validated = $request->validate([
-                'category_id' => 'required|exists:categories,id',
-                'brand_id' => 'required|exists:brands,id',
-                'unit_id' => 'required|exists:units,id',
-                'serial_number' => 'required',
-                'quantity' => 'required|integer|min:1',
-                'date_purchased' => 'required|date',
-                'date_acquired' => 'required|date',
-            ]);
-            
-        
-            $item = Item::create([
-                'categoryID'      => $validated['category_id'],
-                'brandID'         => $validated['brand_id'],
-                'unitID'          => $validated['unit_id'],
-                'serial_number'   => $request->serial_number,
-                'quantity'        => $request->quantity,
-                'equipment_status'=> 0,
-                'date_purchased'  => $request->date_purchased,
-                'date_acquired'   => $request->date_acquired,
-            ]);
-            return response()->json([
-                'success' => true,
-                'message' => 'Item added successfully',
-                'data' => $item
-            ]);
+public function store(Request $request)
+{
+    try {
+        $validated = $request->validate([
+            'category_id' => 'required|exists:categories,id',
+            'brand_id' => 'required|exists:brands,id',
+            'unit_id' => 'required|exists:units,id',
+            'serial_number' => 'required',
+            'quantity' => 'required|integer|min:1',
+            'date_purchased' => 'required|date',
+            'date_acquired' => 'required|date',
+        ]);
 
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation error',
-                'errors' => $e->errors()
-            ], 422);
-            
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Server error: '.$e->getMessage()
-            ], 500);
-        }
+    
+        $item = Item::create([
+            'categoryID'      => $validated['category_id'],
+            'brandID'         => $validated['brand_id'],
+            'unitID'          => $validated['unit_id'],
+            'serial_number'   => $request->serial_number,
+            'quantity'        => $request->quantity,
+            'equipment_status'=> 0,
+            'date_purchased'  => $request->date_purchased,
+            'date_acquired'   => $request->date_acquired,
+        ]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Item added successfully',
+            'data' => $item
+        ]);
+
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Validation error',
+            'errors' => $e->errors()
+        ], 422);
+        
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Server error: '.$e->getMessage()
+        ], 500);
     }
+}
 
     //Update Item
     public function edit($id)

@@ -106,6 +106,17 @@ public function index(Request $request)
             'assigned_by' => $employee->employee_number,
         ]);
 
+        Item::create([
+            'categoryID'      => $item->categoryID,
+            'brandID'         => $item->brandID,
+            'unitID'          => $item->unitID,
+            'serial_number'   => $item->serial_number,
+            'quantity'        => 1,
+            'equipment_status'=> 1,
+            'date_purchased'  => $item->date_purchased,
+            'date_acquired'   => $item->date_acquired,
+        ]);
+
         $itemStatus = Item::where('id',$item->id)->first();
         
         $itemStatus->quantity = $itemStatus->quantity - 1;
@@ -264,18 +275,29 @@ public function index(Request $request)
         // Find the assigned item by its ID
         $assignedItem = AssignedItem::findOrFail($id);
 
-      
+        
         // Update the item status to "returned"
         $assignedItem->item_status = 'returned';
         $assignedItem->save();
-
-        $itemStatus = Item::where('id',$assignedItem->itemID)->first();
-        
+         
+        $itemStatus = Item::where('id',$assignedItem->itemID)
+        ->first();
+         
         $itemStatus->equipment_status = 0;
         $itemStatus->quantity = $itemStatus->quantity + 1;
-
+        
         $itemStatus->save();
 
+        $itemsInUse = Item::where('serial_number', $itemStatus->serial_number)
+        ->where('equipment_status', 1)
+        ->get();
+    
+        foreach ($itemsInUse as $item) {
+            $item->quantity = max(0, $item->quantity - 1);
+            $item->save();
+        }
+        
+        
         ItemHistory::create([
             'employeeID' => $assignedItem->employeeID,
             'itemID' => $assignedItem->itemID,
@@ -294,6 +316,7 @@ public function index(Request $request)
             'activity_logs' => 'Confirmed Item',
         ]);
         $inStock = InStock::where('itemID', $assignedItem->itemID)
+        ->where('employeeID', $employee->id)
         ->where('status', 0)->first();
 
         //In Stock(Accountability for available items)
