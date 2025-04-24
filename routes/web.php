@@ -203,6 +203,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/items/{id}', [ItemController::class, 'destroy'])->name('items.destroy');
 
 
+    Route::put('/items/{item}/repair', [ItemController::class, 'repair'])->name('items.repair');
+
     Route::get('items/create', [ItemController::class, 'create'])->name('items.create');
     Route::post('items/store', [ItemController::class, 'store'])->name('items.store');
 

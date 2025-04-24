@@ -86,8 +86,6 @@
                 <tbody class="bg-white divide-y divide-gray-200">
                     @forelse ($items as $item)
                         @php
-                            if ($item->quantity <= 0) continue;
-
                             $category = $item->category ? $item->category->category_name : 'N/A';
                             $brand = $item->brand ? $item->brand->brand_name : 'N/A';
                             $unit = $item->unit ? $item->unit->unit_name : 'N/A';
@@ -95,7 +93,8 @@
                             $dateAcquired = \Carbon\Carbon::parse($item->date_acquired);
                             $assignedItem = $assigned_items->firstWhere('itemID', $item->id);
                             $user = ($item->equipment_status == 1 && $assignedItem) ? $assignedItem->employee->employee_number : 'None';
-
+                            
+                            // Status colors
                             $statusColor = [
                                 0 => 'bg-green-100 text-green-800',
                                 1 => 'bg-yellow-100 text-yellow-800',
@@ -130,6 +129,15 @@
                                             data-date-acquired="{{ $item->date_acquired }}">
                                         <i class="fas fa-edit"></i>
                                     </button>
+
+                                    @if($item->equipment_status == 2)
+                                        <button class="repair-item-btn text-green-600 hover:text-green-900 transition duration-200"
+                                                data-toggle="modal" data-target="#repairItemModal" 
+                                                data-id="{{ $item->id }}">
+                                            <i class="fas fa-tools"></i>
+                                        </button>
+                                    @endif
+
                                     <form action="{{ route('items.destroy', $item->id) }}" method="POST" class="delete-item-form">
                                         @csrf
                                         @method('DELETE')
@@ -140,12 +148,11 @@
                                 </div>
                             </td>
                         </tr>
-                        @empty
-                            <tr>
-                                <td colspan="9" class="px-6 py-4 text-center text-sm text-gray-500">No items found</td>
-                            </tr>
+                    @empty
+                        <tr>
+                            <td colspan="9" class="px-6 py-4 text-center text-sm text-gray-500">No items found</td>
+                        </tr>
                     @endforelse
-
                 </tbody>
             </table>
         </div>
@@ -232,6 +239,15 @@
                                 data-date-acquired="{{ $item->date_acquired }}">
                             <i class="fas fa-edit mr-1"></i> Edit
                         </button>
+
+                        @if($item->equipment_status == 2)
+                            <button class="repair-item-btn text-green-600 hover:text-green-800 transition duration-200"
+                                    data-toggle="modal" data-target="#repairItemModal" 
+                                    data-id="{{ $item->id }}">
+                                <i class="fas fa-tools mr-1"></i> Repair
+                            </button>
+                        @endif
+
                         <form class="delete-item-form" action="{{ route('items.destroy', $item->id) }}" method="POST">
                             @csrf
                             @method('DELETE')
@@ -253,172 +269,218 @@
 </div>
 
 <!-- Add Item Modal -->
-<div class="modal fade" id="addItemModal" tabindex="-1" role="dialog" aria-labelledby="addItemModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header bg-blue-600 text-white">
-                <h5 class="modal-title text-xl font-semibold" id="addItemModalLabel">Add New Inventory Item</h5>
-                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body p-6">
-                <form action="{{ route('items.store') }}" method="post" id="add-item-form">
-                    @csrf
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Category Field -->
-                        <div>
-                            <label for="category" class="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                            <select id="category" name="category_id" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                <option value="">Select Category</option>
-                                @foreach ($categories as $category)
-                                    <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>{{ $category->category_name }}</option>
-                                @endforeach
-                            </select>
+    <div class="modal fade" id="addItemModal" tabindex="-1" role="dialog" aria-labelledby="addItemModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-blue-600 text-white">
+                    <h5 class="modal-title text-xl font-semibold" id="addItemModalLabel">Add New Inventory Item</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body p-6">
+                    <form action="{{ route('items.store') }}" method="post" id="add-item-form">
+                        @csrf
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Category Field -->
+                            <div>
+                                <label for="category" class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                                <select id="category" name="category_id" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <option value="">Select Category</option>
+                                    @foreach ($categories as $category)
+                                        <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>{{ $category->category_name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <!-- Brand Field -->
+                            <div id="brand-container">
+                                <label for="brand" class="block text-sm font-medium text-gray-700 mb-1">Brand</label>
+                                <select id="brand" name="brand_id" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <option value="">Select Brand</option>
+                                </select>
+                            </div>
+
+                            <!-- Unit Field -->
+                            <div id="unit-container">
+                                <label for="unit" class="block text-sm font-medium text-gray-700 mb-1">Unit</label>
+                                <select id="unit" name="unit_id" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <option value="">Select Unit</option>
+                                </select>
+                            </div>
+
+                            <!-- Serial Number Field -->
+                            <div>
+                                <label for="serial_number" class="block text-sm font-medium text-gray-700 mb-1">Serial Number</label>
+                                <input type="text" id="serial_number" name="serial_number" value="{{ old('serial_number') }}" 
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                            </div>  
+
+                            <div>
+                                <label for="quantity" class="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
+                                <input type="number" id="quantity" name="quantity" value="{{ old('quantity') }}" 
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                    required min="1">
+                            </div>
+
+
+                            <!-- Date Purchased Field -->
+                            <div>
+                                <label for="date_purchased" class="block text-sm font-medium text-gray-700 mb-1">Date Purchased</label>
+                                <input type="date" id="date_purchased" name="date_purchased" value="{{ old('date_purchased') }}" 
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                            </div>
+
+                            <!-- Date Acquired Field -->
+                            <div>
+                                <label for="date_acquired" class="block text-sm font-medium text-gray-700 mb-1">Date Acquired</label>
+                                <input type="date" id="date_acquired" name="date_acquired" value="{{ old('date_acquired') }}" 
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                            </div>
                         </div>
 
-                        <!-- Brand Field -->
-                        <div id="brand-container">
-                            <label for="brand" class="block text-sm font-medium text-gray-700 mb-1">Brand</label>
-                            <select id="brand" name="brand_id" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                <option value="">Select Brand</option>
-                            </select>
+                        <div class="mt-6 flex justify-end space-x-3">
+                            <button type="button" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition duration-200" data-dismiss="modal">Cancel</button>
+                            <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-md shadow hover:bg-blue-700 transition duration-200">Add Item</button>
                         </div>
-
-                        <!-- Unit Field -->
-                        <div id="unit-container">
-                            <label for="unit" class="block text-sm font-medium text-gray-700 mb-1">Unit</label>
-                            <select id="unit" name="unit_id" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                <option value="">Select Unit</option>
-                            </select>
-                        </div>
-
-                        <!-- Serial Number Field -->
-                        <div>
-                            <label for="serial_number" class="block text-sm font-medium text-gray-700 mb-1">Serial Number</label>
-                            <input type="text" id="serial_number" name="serial_number" value="{{ old('serial_number') }}" 
-                                   class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
-                        </div>  
-
-                        <div>
-                            <label for="quantity" class="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
-                            <input type="number" id="quantity" name="quantity" value="{{ old('quantity') }}" 
-                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-                                required min="1">
-                        </div>
-
-
-                        <!-- Date Purchased Field -->
-                        <div>
-                            <label for="date_purchased" class="block text-sm font-medium text-gray-700 mb-1">Date Purchased</label>
-                            <input type="date" id="date_purchased" name="date_purchased" value="{{ old('date_purchased') }}" 
-                                   class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
-                        </div>
-
-                        <!-- Date Acquired Field -->
-                        <div>
-                            <label for="date_acquired" class="block text-sm font-medium text-gray-700 mb-1">Date Acquired</label>
-                            <input type="date" id="date_acquired" name="date_acquired" value="{{ old('date_acquired') }}" 
-                                   class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
-                        </div>
-                    </div>
-
-                    <div class="mt-6 flex justify-end space-x-3">
-                        <button type="button" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition duration-200" data-dismiss="modal">Cancel</button>
-                        <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-md shadow hover:bg-blue-700 transition duration-200">Add Item</button>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 <!-- Edit Item Modal -->
-<div class="modal fade" id="editItemModal" tabindex="-1" role="dialog" aria-labelledby="editItemModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header bg-blue-600 text-white">
-                <h5 class="modal-title text-xl font-semibold" id="editItemModalLabel">Edit Inventory Item</h5>
-                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body p-6">
-                <form action="" method="POST" id="edit-item-form">
-                    @csrf
-                    @method('PUT')
-                    <input type="hidden" name="id" id="edit-item-id">
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Category Field -->
-                        <div>
-                            <label for="edit-category" class="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                            <select id="edit-category" name="category_id" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                <option value="">Select Category</option>
-                                @foreach ($categories as $category)
-                                    <option value="{{ $category->id }}">{{ $category->category_name }}</option>
-                                @endforeach
-                            </select>
+    <div class="modal fade" id="editItemModal" tabindex="-1" role="dialog" aria-labelledby="editItemModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-blue-600 text-white">
+                    <h5 class="modal-title text-xl font-semibold" id="editItemModalLabel">Edit Inventory Item</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body p-6">
+                    <form action="" method="POST" id="edit-item-form">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" name="id" id="edit-item-id">
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Category Field -->
+                            <div>
+                                <label for="edit-category" class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                                <select id="edit-category" name="category_id" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <option value="">Select Category</option>
+                                    @foreach ($categories as $category)
+                                        <option value="{{ $category->id }}">{{ $category->category_name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <!-- Brand Field -->
+                            <div>
+                                <label for="edit-brand" class="block text-sm font-medium text-gray-700 mb-1">Brand</label>
+                                <select id="edit-brand" name="brand_id" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <option value="">Select Brand</option>
+                                </select>
+                            </div>
+
+                            <!-- Unit Field -->
+                            <div>
+                                <label for="edit-unit" class="block text-sm font-medium text-gray-700 mb-1">Unit</label>
+                                <select id="edit-unit" name="unit_id" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <option value="">Select Unit</option>
+                                </select>
+                            </div>
+
+                            <!-- Serial Number Field -->
+                            <div>
+                                <label for="edit-serial_number" class="block text-sm font-medium text-gray-700 mb-1">Serial Number</label>
+                                <input type="text" id="edit-serial_number" name="serial_number" 
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                            </div>
+
+                            <!-- Quantity Field -->
+                            <div>
+                                <label for="edit-quantity" class="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
+                                <input type="number" id="edit-quantity" name="quantity" 
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                            </div>
+
+                            <!-- Date Purchased Field -->
+                            <div>
+                                <label for="edit-date_purchased" class="block text-sm font-medium text-gray-700 mb-1">Date Purchased</label>
+                                <input type="date" id="edit-date_purchased" name="date_purchased" 
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                            </div>
+
+                            <!-- Date Acquired Field -->
+                            <div>
+                                <label for="edit-date_acquired" class="block text-sm font-medium text-gray-700 mb-1">Date Acquired</label>
+                                <input type="date" id="edit-date_acquired" name="date_acquired" 
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                            </div>
                         </div>
 
-                        <!-- Brand Field -->
-                        <div>
-                            <label for="edit-brand" class="block text-sm font-medium text-gray-700 mb-1">Brand</label>
-                            <select id="edit-brand" name="brand_id" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                <option value="">Select Brand</option>
-                            </select>
+                        <div class="mt-6 flex justify-end space-x-3">
+                            <button type="button" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition duration-200" data-dismiss="modal">Cancel</button>
+                            <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-md shadow hover:bg-blue-700 transition duration-200">Update Item</button>
                         </div>
-
-                        <!-- Unit Field -->
-                        <div>
-                            <label for="edit-unit" class="block text-sm font-medium text-gray-700 mb-1">Unit</label>
-                            <select id="edit-unit" name="unit_id" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                <option value="">Select Unit</option>
-                            </select>
-                        </div>
-
-                        <!-- Serial Number Field -->
-                        <div>
-                            <label for="edit-serial_number" class="block text-sm font-medium text-gray-700 mb-1">Serial Number</label>
-                            <input type="text" id="edit-serial_number" name="serial_number" 
-                                   class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
-                        </div>
-
-                        <!-- Quantity Field -->
-                        <div>
-                            <label for="edit-quantity" class="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
-                            <input type="number" id="edit-quantity" name="quantity" 
-                                   class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
-                        </div>
-
-                        <!-- Date Purchased Field -->
-                        <div>
-                            <label for="edit-date_purchased" class="block text-sm font-medium text-gray-700 mb-1">Date Purchased</label>
-                            <input type="date" id="edit-date_purchased" name="date_purchased" 
-                                   class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
-                        </div>
-
-                        <!-- Date Acquired Field -->
-                        <div>
-                            <label for="edit-date_acquired" class="block text-sm font-medium text-gray-700 mb-1">Date Acquired</label>
-                            <input type="date" id="edit-date_acquired" name="date_acquired" 
-                                   class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
-                        </div>
-                    </div>
-
-                    <div class="mt-6 flex justify-end space-x-3">
-                        <button type="button" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition duration-200" data-dismiss="modal">Cancel</button>
-                        <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-md shadow hover:bg-blue-700 transition duration-200">Update Item</button>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
+<!-- Repair Item Modal (Shared by both views) -->
+    <div class="modal fade" id="repairItemModal" tabindex="-1" role="dialog" aria-labelledby="repairItemModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-green-600 text-white">
+                    <h5 class="modal-title" id="repairItemModalLabel">Repair Item</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to mark this item as repaired and return it to available inventory?</p>
+                    <form id="repair-item-form" method="POST">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" name="equipment_status" value="0">
+                    
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 transition duration-200" data-dismiss="modal">Cancel</button>
+                    <button type="submit" form="repair-item-form" class="px-4 py-2 bg-green-600 text-white rounded-md shadow hover:bg-green-700 transition duration-200">
+                        <i class="fas fa-check-circle mr-1"></i> Confirm Repair
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle repair button clicks for both table and grid views
+        document.querySelectorAll('.repair-item-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const itemId = this.getAttribute('data-id');
+                const form = document.getElementById('repair-item-form');
+                form.action = `/items/${itemId}/repair`;
+            });
+        });
+
+        // Initialize Bootstrap tooltips if needed
+        if (typeof $ !== 'undefined') {
+            $('[data-toggle="tooltip"]').tooltip();
+        }
+    });
+</script>
 
 <script>
     // View Toggle Functionality
@@ -713,7 +775,7 @@
     });
 
     // Edit Item Modal Population - Updated Version
-$(document).on('click', '.edit-item-btn', function() {
+    $(document).on('click', '.edit-item-btn', function() {
     var itemId = $(this).data('id');
     var categoryId = $(this).data('category');
     var brandId = $(this).data('brand');
@@ -767,9 +829,9 @@ $(document).on('click', '.edit-item-btn', function() {
         });
     }
     
-    // Show the modal
-    $('#editItemModal').modal('show');
-});
+        // Show the modal
+         $('#editItemModal').modal('show');
+    });
 
     // Helper function to format date for input field
     function formatDateForInput(dateString) {

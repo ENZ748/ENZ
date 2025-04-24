@@ -366,6 +366,19 @@ public function index(Request $request)
 
         $items =  Item::where('id',$assignedItem->itemID)->first();
 
+
+        $itemsInUse = Item::where('id',$assignedItem->itemID)
+        ->where('equipment_status', 1)
+        ->first();
+
+        if($itemsInUse)
+        {
+            $itemsInUse->quantity = max(0, $itemsInUse->quantity - 1);
+            $itemsInUse->save();
+        }
+
+
+
         $itemsDamaged = Item::where('id',$assignedItem->itemID)
         ->where('equipment_status', 2)
         ->first();

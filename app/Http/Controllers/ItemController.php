@@ -17,6 +17,7 @@ class ItemController extends Controller
     {
     
         $items = Item::with(['category', 'brand', 'unit'])
+        ->where('quantity', '>', 0)
         ->orderBy('created_at', 'DESC')
         ->paginate(12);
 
@@ -171,6 +172,7 @@ public function store(Request $request)
     {
         // Start with a query that eagerly loads related models and orders by latest
         $itemsQuery = Item::with(['category', 'brand', 'unit'])
+                        ->where('quantity', '>', 0)
                         ->orderBy('created_at', 'DESC');
 
         // Initialize a message variable
@@ -222,6 +224,31 @@ public function store(Request $request)
             'selected_status' => $request->equipment_status ?? '3'
         ]);
     }
+
+    public function repair(Item $item)
+    {
+        $itemDamaged = $item; // Optional, or just use $item directly below
+    
+        $itemStatus = Item::where('categoryID', $item->categoryID)
+            ->where('brandID', $item->brandID)
+            ->where('unitID', $item->unitID)
+            ->where('serial_number', $item->serial_number)
+            ->where('equipment_status', 0)
+            ->first();
+    
+        if ($itemStatus) {
+            $item->quantity = max(0, $item->quantity - 1);
+            $item->save();
+    
+            $itemStatus->quantity += 1;
+            $itemStatus->save();
+        } else {
+            $item->update(['equipment_status' => 0]);
+        }
+    
+        return redirect()->back()->with('success', 'Item marked as repaired');
+    }
+    
 
 
 
