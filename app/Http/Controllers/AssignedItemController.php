@@ -97,16 +97,7 @@ public function index(Request $request)
         // Find the employee associated with the current user
         $employee = Employees::where('user_id', $user_id)->first();
 
-        // Create the new assigned item
-        AssignedItem::create([
-            'employeeID' => $validatedData['employeeID'],
-            'itemID' => $item->id,
-            'notes' => $validatedData['notes'],
-            'assigned_date' => $validatedData['assigned_date'],
-            'assigned_by' => $employee->employee_number,
-        ]);
-
-        Item::create([
+        $newItem = Item::create([
             'categoryID'      => $item->categoryID,
             'brandID'         => $item->brandID,
             'unitID'          => $item->unitID,
@@ -116,14 +107,20 @@ public function index(Request $request)
             'date_purchased'  => $item->date_purchased,
             'date_acquired'   => $item->date_acquired,
         ]);
+        
+        AssignedItem::create([
+            'employeeID'     => $validatedData['employeeID'],
+            'itemID'         => $newItem->id,
+            'notes'          => $validatedData['notes'],
+            'assigned_date'  => $validatedData['assigned_date'],
+            'assigned_by'    => $employee->employee_number,
+        ]);
+        
+
 
         $itemStatus = Item::where('id',$item->id)->first();
         
         $itemStatus->quantity = $itemStatus->quantity - 1;
-        if($itemStatus->quantity == 0)
-        {
-            $itemStatus->equipment_status = 1;  
-        }
         $itemStatus->save();
 
 
@@ -275,27 +272,39 @@ public function index(Request $request)
         // Find the assigned item by its ID
         $assignedItem = AssignedItem::findOrFail($id);
 
-        
-        // Update the item status to "returned"
-        $assignedItem->item_status = 'returned';
-        $assignedItem->save();
-         
-        $itemStatus = Item::where('id',$assignedItem->itemID)
+ 
+        $itemsInUse = Item::where('id',$assignedItem->itemID)
         ->first();
-         
-        $itemStatus->equipment_status = 0;
-        $itemStatus->quantity = $itemStatus->quantity + 1;
-        
-        $itemStatus->save();
 
-        $itemsInUse = Item::where('serial_number', $itemStatus->serial_number)
-        ->where('equipment_status', 1)
-        ->get();
-    
-        foreach ($itemsInUse as $item) {
-            $item->quantity = max(0, $item->quantity - 1);
-            $item->save();
+        $itemsInUse->quantity = max(0, $itemsInUse->quantity - 1);
+        $itemsInUse->save();
+
+        
+
+       // Find an available item with matching specifications
+        $itemStatus = Item::where('categoryID', $itemsInUse->categoryID)
+        ->where('brandID', $itemsInUse->brandID)
+        ->where('unitID', $itemsInUse->unitID)
+        ->where('serial_number', $itemsInUse->serial_number)
+        ->where('equipment_status', 0)
+        ->first();
+
+        // Check if item was found before updating
+        if ($itemStatus) {
+            $itemStatus->quantity += 1;  // More concise increment syntax
+            $itemStatus->save();
+        } else {
+            // Handle case where no matching available item was found
+            // You might want to log this or throw an exception
+            Log::warning('No available item found for incrementing quantity', [
+                'categoryID' => $itemsInUse->categoryID,
+                'brandID' => $itemsInUse->brandID,
+                'unitID' => $itemsInUse->unitID,
+                'serial_number' => $itemsInUse->serial_number
+            ]);
         }
+
+        
         
         
         ItemHistory::create([
@@ -308,7 +317,7 @@ public function index(Request $request)
         ]);
 
         $user = Auth::user(); 
-      
+        
         $userId = $user->id;  
         
         ActivityLog::create([
@@ -318,7 +327,7 @@ public function index(Request $request)
         $inStock = InStock::where('itemID', $assignedItem->itemID)
         ->where('employeeID', $employee->id)
         ->where('status', 0)->first();
-
+        
         //In Stock(Accountability for available items)
         if ($inStock) {
             // Update quantity if exists
@@ -328,20 +337,22 @@ public function index(Request $request)
             InStock::create([
                 'employeeID' => $employee->id,
                 'itemID' => $assignedItem->itemID,
-    
+                 
             ]);
         }
-
-        $in_use = InUse::where('itemID',$assignedItem->itemID)->first();
         
-        $in_use->status = 1;
-        $in_use->save();
 
-
+        
+               
+        // Update the item status to "returned"
+        $assignedItem->item_status = 'returned';
+        $assignedItem->save();
+         
+        
         // Redirect back with a success message
         return redirect()->route('assigned_items.index')->with('success', 'Item marked as returned.');
     }
-
+    
     public function markAsDamaged($id)
     {       
         // Get the current user ID
@@ -353,30 +364,30 @@ public function index(Request $request)
         // Find the assigned item by its ID
         $assignedItem = AssignedItem::findOrFail($id);
 
-      
-        // Update the item status to "returned"
-        $assignedItem->item_status = 'returned';
-        $assignedItem->save();
+        $items =  Item::where('id',$assignedItem->itemID)->first();
 
-        $itemStatus = Item::where('id',$assignedItem->itemID)->first();
-        
-        $itemStatus->equipment_status = 2;
-        $itemStatus->save();
+        $itemsDamaged = Item::where('id',$assignedItem->itemID)
+        ->where('equipment_status', 2)
+        ->first();
+        if($itemsDamaged)
+        {
+            $itemsDamaged->quantity += 1;
+            $itemsDamaged->save();
+        }else{
 
-        $damagedItem = DamagedItem::where('itemID', $assignedItem->itemID)->first();
-
-        if ($damagedItem) {
-            // Update quantity if exists
-            $damagedItem->quantity += 1;
-            $damagedItem->save();
-        } else {
-            // Create new record if doesn't exist
-            DamagedItem::create([
-                'itemID' => $assignedItem->itemID,
-                'quantity' => 1
+            Item::create([
+                'categoryID'      => $items->categoryID,
+                'brandID'         => $items->brandID,
+                'unitID'          => $items->unitID,
+                'serial_number'   => $items->serial_number,
+                'quantity'        => 1,
+                'equipment_status'=> 2,
+                'date_purchased'  => $items->date_purchased,
+                'date_acquired'   => $items->date_acquired,
             ]);
+
         }
-       
+        
 
         ItemHistory::create([
             'employeeID' => $assignedItem->employeeID,
@@ -403,12 +414,10 @@ public function index(Request $request)
 
         ]);
 
-        //In Use
-        $in_use = InUse::where('itemID',$assignedItem->itemID)->first();
+        // Update the item status to "returned"
+        $assignedItem->item_status = 'returned';
+        $assignedItem->save();
         
-        $in_use->status = 1;
-        $in_use->save();
-
 
         // Redirect back with a success message
         return redirect()->route('assigned_items.index')->with('success', 'Item marked as returned.');
