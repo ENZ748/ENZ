@@ -9,6 +9,7 @@ use App\Models\Item;
 use App\Models\Employees;
 use App\Models\AssignedItem;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class ChartController extends Controller
 {
@@ -18,114 +19,139 @@ class ChartController extends Controller
         $returned_items = AssignedItem::where('item_status', 'returned');
         return view('chart', compact('items'));
     }
+    
     public function showChart()
     {
-        //Equipment
-            $count_items = Item::count(); // Count all items
-
-            // Fetch item counts grouped by month
-            $monthlyCounts = Item::selectRaw('MONTH(created_at) as month, COUNT(*) as count')
-                ->groupBy('month')
-                ->orderBy('month')
-                ->pluck('count', 'month')
-                ->toArray();
-
-            // Define month labels
-            $labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
-            // Prepare dynamic values
-            $values = array_fill(0, 12, 0); // Default to 0 for all months
-            foreach ($monthlyCounts as $month => $count) {
-                $values[$month - 1] = $count; // Adjust index since array is 0-based
-            }
-
-            // Trim to required months if needed
-            $labels = array_slice($labels, 0, 5);
-            $values = array_slice($values, 0, 5);
-        //User
-            $count_users = Employees::count(); // Get total employee count
-
-            // Fetch employee counts grouped by month and year
-            $usermonthlyCounts = Employees::selectRaw('YEAR(created_at) as year, MONTH(created_at) as month, COUNT(*) as count')
-                ->groupBy('year', 'month')
-                ->orderBy('year')
-                ->orderBy('month')
-                ->pluck('count', 'month')
-                ->toArray();
-            
-            // Define month labels
-            $userLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-            
-            // Prepare dynamic values
-            $userValues = array_fill(0, 12, 0); // Default to 0 for all months
-            foreach ($usermonthlyCounts as $month => $count) {
-                $userValues[$month - 1] = $count; // Adjust index since array is 0-based
-            }
-            
-            // Trim to required months if needed
-            $userLabels = array_slice($userLabels, 0, 5);
-            $userValues = array_slice($userValues, 0, 5);
-
-        //Returned Items
-        $count_returned_items = AssignedItem::where('item_status', 'returned')->count();
-
-        // Fetch employee counts grouped by month and year, only where 'item_status' is 'returned'
-        $returnedItemsmonthlyCounts = AssignedItem::selectRaw('YEAR(updated_at) as year, MONTH(updated_at) as month, COUNT(*) as count')
-            ->where('item_status', 'returned')  // Make sure to filter by 'returned' status
-            ->groupBy('year', 'month')
-            ->orderBy('year')
-            ->orderBy('month')
-            ->pluck('count', 'month')
-            ->toArray();
+        $currentYear = Carbon::now()->year;
+        $lastUpdated = Carbon::now()->format('M d, Y');
         
-        // Define month labels
-        $returnedItemsLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        $yearlyData = [];
         
-        // Prepare dynamic values with default to 0 for all months
-        $returnedValues = array_fill(0, 12, 0); // Default to 0 for all months
-        
-        // Fill the returnedValues array based on the fetched counts
-        foreach ($returnedItemsmonthlyCounts as $month => $count) {
-            // Month comes from 1 (January) to 12 (December), adjust to 0-indexed array
-            $returnedValues[$month - 1] = $count;
+        // Generate data for each year from 2025 to 2030
+        for ($year = 2025; $year <= 2030; $year++) {
+            // Equipment data for the year
+            $equipmentData = $this->getEquipmentData($year);
+            
+            // User data for the year
+            $userData = $this->getUserData($year);
+            
+            // Returned items data for the year
+            $returnedData = $this->getReturnedData($year);
+            
+            // Damaged items data for the year
+            $damagedData = $this->getDamagedData($year);
+            
+            $yearlyData[$year] = [
+                'equipment' => $equipmentData,
+                'users' => $userData,
+                'returned' => $returnedData,
+                'damaged' => $damagedData
+            ];
         }
         
-        // Trim to the required months if needed (for example, only the first 5 months)
-        $returnedItemsLabels = array_slice($returnedItemsLabels, 0, 5);
-        $returnedValues = array_slice($returnedValues, 0, 5);
-        
-
-        //Damaged Items
-        $count_damagedItems = Item::where('equipment_status', 2)->count(); // Count all items
-
-        // Fetch item counts grouped by month
-        $damagedmonthlyCounts = Item::selectRaw('MONTH(updated_at) as month, COUNT(*) as count')
-            ->where('equipment_status', 2)
-            ->groupBy('month')
-            ->orderBy('month')
-            ->pluck('count', 'month')   
-            ->toArray();
-
-        // Define month labels
-        $damagedlabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
-        // Prepare dynamic values
-        $damagedvalues = array_fill(0, 12, 0); // Default to 0 for all months
-        foreach ($damagedmonthlyCounts as $month => $count) {
-            $damagedvalues[$month - 1] = $count; // Adjust index since array is 0-based
-        }
-
-        // Trim to required months if needed
-        $damagedlabels = array_slice($damagedlabels, 0, 5);
-        $damagedvalues = array_slice($damagedvalues, 0, 5);
-
-         
-
         $count_items = Item::all()->count();
         $count_categories = Category::all()->count();
         $count_returned_items = AssignedItem::where('item_status', 'returned')->count();
         $count_inStock = Item::where('equipment_status', 0)->count();
 
-        return view('chart', compact('labels', 'values','userLabels', 'userValues','returnedItemsLabels','returnedValues','damagedlabels','damagedvalues', 'count_items','count_categories','count_returned_items','count_inStock'));
+        return view('chart', compact(
+            'yearlyData',
+            'currentYear',
+            'lastUpdated',
+            'count_items',
+            'count_categories',
+            'count_returned_items',
+            'count_inStock'
+        ));
+    }
+    
+    private function getEquipmentData($year)
+    {
+        $monthlyCounts = Item::selectRaw('MONTH(created_at) as month, COUNT(*) as count')
+            ->whereYear('created_at', $year)
+            ->groupBy('month')
+            ->orderBy('month')
+            ->pluck('count', 'month')
+            ->toArray();
+
+        $labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        $values = array_fill(0, 12, 0);
+        
+        foreach ($monthlyCounts as $month => $count) {
+            $values[$month - 1] = $count;
+        }
+
+        return [
+            'labels' => array_slice($labels, 0, 5),
+            'values' => array_slice($values, 0, 5)
+        ];
+    }
+    
+    private function getUserData($year)
+    {
+        $monthlyCounts = Employees::selectRaw('MONTH(created_at) as month, COUNT(*) as count')
+            ->whereYear('created_at', $year)
+            ->groupBy('month')
+            ->orderBy('month')
+            ->pluck('count', 'month')
+            ->toArray();
+
+        $labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        $values = array_fill(0, 12, 0);
+        
+        foreach ($monthlyCounts as $month => $count) {
+            $values[$month - 1] = $count;
+        }
+
+        return [
+            'labels' => array_slice($labels, 0, 5),
+            'values' => array_slice($values, 0, 5)
+        ];
+    }
+    
+    private function getReturnedData($year)
+    {
+        $monthlyCounts = AssignedItem::selectRaw('MONTH(updated_at) as month, COUNT(*) as count')
+            ->where('item_status', 'returned')
+            ->whereYear('updated_at', $year)
+            ->groupBy('month')
+            ->orderBy('month')
+            ->pluck('count', 'month')
+            ->toArray();
+
+        $labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        $values = array_fill(0, 12, 0);
+        
+        foreach ($monthlyCounts as $month => $count) {
+            $values[$month - 1] = $count;
+        }
+
+        return [
+            'labels' => array_slice($labels, 0, 5),
+            'values' => array_slice($values, 0, 5)
+        ];
+    }
+    
+    private function getDamagedData($year)
+    {
+        $monthlyCounts = Item::selectRaw('MONTH(updated_at) as month, COUNT(*) as count')
+            ->where('equipment_status', 2)
+            ->whereYear('updated_at', $year)
+            ->groupBy('month')
+            ->orderBy('month')
+            ->pluck('count', 'month')
+            ->toArray();
+
+        $labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        $values = array_fill(0, 12, 0);
+        
+        foreach ($monthlyCounts as $month => $count) {
+            $values[$month - 1] = $count;
+        }
+
+        return [
+            'labels' => array_slice($labels, 0, 5),
+            'values' => array_slice($values, 0, 5)
+        ];
     }
 }

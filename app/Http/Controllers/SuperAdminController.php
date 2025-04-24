@@ -111,7 +111,7 @@ class SuperAdminController extends Controller
 
         ]);
 
-        return redirect()-> route('admin')->with('success', 'Equipment Updated successfully');  
+        return redirect()-> route('superAdmin.dashboard')->with('success', 'Equipment Updated successfully');  
 
     }   
 
@@ -128,7 +128,7 @@ class SuperAdminController extends Controller
         $employee->save();
 
         // Redirect back to the employee list page with a success message
-        return redirect()->route('admin')->with('success', 'Employee status updated successfully.');
+        return redirect()->route('superAdmin.dashboard')->with('success', 'Employee status updated successfully.');
     }
 
     public function activityLog()

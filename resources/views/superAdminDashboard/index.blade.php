@@ -1,48 +1,264 @@
 @extends('layouts.superAdminApp')
 
 @section('content')
-<h1>Hello Super Admin</h1>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<div class="container">
-    <div class="cards">
-        <!-- Card for Admin -->
-        <div class="card card-items" onclick="showModal('items')">
-            <div class="card-icon">
-            <span class="icon">📦</span>
+<div class="container mx-auto px-4 py-8">
+    <!-- Top Section: Card and Chart -->
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-16">
+        <!-- Admin Card -->
+        <div class="lg:col-span-1">
+            <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer h-40" 
+                 onclick="showModal('items')">
+                <div class="p-4 flex items-center h-full">
+                    <div class="bg-blue-100 p-3 rounded-full mr-4">
+                        <span class="text-blue-600 text-xl">👤</span>
+                    </div>
+                    <div>
+                        <h3 class="text-gray-500 text-xs font-medium uppercase tracking-wider">TOTAL ADMIN</h3>
+                        <p class="mt-1 text-2xl font-semibold text-gray-900">{{$count_admin}}</p>
+                    </div>
+                </div>
             </div>
-            <div class="card-title">TOTAL Admin</div>
-            <div class="card-value">{{$count_admin}}</div>
-            <div class="card-indicator indicator-up">
-            ↑ 12.3% from last month
+        </div>
+
+        <!-- Admin Chart -->
+        <div class="lg:col-span-3">
+            <div class="bg-white rounded-xl shadow-md overflow-hidden p-6 h-full">
+                <div class="flex justify-between items-center mb-9">
+                    <h3 class="text-lg font-medium text-gray-900">Admin Statistics</h3>
+                </div>
+                <div class="h-64">
+                    <canvas id="chart1"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Section: Admin Management (full width) -->
+    <div class="bg-white rounded-xl shadow-md overflow-hidden mb-8">
+        <div class="p-6">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+                <h1 class="text-2xl font-bold text-gray-800">Admin Management</h1>
+                <button class="btn btn-primary mt-4 md:mt-0" data-bs-toggle="modal" data-bs-target="#addEmployeeModal">
+                    Add Admin
+                </button>
+            </div>
+
+            @if ($errors->any())
+                <div class="alert alert-danger mb-6">
+                    <ul class="list-disc pl-5">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            @if($admins->isEmpty())
+                <div class="alert alert-warning">No admins found.</div>
+            @else
+                <div class="table-responsive">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">First Name</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Name</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employee Number</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hire Date</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            @foreach ($admins as $admin)
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $admin->first_name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $admin->last_name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $admin->employee_number }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $admin->department }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $admin->hire_date }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">    
+                                        <form action="{{ route('admin.toggleStatus', $admin->id) }}" method="POST" class="status-form">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button type="button" class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium {{ $admin->active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}"
+                                                onclick="confirmStatusChange(this)">
+                                                {{ $admin->active ? 'Active' : 'Inactive' }}
+                                            </button>
+                                        </form>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <button class="text-blue-600 hover:text-blue-900 mr-3" onclick="openEditModal({{ $admin }})">Edit</button>
+                                        <button class="text-blue-600 hover:text-blue-900" onclick="openAssignedModal({{ $admin->id }})">View</button>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @endif
+        </div>
+    </div>
+
+<!-- Dashboard Modal -->
+<div id="modal-items" class="modal hidden fixed inset-0 z-50 overflow-y-auto">
+    <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <!-- Background overlay -->
+        <div class="fixed inset-0 transition-opacity" onclick="closeModal('items')">
+            <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+        </div>
+        
+        <!-- Modal content -->
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-gray-10 bg-opacity-5">
+        <!-- Modal -->
+        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div class="sm:flex sm:items-start">
+                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Total Admin</h3>
+                        <div class="mt-2">
+                            <p class="text-sm text-gray-500 mb-2"><strong class="font-medium text-gray-700">Current Total:</strong> {{$count_admin}} Admin</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <button type="button" onclick="closeModal('items')" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                    Close
+                </button>
+            </div>
+        </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Employee Modal -->
+<div class="modal fade" id="addEmployeeModal" tabindex="-1" aria-labelledby="addEmployeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Admin</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addEmployeeForm" method="POST" action="{{ route('admin.store') }}" onsubmit="return confirmAddEmployee(event)">
+                    @csrf
+                    <div class="mb-3">
+                        <label class="form-label">First Name</label>
+                        <input type="text" name="first_name" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Last Name</label>
+                        <input type="text" name="last_name" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Employee Number</label>
+                        <input type="text" name="employee_number" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Department</label>
+                        <input type="text" name="department" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Hire Date</label>
+                        <input type="date" name="hire_date" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" name="email" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input type="password" id="password" name="password" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Confirm Password</label>
+                        <input type="password" id="confirm_password" name="password_confirmation" class="form-control" required>
+                        <span id="password_error" class="text-danger" style="display: none;">⚠ Passwords do not match.</span>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Admin</button>
+                </form>
             </div>
         </div>
     </div>
 </div>
 
-      <!-- Modal for Admin -->
-        <div id="modal-items" class="modal">
-            <div class="modal-content">
-            <span class="close-modal" onclick="closeModal('items')">&times;</span>
-            <h2 class="modal-title">Total Admin</h2>
-            <div class="modal-details">
-                <p><strong>Current Total:</strong> {{$count_admin}} Admin</p>
-
+<!-- Edit Employee Modal -->
+<div class="modal fade" id="editEmployeeModal" tabindex="-1" aria-labelledby="editEmployeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Admin</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+            <div class="modal-body">
+                <form id="editEmployeeForm" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <input type="hidden" id="edit_employee_id">
+                    <div class="mb-3">
+                        <label class="form-label">First Name</label>
+                        <input type="text" id="edit_first_name" name="first_name" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Last Name</label>
+                        <input type="text" id="edit_last_name" name="last_name" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Employee Number</label>
+                        <input type="text" id="edit_employee_number" name="employee_number" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Department</label>
+                        <input type="text" id="edit_department" name="department" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Hire Date</label>
+                        <input type="date" id="edit_hire_date" name="hire_date" class="form-control" required>
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="confirmUpdate()">Update Admin</button>
+                </form>
             </div>
         </div>
+    </div>
+</div>
 
-<div style="width: 45%; padding: 15px; border: 1px solid #ccc; border-radius: 8px; box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1); background: #fff; position: relative;">
-            <h3 style="position: absolute; top: 10px; left: 15px; margin: 0; font-size: 14px; color: #333;">Damaged Items</h3>
-            <canvas id="chart1" style="margin-top: 25px;"></canvas>
+<!-- Assigned Item Modal -->
+<div class="modal fade" id="editAssignedModal" tabindex="-1" aria-labelledby="editAssignedModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Assigned Items</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <table id="assignedItemsTable" class="table">
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Brand</th>
+                            <th>Unit</th>
+                            <th>Serial Number</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Assigned items will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 
-            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // Equipments
+    // Dashboard Chart
     const labels = @json($labels);
     const dataValues = @json($values);
 
-    // Function to create a chart (Make sure the chart name matches the one you're calling)
     function createChartDamagedItems(chartId, chartType, label, bgColor, borderColor) {
         const ctx = document.getElementById(chartId).getContext('2d');
         new Chart(ctx, {
@@ -64,17 +280,20 @@
                     y: {
                         beginAtZero: true
                     }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    }
                 }
             }
         });
     }
 
-    // Call the chart creation function correctly
     createChartDamagedItems('chart1', 'bar', 'Admin', 'rgba(54, 162, 235, 0.5)', 'rgba(54, 162, 235, 1)');
-</script>
 
-<script>
-     function showModal(type) {
+    // Dashboard Modal Functions
+    function showModal(type) {
       document.getElementById('modal-' + type).style.display = 'flex';
     }
     
@@ -91,225 +310,166 @@
         }
       }
     }
+
+    // Admin Management Functions
+    function openEditModal(admin) {
+        document.getElementById('edit_employee_id').value = admin.id;
+        document.getElementById('edit_first_name').value = admin.first_name;
+        document.getElementById('edit_last_name').value = admin.last_name;
+        document.getElementById('edit_employee_number').value = admin.employee_number;
+        document.getElementById('edit_department').value = admin.department;
+        document.getElementById('edit_hire_date').value = admin.hire_date;
+        document.getElementById('editEmployeeForm').action = `/admin/update/${admin.id}`;
+        new bootstrap.Modal(document.getElementById('editEmployeeModal')).show();
+    }
+
+    function confirmUpdate() {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "Do you want to update this admin's details?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, update it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: "Updating...",
+                    text: "Please wait while processing your request.",
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                setTimeout(() => {
+                    Swal.fire({
+                        title: "Success!",
+                        text: "Admin details have been updated.",
+                        icon: "success",
+                        confirmButtonColor: "#3085d6"
+                    }).then(() => {
+                        document.getElementById('editEmployeeForm').submit();
+                    });
+                }, 2000);
+            }
+        });
+    }
+
+    function openAssignedModal(adminId) {
+        fetch(`/employee/items/${adminId}`)
+            .then(response => response.json())
+            .then(assignedItems => {
+                const tableBody = document.querySelector('#assignedItemsTable tbody');
+                tableBody.innerHTML = '';
+
+                assignedItems.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.equipment_category}</td>
+                        <td>${item.equipment_brand}</td>
+                        <td>${item.equipment_unit}</td>
+                        <td>${item.equipment_serialNumber}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+
+                new bootstrap.Modal(document.getElementById('editAssignedModal')).show();
+            });
+    }
+
+    function confirmStatusChange(button) {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You are about to change the admin's status!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, change it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: "Processing...",
+                    text: "Please wait",
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                setTimeout(() => {
+                    Swal.fire({
+                        title: "Success!",
+                        text: "Admin status has been updated.",
+                        icon: "success",
+                        confirmButtonColor: "#3085d6"
+                    }).then(() => {
+                        button.closest('form').submit();
+                    });
+                }, 2000);
+            }
+        });
+    }
+
+    function validatePassword() {
+        var password = document.getElementById("password").value;
+        var confirmPassword = document.getElementById("confirm_password").value;
+        var errorSpan = document.getElementById("password_error");
+
+        if (password !== confirmPassword) {
+            errorSpan.style.display = "block";
+            return false;
+        } else {
+            errorSpan.style.display = "none";
+            return true;
+        }
+    }
+
+    function confirmAddEmployee(event) {
+        event.preventDefault();
+
+        if (!validatePassword()) {
+            return;
+        }
+
+        Swal.fire({
+            title: "Are you sure?",
+            text: "Do you want to add this admin?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, add admin!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: "Processing...",
+                    text: "Please wait while we add the admin.",
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                setTimeout(() => {
+                    Swal.fire({
+                        title: "Success!",
+                        text: "Admin has been added successfully.",
+                        icon: "success",
+                        confirmButtonColor: "#3085d6"
+                    }).then(() => {
+                        document.getElementById('addEmployeeForm').submit();
+                    });
+                }, 2000);
+            }
+        });
+    }
 </script>
 
-<style>
-    
-    /* From Uiverse.io by Lokesh1379 */ 
-    .parent {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      justify-content: right;
-      align-items: right;
-    }
-    
-    .child {
-      width: 50px;
-      height: 50px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      transform-style: preserve-3d;
-      transition: all 0.5s ease-in-out;
-      border-radius: 50%;
-      margin: 0 5px;
-    }
-    
-    .child:hover {
-      background-color: white;
-      background-position: -100px 100px, -100px 100px;
-      transform: rotate3d(0.5, 1, 0, 30deg);
-      transform: perspective(180px) rotateX(60deg) translateY(2px);
-      box-shadow: 0px 10px 10px rgb(1, 49, 182);
-    }
-    
-    button {
-      border: none;
-      background-color: transparent;
-      font-size: 20px;
-    }
-    
-    .button:hover {
-      width: inherit;
-      height: inherit;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      transform: translate3d(0px, 0px, 15px) perspective(180px) rotateX(-35deg) translateY(2px);
-      border-radius: 50%;
-    }
-  
-   {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    
-    body {
-      background-color: #f5f7fb;
-      padding: 20px;
-    }
-    
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      margin-bottom: 70px;
-    }
-    
-    .dashboard-title {
-      color: #333;
-      margin-bottom: 24px;
-      font-size: 28px;
-      font-weight: 600;
-    }
-    
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 20px;
-    }
-    
-    .card {
-      background-color: white;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-      cursor: pointer;
-      transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-    }
-    
-    .card:active {
-      transform: translateY(0);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-    
-    .card::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 4px;
-      background-color: #ddd;
-    }
-    
-    .card-items::after {
-      background-color: #4caf50;
-    }
-    
-    .card-categories::after {
-      background-color: #2196f3;
-    }
-    
-    .card-returned::after {
-      background-color: #ff9800;
-    }
-    
-    .card-stock::after {
-      background-color: #9c27b0;
-    }
-    
-    .card-icon {
-      margin-bottom: 15px;
-      font-size: 24px;
-    }
-    
-    .icon {
-      display: inline-block;
-      padding: 12px;
-      border-radius: 50%;
-      background-color: rgba(0, 0, 0, 0.05);
-    }
-    
-    .card-title {
-      color: #888;
-      font-size: 14px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 10px;
-    }
-    
-    .card-value {
-      color: #333;
-      font-size: 28px;
-      font-weight: 700;
-      margin-bottom: 10px;
-    }
-    
-    .card-indicator {
-      font-size: 14px;
-      font-weight: 500;
-    }
-    
-    .indicator-up {
-      color: #4caf50;
-    }
-    
-    .indicator-down {
-      color: #f44336;
-    }
-    
-    .indicator-neutral {
-      color: #607d8b;
-    }
-    
-    /* Modal styles for when cards are clicked */
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 999;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.5);
-      align-items: center;
-      justify-content: center;
-    }
-    
-    .modal-content {
-      background-color: white;
-      padding: 30px;
-      border-radius: 12px;
-      width: 90%;
-      max-width: 600px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-      position: relative;
-    }
-    
-    .close-modal {
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      font-size: 20px;
-      color: #888;
-      cursor: pointer;
-      transition: color 0.2s;
-    }
-    
-    .close-modal:hover {
-      color: #333;
-    }
-    
-    .modal-title {
-      font-size: 24px;
-      margin-bottom: 20px;
-      color: #333;
-    }
-    
-    .modal-details {
-      margin-bottom: 20px;
-    } 
-</style>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 @endsection
