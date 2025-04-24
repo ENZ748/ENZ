@@ -19,9 +19,7 @@
         <!-- Profile Header -->
         <div class="flex flex-col items-center mb-8">
             <div>
-                <button class="absolute bottom-0 right-0 bg-white rounded-full p-2 border-4 border-blue-100 shadow-md hover:bg-blue-50 transition-all">
                     <i class="fas fa-cog text-blue-600 text-sm"></i>
-                </button>
             </div>
             
             <div class="text-center">
@@ -30,8 +28,11 @@
                 </h1>
                 <p class="text-lg text-gray-600 max-w-2xl text-center">
                     Manage and track all your assigned company equipment in one place. 
-                    <span class="block text-sm text-gray-500 mt-1">Date and Time Now: {{ now()->setTimezone('Asia/Manila')->format('l, F j, Y h:i A') }}</span>
+                    <span class="block text-sm text-gray-500 mt-1">
+                    Date and Time Now: <span id="philippine-time">{{ now()->setTimezone('Asia/Manila')->format('l, F j, Y h:i A') }}</span>
+                    </span>
                 </p>
+
             </div>
         </div>
  
@@ -646,5 +647,36 @@ document.addEventListener('DOMContentLoaded', function() {
         arrow: true
     });
 });
+// Update the time every minute
+function updatePhilippineTime() {
+    const options = { 
+        timeZone: 'Asia/Manila',
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+    };
+    
+    const formatter = new Intl.DateTimeFormat('en-US', options);
+    const parts = formatter.formatToParts(new Date());
+    
+    let formattedDate = {};
+    parts.forEach(part => {
+        formattedDate[part.type] = part.value;
+    });
+    
+    const timeString = `${formattedDate.weekday}, ${formattedDate.month} ${formattedDate.day}, ${formattedDate.year} ${formattedDate.hour}:${formattedDate.minute} ${formattedDate.dayPeriod}`;
+    document.getElementById('philippine-time').textContent = timeString; 
+}
+
+// Initial call
+updatePhilippineTime();
+
+// Update every minute
+setInterval(updatePhilippineTime, 60000);
 </script>
 @endsection
+
