@@ -15,11 +15,11 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased">
-        @include('layouts.navigation')
+        @include('layouts.nav')
 
         <div class="min-h-screen bg-gray-100 flex">
 
-        @include('layouts.superAdminSidebar')
+
             <!-- Main Content Area -->
             <div class="flex-1 p-6">
                 <!-- Page Heading -->
