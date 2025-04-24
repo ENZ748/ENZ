@@ -18,23 +18,21 @@
     <div class="container mx-auto px-4 py-8 max-w-7xl">
         <!-- Profile Header -->
         <div class="flex flex-col items-center mb-8">
-            <div class="relative inline-block mb-4">
-                <div class="w-28 h-28 rounded-full bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center shadow-xl">
-                    <i class="fas fa-user text-5xl text-white"></i>
-                </div>
-                <button class="absolute bottom-0 right-0 bg-white rounded-full p-2 border-4 border-blue-100 shadow-md hover:bg-blue-50 transition-all">
+            <div>
                     <i class="fas fa-cog text-blue-600 text-sm"></i>
-                </button>
             </div>
             
             <div class="text-center">
                 <h1 class="text-4xl font-bold text-gray-800 mb-2">
                     <i class="fas fa-laptop-house text-blue-600 mr-3"></i>My Assets
                 </h1>
-                <p class="text-lg text-gray-600 max-w-2xl">
+                <p class="text-lg text-gray-600 max-w-2xl text-center">
                     Manage and track all your assigned company equipment in one place. 
-                    <span class="block text-sm text-gray-500 mt-1">Date and Time Now: {{ now()->setTimezone('Asia/Manila')->format('l, F j, Y h:i A') }}</span>
+                    <span class="block text-sm text-gray-500 mt-1">
+                    Date and Time Now: <span id="philippine-time">{{ now()->setTimezone('Asia/Manila')->format('l, F j, Y h:i A') }}</span>
+                    </span>
                 </p>
+
             </div>
         </div>
  
@@ -198,14 +196,6 @@
                     </div>
                     <h3 class="mt-2 text-lg font-medium text-gray-900">No assets assigned</h3>
                     <p class="mt-1 text-sm text-gray-500">You don't currently have any assets assigned to you.</p>
-                    <div class="mt-6">
-                        <button type="button" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                            <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                            </svg>
-                            Request Equipment
-                        </button>
-                    </div>
                 </div>
             @endif
         </div>
@@ -384,120 +374,157 @@
 </div>
 
 <style>
-    /* Dark mode styles */
-    .dark .bg-gradient-to-br {
-        background-image: linear-gradient(to bottom right, #1e3a8a, #1e1b4b);
+    /* Enhanced Dark Mode Styles */
+    .dark {
+        --tw-bg-opacity: 1;
+        --tw-text-opacity: 1;
     }
     
     .dark .bg-white {
         background-color: #1f2937 !important;
     }
     
-    .dark .text-gray-800 {
-        color: #f3f4f6 !important;
+    /* Text Colors */
+    .dark .text-gray-800,
+    .dark .text-gray-900 {
+        color: rgba(249, 250, 251, var(--tw-text-opacity)) !important;
+    }
+    
+    .dark .text-gray-700 {
+        color: rgba(229, 231, 235, var(--tw-text-opacity)) !important;
     }
     
     .dark .text-gray-600 {
-        color: #d1d5db !important;
+        color: rgba(209, 213, 219, var(--tw-text-opacity)) !important;
     }
     
     .dark .text-gray-500 {
-        color: #9ca3af !important;
+        color: rgba(156, 163, 175, var(--tw-text-opacity)) !important;
     }
     
+    /* Backgrounds */
     .dark .bg-gray-50 {
         background-color: #374151 !important;
     }
     
-    .dark .divide-gray-200 {
-        border-color: #4b5563 !important;
-    }
-    
-    .dark .border-gray-100 {
-        border-color: #374151 !important;
-    }
-    
-    .dark .hover\:bg-gray-50:hover {
-        background-color: #4b5563 !important;
-    }
-    
-    .dark .text-gray-900 {
-        color: #f9fafb !important;
-    }
-    
-    .dark .text-gray-700 {
-        color: #e5e7eb !important;
-    }
-    
+    /* Active Items (Blue) */
     .dark .bg-blue-100 {
         background-color: #1e40af !important;
     }
     
-    .dark .text-blue-600 {
+    .dark .text-blue-600,
+    .dark .text-blue-800 {
         color: #93c5fd !important;
     }
     
+    /* Returned Items (Green) */
     .dark .bg-green-100 {
         background-color: #065f46 !important;
     }
     
-    .dark .text-green-600 {
+    .dark .text-green-600,
+    .dark .text-green-800 {
         color: #6ee7b7 !important;
     }
     
+    /* Borders */
+    .dark .border-gray-100,
+    .dark .border-gray-200,
+    .dark .border-gray-300,
     .dark .border {
         border-color: #4b5563 !important;
     }
-
-    /* Smooth transitions for all interactive elements */
-    button, a, .transition-all {
-        transition: all 0.2s ease-in-out;
+    
+    /* Hover States */
+    .dark .hover\:bg-gray-50:hover {
+        background-color: #4b5563 !important;
     }
     
-    /* Card hover effects */
-    .hover\:-translate-y-1:hover {
-        transform: translateY(-4px);
+    /* Cards */
+    .dark .bg-white {
+        background-color: #1f2937 !important;
     }
     
-    /* Gradient text for headers */
-    .gradient-text {
-        background-clip: text;
-        -webkit-background-clip: text;
-        color: transparent;
-        background-image: linear-gradient(to right, #3b82f6, #6366f1);
+    /* Buttons */
+    .dark .bg-white {
+        background-color: #374151 !important;
     }
     
-    /* Custom scrollbar for tables */
-    .custom-scrollbar::-webkit-scrollbar {
-        height: 8px;
+    /* Tables */
+    .dark .divide-gray-200 {
+        border-color: #4b5563 !important;
     }
     
-    .custom-scrollbar::-webkit-scrollbar-track {
-        background: #f1f1f1;
-        border-radius: 10px;
+    /* Empty States */
+    .dark .text-gray-900 {
+        color: #f9fafb !important;
     }
     
-    .custom-scrollbar::-webkit-scrollbar-thumb {
-        background: #c1c1c1;
-        border-radius: 10px;
+    /* Ensure all text is visible in dark mode */
+    .dark {
+        color: #e5e7eb !important;
     }
     
-    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-        background: #a1a1a1;
+    /* Specific component overrides */
+    .dark .bg-gradient-to-br {
+        background-image: linear-gradient(to bottom right, #1e3a8a, #1e1b4b) !important;
     }
     
-    /* Pulse animation for empty states */
-    @keyframes pulse {
-        0%, 100% {
-            opacity: 1;
-        }
-        50% {
-            opacity: 0.5;
-        }
+    /* Form elements */
+    .dark input,
+    .dark select,
+    .dark textarea {
+        background-color: #1f2937 !important;
+        border-color: #4b5563 !important;
+        color: #f3f4f6 !important;
     }
     
-    .animate-pulse {
-        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    /* Links and buttons */
+    .dark a {
+        color: #93c5fd !important;
+    }
+    
+    .dark button {
+        color: #f3f4f6 !important;
+    }
+    
+    /* Shadows - make them more visible in dark mode */
+    .dark .shadow-lg {
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.25) !important;
+    }
+    
+    /* Status badges */
+    .dark .bg-blue-100 {
+        background-color: rgba(30, 64, 175, 0.2) !important;
+    }
+    
+    .dark .bg-green-100 {
+        background-color: rgba(6, 95, 70, 0.2) !important;
+    }
+    
+    /* Card headers */
+    .dark .bg-gradient-to-r.from-blue-600.to-indigo-700,
+    .dark .bg-gradient-to-r.from-green-600.to-teal-700 {
+        background-image: linear-gradient(to right, var(--tw-gradient-from), var(--tw-gradient-to)) !important;
+    }
+    
+    /* Ensure white text remains white in dark mode */
+    .dark .text-white {
+        color: white !important;
+    }
+    
+    /* Icons */
+    .dark svg:not([class*="text-"]) {
+        color: #e5e7eb !important;
+    }
+    
+    /* Override any specific text colors that might be too light */
+    .dark .text-blue-100 {
+        color: #bfdbfe !important;
+    }
+    
+    .dark .text-green-100 {
+        color: #a7f3d0 !important;
     }
 </style>
 
@@ -612,5 +639,36 @@ document.addEventListener('DOMContentLoaded', function() {
         arrow: true
     });
 });
+// Update the time every minute
+function updatePhilippineTime() {
+    const options = { 
+        timeZone: 'Asia/Manila',
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+    };
+    
+    const formatter = new Intl.DateTimeFormat('en-US', options);
+    const parts = formatter.formatToParts(new Date());
+    
+    let formattedDate = {};
+    parts.forEach(part => {
+        formattedDate[part.type] = part.value;
+    });
+    
+    const timeString = `${formattedDate.weekday}, ${formattedDate.month} ${formattedDate.day}, ${formattedDate.year} ${formattedDate.hour}:${formattedDate.minute} ${formattedDate.dayPeriod}`;
+    document.getElementById('philippine-time').textContent = timeString; 
+}
+
+// Initial call
+updatePhilippineTime();
+
+// Update every minute
+setInterval(updatePhilippineTime, 60000);
 </script>
 @endsection
+

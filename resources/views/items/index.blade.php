@@ -20,7 +20,7 @@
                 <i class="fas fa-plus-circle mr-2"></i> Add Item
             </button>
             <a href="{{ route('categories.index') }}" 
-               class="px-5 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg shadow-md transition duration-300 flex items-center">
+               class="px-5 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg shadow-md transition duration-300 flex items-center no-underline">
                 <i class="fas fa-tags mr-2"></i> View Categories
             </a>
         </div>

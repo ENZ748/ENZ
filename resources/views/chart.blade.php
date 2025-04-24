@@ -114,6 +114,19 @@
    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+    <!-- Year Selection Dropdown -->
+    <div class="flex justify-end my-3">
+    <select id="yearSelector" class="px-4 py-2 rounded-lg border border-gray-300 text-base mr-20">
+        @for($i = 2025; $i <= 2030; $i++)
+            <option value="{{ $i }}" {{ $i == $currentYear ? 'selected' : '' }}>{{ $i }}</option>
+        @endfor
+    </select>
+</div>
+
+
+
+
+
     <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;">
     <!-- Equipment Chart -->
     <div style="width: 45%; min-width: 300px; padding: 20px; border: 1px solid #e0e0e0; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); background: #fff;">
@@ -125,7 +138,7 @@
             <canvas id="chart1"></canvas>
         </div>
         <div style="text-align: right; margin-top: 8px; font-size: 12px; color: #777;">
-            Last updated: <?php echo date('M d, Y'); ?>
+            Last updated: {{ $lastUpdated }}
         </div>
     </div>
     
@@ -139,7 +152,7 @@
             <canvas id="chart2"></canvas>
         </div>
         <div style="text-align: right; margin-top: 8px; font-size: 12px; color: #777;">
-            Last updated: <?php echo date('M d, Y'); ?>
+            Last updated: {{ $lastUpdated }}
         </div>
     </div>
     
@@ -153,7 +166,7 @@
             <canvas id="chart3"></canvas>
         </div>
         <div style="text-align: right; margin-top: 8px; font-size: 12px; color: #777;">
-            Last updated: <?php echo date('M d, Y'); ?>
+            Last updated: {{ $lastUpdated }}
         </div>
     </div>
     
@@ -167,28 +180,35 @@
             <canvas id="chart4"></canvas>
         </div>
         <div style="text-align: right; margin-top: 8px; font-size: 12px; color: #777;">
-            Last updated: <?php echo date('M d, Y'); ?>
+            Last updated: {{ $lastUpdated }}
         </div>
     </div>
 </div>
 
 <script>
-    // Preserve all original data variables
-    // Equipments
-    const labels = @json($labels);
-    const dataValues = @json($values);
-
-    // Users
-    const userLabels = @json($userLabels);
-    const userdataValues = @json($userValues);
-
-    // Returned Items
-    const returnedItemsLabels = @json($returnedItemsLabels);
-    const returnedItemsdataValues = @json($returnedValues);
-
-    // Damaged Items
-    const damagedlabels = @json($damagedlabels);
-    const damagedItemsdataValues = @json($damagedvalues);
+    // Store all chart data by year
+    const chartDataByYear = {
+        @foreach($yearlyData as $year => $data)
+            {{ $year }}: {
+                equipment: {
+                    labels: @json($data['equipment']['labels']),
+                    values: @json($data['equipment']['values'])
+                },
+                users: {
+                    labels: @json($data['users']['labels']),
+                    values: @json($data['users']['values'])
+                },
+                returned: {
+                    labels: @json($data['returned']['labels']),
+                    values: @json($data['returned']['values'])
+                },
+                damaged: {
+                    labels: @json($data['damaged']['labels']),
+                    values: @json($data['damaged']['values'])
+                }
+            },
+        @endforeach
+    };
 
     // Modern color palette
     const colors = {
@@ -231,16 +251,22 @@
         }
     };
 
+    // Chart instances
+    let chart1, chart2, chart3, chart4;
+
     // Initialize all charts with consistent height
-    function initializeCharts() {
+    function initializeCharts(year) {
+        const dataForYear = chartDataByYear[year] || chartDataByYear[{{ $currentYear }}];
+        
         // Equipment Chart
-        new Chart(document.getElementById('chart1'), {
+        if (chart1) chart1.destroy();
+        chart1 = new Chart(document.getElementById('chart1'), {
             type: 'bar',
             data: {
-                labels: labels,
+                labels: dataForYear.equipment.labels,
                 datasets: [{
                     label: 'Equipment Count',
-                    data: dataValues,
+                    data: dataForYear.equipment.values,
                     backgroundColor: colors.blue.bg,
                     borderColor: colors.blue.border,
                     borderWidth: 1,
@@ -251,13 +277,14 @@
         });
 
         // User Chart
-        new Chart(document.getElementById('chart2'), {
+        if (chart2) chart2.destroy();
+        chart2 = new Chart(document.getElementById('chart2'), {
             type: 'line',
             data: {
-                labels: userLabels,
+                labels: dataForYear.users.labels,
                 datasets: [{
                     label: 'Active Users',
-                    data: userdataValues,
+                    data: dataForYear.users.values,
                     backgroundColor: colors.red.bg,
                     borderColor: colors.red.border,
                     borderWidth: 2,
@@ -269,13 +296,14 @@
         });
 
         // Returned Items Chart
-        new Chart(document.getElementById('chart3'), {
+        if (chart3) chart3.destroy();
+        chart3 = new Chart(document.getElementById('chart3'), {
             type: 'pie',
             data: {
-                labels: returnedItemsLabels,
+                labels: dataForYear.returned.labels,
                 datasets: [{
                     label: 'Returned Items',
-                    data: returnedItemsdataValues,
+                    data: dataForYear.returned.values,
                     backgroundColor: [
                         colors.teal.bg,
                         colors.purple.bg,
@@ -303,13 +331,14 @@
         });
 
         // Damaged Items Chart
-        new Chart(document.getElementById('chart4'), {
+        if (chart4) chart4.destroy();
+        chart4 = new Chart(document.getElementById('chart4'), {
             type: 'doughnut',
             data: {
-                labels: damagedlabels,
+                labels: dataForYear.damaged.labels,
                 datasets: [{
                     label: 'Damaged Items',
-                    data: damagedItemsdataValues,
+                    data: dataForYear.damaged.values,
                     backgroundColor: [
                         colors.orange.bg,
                         'rgba(201, 203, 207, 0.7)'
@@ -338,7 +367,15 @@
     }
 
     // Initialize charts when DOM is loaded
-    document.addEventListener('DOMContentLoaded', initializeCharts);
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeCharts({{ $currentYear }});
+        
+        // Add event listener for year selector
+        document.getElementById('yearSelector').addEventListener('change', function() {
+            const selectedYear = this.value;
+            initializeCharts(parseInt(selectedYear));
+        });
+    });
 </script> 
 
   <style>

@@ -169,7 +169,7 @@
             </div>
             
             <!-- iPhone -->
-            <div class="item-button" data-item="iphone" data-itemname="IPHONE" onclick="changeBackground('iphone')">
+            <div class="item-button" data-item="iphone" data-itemname="PHONE" onclick="changeBackground('iphone')">
                 <i class="fas fa-mobile-alt item-icon"></i>
             </div>
             
@@ -184,7 +184,7 @@
             </div>
             
             <!-- GoPro -->
-            <div class="item-button" data-item="gopro" data-itemname="GOPRO" onclick="changeBackground('gopro')">
+            <div class="item-button" data-item="gopro" data-itemname="CAMERA" onclick="changeBackground('gopro')">
                 <i class="fas fa-camera item-icon"></i>
             </div>
         </div>

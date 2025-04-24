@@ -7,19 +7,29 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
+        :root {
+            --sidebar-width: 220px;
+            --sidebar-bg: rgb(0, 116, 232);
+            --sidebar-hover: rgb(0, 90, 180);
+            --transition-speed: 0.3s;
+        }
+
         /* Sidebar Styling */
         .sidebar {
             position: fixed;
             top: 0;
             left: 0;
-            height: 100%;
-            width: 220px;
-            background-color: rgb(0, 116, 232);
-            padding-top: 20px;
+            height: 100vh;
+            width: var(--sidebar-width);
+            background-color: var(--sidebar-bg);
+            padding-top: 1.5rem;
             text-align: center;
-            transition: all 0.3s ease-in-out;
+            transition: all var(--transition-speed) ease;
             z-index: 1000;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
         }
+
         .sidebar img {
             width: 120px;
             height: 120px;
@@ -27,58 +37,72 @@
             padding: 10px;
             border-radius: 50%;
             display: block;
-            margin: 0 auto 20px;
+            margin: 0 auto 1.5rem;
+            object-fit: contain;
         }
-        .sidebar a {
+
+        .sidebar .nav {
+            width: 100%;
+        }
+
+        .sidebar .nav-item {
+            width: 100%;
+        }
+
+        .sidebar .nav-link {
             color: white;
-            padding: 10px 15px;
+            padding: 0.75rem 1.5rem;
             text-decoration: none;
             display: flex;
             align-items: center;
+            transition: all 0.2s ease;
+            border-left: 4px solid transparent;
+            margin: 0.25rem 0;
         }
-        .sidebar a i {
-            margin-right: 10px;
+
+        .sidebar .nav-link i {
+            width: 24px;
+            text-align: center;
+            margin-right: 12px;
+            font-size: 1.1rem;
         }
-        .sidebar a:hover {
-            background-color: rgb(0, 90, 180);
+
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link:focus {
+            background-color: var(--sidebar-hover);
+            border-left-color: white;
         }
-        
+
+        /* Content area */
         .content {
-            margin-left: 220px;
+            margin-left: var(--sidebar-width);
             padding: 20px;
-            transition: all 0.3s;
+            transition: margin var(--transition-speed) ease;
+            min-height: 100vh;
         }
 
-        /* Responsive Sidebar */
-        @media (max-width: 768px) {
-            .sidebar {
-                left: -220px;
-            }
-            .sidebar.open {
-                left: 0;
-            }
-            .content {
-                margin-left: 0;
-            }
-            .overlay {
-                display: block;
-            }
-        }
-
-        /* Button for toggling sidebar */
+        /* Toggle Button */
         .toggle-btn {
             position: fixed;
             top: 15px;
             left: 15px;
-            background-color: rgb(0, 116, 232);
+            background-color: var(--sidebar-bg);
             color: white;
             border: none;
-            padding: 10px;
+            border-radius: 4px;
+            padding: 10px 12px;
             cursor: pointer;
             z-index: 1100;
+            transition: all var(--transition-speed) ease;
+            display: none;
         }
 
-        /* Overlay to cover content when sidebar is open */
+        .toggle-btn:hover {
+            background-color: var(--sidebar-hover);
+            transform: scale(1.05);
+        }
+
+        /* Overlay */
         .overlay {
             position: fixed;
             top: 0;
@@ -86,66 +110,100 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.5);
-            display: none;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity var(--transition-speed) ease, visibility var(--transition-speed) ease;
             z-index: 999;
-        }
-        .overlay.show {
-            display: block;
+            cursor: pointer;
         }
 
-        /* Keep sidebar visible on larger screens */
+        .overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Responsive Behavior */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .content {
+                margin-left: 0;
+            }
+
+            .toggle-btn {
+                display: block;
+            }
+
+            .sidebar.open ~ .toggle-btn {
+                left: calc(var(--sidebar-width) + 15px);
+            }
+        }
+
+        /* Smooth transitions for larger screens */
         @media (min-width: 769px) {
             .sidebar {
-                left: 0;
-            }
-            .content {
-                margin-left: 220px;
+                transform: translateX(0);
             }
         }
     </style>
 </head>
 <body>
-
-
-    <!-- Toggle Button -->
-    <button class="toggle-btn d-md-none" onclick="toggleSidebar()">
+    <!-- Toggle Button (hidden on desktop) -->
+    <button class="toggle-btn" onclick="toggleSidebar()" aria-label="Toggle navigation">
         <i class="fas fa-bars"></i>
     </button>
 
     <!-- Sidebar -->
-    <div class="sidebar" id="sidebar">
-        <img src="EnzLogo.png" alt="Enz Logo">
+    <nav class="sidebar" id="sidebar">
+        <img src="{{ asset('EnzLogo.png') }}" alt="Enz Logo">
         <ul class="nav flex-column">
             <li class="nav-item">
                 <a class="nav-link" href="{{route('superAdmin.dashboard')}}">
                     <i class="fas fa-tachometer-alt"></i> Dashboard
                 </a>
             </li>
-
             <li class="nav-item">
                 <a class="nav-link" href="{{route('admin')}}">
                     <i class="fas fa-users"></i> Admin Accounts
                 </a>
             </li>
             <li class="nav-item">
-
-            <li class="nav-item">
                 <a class="nav-link" href="{{route('admin.activityLogs')}}">
                     <i class="fas fa-file-invoice"></i> Activity Logs
                 </a>
             </li>   
         </ul>
-    </div>
+    </nav>
 
-    <!-- Overlay -->
+    <!-- Overlay (for mobile) -->
     <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
 
     <script>
         function toggleSidebar() {
-            document.getElementById("sidebar").classList.toggle("open");
-            document.getElementById("overlay").classList.toggle("show");
+            const sidebar = document.getElementById("sidebar");
+            const overlay = document.getElementById("overlay");
+            
+            sidebar.classList.toggle("open");
+            overlay.classList.toggle("show");
+            
+            // Prevent scrolling when sidebar is open
+            document.body.style.overflow = sidebar.classList.contains("open") ? 'hidden' : '';
         }
-    </script>
 
+        // Close sidebar when clicking on a nav link (for mobile)
+        document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+            link.addEventListener('click', function() {
+                if (window.innerWidth <= 768) {
+                    toggleSidebar();
+                }
+            });
+        });
+    </script>
 </body>
 </html>
