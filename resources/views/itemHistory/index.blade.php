@@ -8,30 +8,33 @@
             </div>
         </div>
 
-            <!-- Search Bar -->
-            <div class="card-body">
-                <form action="{{ route('assigned-items.history') }}" method="GET">
-                    <div class="input-group w-50 mb-3">
-                        <input type="text" 
-                               name="search" 
-                               class="form-control border-0" 
-                               placeholder="Search by employee name, item, serial number..." 
-                               value="{{ request('search') }}">
-                        <div class="input-group-append">
-                            <button class="btn btn-primary" type="submit">
-                                <i class="fas fa-search"></i>
-                            </button>
-                        </div>
-                        @if(request('search'))
-                            <div class="input-group-append">
-                                <a href="{{ route('assigned-items.history') }}" class="btn btn-outline-secondary">
-                                    <i class="fas fa-times"></i>
-                                </a>
-                            </div>
-                        @endif
+    <!-- Search Bar -->
+    <div class="card-body">
+        <div class="d-flex justify-content-end">
+            <form action="{{ route('assigned-items.history') }}" method="GET">
+                <div class="input-group mb-3" style="width: 450px;">
+                    <input type="text" 
+                           name="search" 
+                           class="form-control border-0" 
+                           placeholder="Search by employee name, item, serial number..." 
+                           value="{{ request('search') }}">
+                    <div class="input-group-append">
+                        <button class="btn btn-primary" type="submit">
+                            <i class="fas fa-search"></i>Search
+                        </button>
                     </div>
-                </form>
-            </div>
+                    @if(request('search'))
+                        <div class="input-group-append">
+                            <a href="{{ route('assigned-items.history') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times"></i>
+                            </a>
+                        </div>
+                    @endif
+                </div>
+            </form>
+        </div>
+    </div>
+
 
         <div id="table-view" class="bg-white rounded-xl shadow-md overflow-hidden mb-8">
                 <div class="overflow-x-auto">
