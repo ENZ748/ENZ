@@ -57,9 +57,6 @@
                     Take control of your stock with our powerful yet simple inventory management system.
                 </p>
                 <div class="mt-10">
-                    <a href="{{ route('login') }}" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-indigo-700 bg-white hover:bg-indigo-50">
-                        Get Started
-                    </a>
                     <a href="#features" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-indigo-700 bg-white hover:bg-indigo-50">
                         Learn More
                     </a>

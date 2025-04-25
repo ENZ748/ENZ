@@ -164,8 +164,15 @@
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Department</label>
-                                <input type="text" name="department" class="form-control" required>
-                                <div class="invalid-feedback">Please provide a department.</div>
+                                <select name="department" class="form-select" required>
+                                    <option value="" selected disabled>Select Department</option>
+                                    <option value="IT">IT</option>
+                                    <option value="Marketing">Marketing</option>
+                                    <option value="HR">HR</option>
+                                    <option value="Sales">Sales</option>
+                                    <option value="Accounting">Accounting</option>
+                                </select>
+                                <div class="invalid-feedback">Please select a department.</div>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Hire Date</label>
@@ -176,8 +183,8 @@
                                 <label class="form-label">Email</label>
                                 <div class="input-group">
                                     <input type="email" name="email" class="form-control" required 
-                                           oninput="this.value = this.value.toLowerCase()"
-                                           onblur="validateEmail(this)">
+                                        oninput="this.value = this.value.toLowerCase()"
+                                        onblur="validateEmail(this)">
                                 </div>
                                 <div id="email_error" class="text-danger small mt-1" style="display: none;">
                                     <i class="bi bi-exclamation-triangle-fill"></i> Email must end with @enzconsultancy.com
@@ -243,8 +250,15 @@
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Department</label>
-                                <input type="text" id="edit_department" name="department" class="form-control" required>
-                                <div class="invalid-feedback">Please provide a department.</div>
+                                <select id="edit_department" name="department" class="form-select" required>
+                                    <option value="" disabled>Select Department</option>
+                                    <option value="IT">IT</option>
+                                    <option value="Marketing">Marketing</option>
+                                    <option value="HR">HR</option>
+                                    <option value="Sales">Sales</option>
+                                    <option value="Accounting">Accounting</option>
+                                </select>
+                                <div class="invalid-feedback">Please select a department.</div>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Hire Date</label>
@@ -255,7 +269,7 @@
                                 <label class="form-label">Email</label>
                                 <div class="input-group">
                                     <input type="email" id="edit_email" name="email" class="form-control" required
-                                           onblur="validateEditEmail(this)">
+                                        onblur="validateEditEmail(this)">
                                 </div>
                                 <div id="edit_email_error" class="text-danger small mt-1" style="display: none;">
                                     <i class="bi bi-exclamation-triangle-fill"></i> Email must end with @enzconsultancy.com
