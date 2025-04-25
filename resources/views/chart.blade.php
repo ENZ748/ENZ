@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-<!-- From Uiverse.io by Lokesh1379 -->
 <body> 
 <div class="container">
     <h1 class="dashboard-title">Inventory Overview</h1>
@@ -114,18 +113,16 @@
    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- Year Selection Dropdown -->
+    <!-- Year Selection Dropdown - Now sorted newest first -->
     <div class="flex justify-end my-3">
-    <select id="yearSelector" class="px-4 py-2 rounded-lg border border-gray-300 text-base mr-20">
-        @for($i = 2025; $i <= 2030; $i++)
-            <option value="{{ $i }}" {{ $i == $currentYear ? 'selected' : '' }}>{{ $i }}</option>
-        @endfor
-    </select>
-</div>
-
-
-
-
+        <select id="yearSelector" class="px-4 py-2 rounded-lg border border-gray-300 text-base mr-20">
+            @foreach(array_reverse(array_keys($yearlyData)) as $year)
+                <option value="{{ $year }}" {{ $year == $currentYear ? 'selected' : '' }}>
+                    {{ $year }}
+                </option>
+            @endforeach
+        </select>
+    </div>
 
     <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;">
     <!-- Equipment Chart -->
@@ -256,7 +253,12 @@
 
     // Initialize all charts with consistent height
     function initializeCharts(year) {
-        const dataForYear = chartDataByYear[year] || chartDataByYear[{{ $currentYear }}];
+        const dataForYear = chartDataByYear[year];
+        
+        if (!dataForYear) {
+            console.error(`No data available for year ${year}`);
+            return;
+        }
         
         // Equipment Chart
         if (chart1) chart1.destroy();
@@ -372,14 +374,13 @@
         
         // Add event listener for year selector
         document.getElementById('yearSelector').addEventListener('change', function() {
-            const selectedYear = this.value;
-            initializeCharts(parseInt(selectedYear));
+            const selectedYear = parseInt(this.value);
+            initializeCharts(selectedYear);
         });
     });
 </script> 
 
   <style>
-    
     /* From Uiverse.io by Lokesh1379 */ 
     .parent {
       width: 100%;

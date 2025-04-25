@@ -539,72 +539,73 @@
 
     // Form submission handlers
     function handleFormSubmission(form, successMessage) {
-        const formData = new FormData(form);
-        const url = form.getAttribute('action');
-        const method = form.getAttribute('method');
-        
-        // Show loading state
-        Swal.fire({
-            title: 'Processing...',
-            html: `
-                <div class="text-center py-3">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
-                    <p class="mt-2">Please wait while we process your request.</p>
+    const formData = new FormData(form);
+    const url = form.getAttribute('action');
+    const method = form.getAttribute('method');
+    
+    // Show loading state
+    Swal.fire({
+        title: 'Processing...',
+        html: `
+            <div class="text-center py-3">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
                 </div>
-            `,
-            showConfirmButton: false,
-            allowOutsideClick: false
-        });
+                <p class="mt-2">Please wait while we process your request.</p>
+            </div>
+        `,
+        showConfirmButton: false,
+        allowOutsideClick: false
+    });
 
-        fetch(url, {
-            method: method,
-            body: formData,
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                'Accept': 'application/json'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            Swal.close();
-            if (data.success) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Success!',
-                    text: successMessage,
-                    confirmButtonColor: '#3085d6',
-                    timer: 3000,
-                    timerProgressBar: true
-                }).then(() => {
-                    window.location.reload();
-                });
-            } else {
-                let errorMessage = data.message || 'An error occurred';
-                if (data.errors) {
-                    errorMessage = '';
-                    for (const [key, value] of Object.entries(data.errors)) {
-                        errorMessage += `${value.join('<br>')}<br>`;
-                    }
-                }
-                
-                Swal.fire({
-                    position: 'top-end',
-                    icon: 'error',
-                    title: errorMessage,
-                    showConfirmButton: false,
-                    timer: 5000,
-                    timerProgressBar: true,
-                    toast: true,
-                    background: '#fef2f2',
-                    iconColor: '#ef4444',
-                    color: '#991b1b'
-                });
-            }
-        })
-        .catch(error => {
-            Swal.close();
+    fetch(url, {
+        method: method,
+        body: formData,
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(errData => {
+                // Create custom error with status and data
+                const error = new Error('Request failed');
+                error.response = {
+                    status: response.status,
+                    data: errData
+                };
+                throw error;
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        Swal.close();
+        if (data.success) {
+            // Success case
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: successMessage,
+                confirmButtonColor: '#3085d6',
+                timer: 3000,
+                timerProgressBar: true
+            }).then(() => {
+                window.location.reload();
+            });
+        } else {
+            // Handle non-success responses
+            showSerialNumberError(data);
+        }
+    })
+    .catch(error => {
+        Swal.close();
+        if (error.response && error.response.status === 422) {
+            // Specifically handle validation errors
+            showSerialNumberError(error.response.data);
+        } else {
+            // Generic error handling
             Swal.fire({
                 position: 'top-end',
                 icon: 'error',
@@ -612,13 +613,33 @@
                 showConfirmButton: false,
                 timer: 5000,
                 timerProgressBar: true,
-                toast: true,
-                background: '#fef2f2',
-                iconColor: '#ef4444',
-                color: '#991b1b'
+                toast: true
             });
-        });
+        }
+    });
+}
+
+// Specialized function to display serial number error
+function showSerialNumberError(responseData) {
+    let errorMessage = responseData.message || 'Validation failed';
+    
+    // Check if this is a serial number error
+    if (responseData.errors && responseData.errors.serial_number) {
+        errorMessage = responseData.errors.serial_number[0]; // "Serial Number already exists"
     }
+    
+    Swal.fire({
+        position: 'top-end',
+        icon: 'error',
+        title: errorMessage,
+        showConfirmButton: false,
+        timer: 5000,
+        timerProgressBar: true,
+        toast: true,
+        background: '#fef2f2',
+        iconColor: '#ef4444'
+    });
+}
 
     // Add item form submission
     document.getElementById('add-item-form').addEventListener('submit', function(e) {

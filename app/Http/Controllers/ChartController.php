@@ -15,9 +15,9 @@ class ChartController extends Controller
 {
     public function index()
     {
-        $count_items = Item::all()->count();
-        $returned_items = AssignedItem::where('item_status', 'returned');
-        return view('chart', compact('items'));
+        $count_items = Item::count();
+        $returned_items = AssignedItem::where('item_status', 'returned')->count();
+        return view('chart', compact('count_items', 'returned_items'));
     }
     
     public function showChart()
@@ -25,32 +25,44 @@ class ChartController extends Controller
         $currentYear = Carbon::now()->year;
         $lastUpdated = Carbon::now()->format('M d, Y');
         
-        $yearlyData = [];
+        // Get all distinct years that have data in any relevant table
+        $itemYears = Item::selectRaw('YEAR(date_acquired) as year')
+            ->distinct()
+            ->pluck('year');
+            
+        $employeeYears = Employees::selectRaw('YEAR(created_at) as year')
+            ->distinct()
+            ->pluck('year');
+            
+        $assignedYears = AssignedItem::selectRaw('YEAR(updated_at) as year')
+            ->distinct()
+            ->pluck('year');
         
-        // Generate data for each year from 2025 to 2030
-        for ($year = 2025; $year <= 2030; $year++) {
-            // Equipment data for the year
-            $equipmentData = $this->getEquipmentData($year);
-            
-            // User data for the year
-            $userData = $this->getUserData($year);
-            
-            // Returned items data for the year
-            $returnedData = $this->getReturnedData($year);
-            
-            // Damaged items data for the year
-            $damagedData = $this->getDamagedData($year);
-            
+        // Combine all years and ensure uniqueness
+        $allYears = $itemYears->merge($employeeYears)
+                             ->merge($assignedYears)
+                             ->unique()
+                             ->sort()
+                             ->values();
+        
+        // Always include current year if not present
+        if (!$allYears->contains($currentYear)) {
+            $allYears->push($currentYear);
+            $allYears = $allYears->sort();
+        }
+        
+        $yearlyData = [];
+        foreach ($allYears as $year) {
             $yearlyData[$year] = [
-                'equipment' => $equipmentData,
-                'users' => $userData,
-                'returned' => $returnedData,
-                'damaged' => $damagedData
+                'equipment' => $this->getEquipmentData($year),
+                'users' => $this->getUserData($year),
+                'returned' => $this->getReturnedData($year),
+                'damaged' => $this->getDamagedData($year)
             ];
         }
         
-        $count_items = Item::all()->count();
-        $count_categories = Category::all()->count();
+        $count_items = Item::count();
+        $count_categories = Category::count();
         $count_returned_items = AssignedItem::where('item_status', 'returned')->count();
         $count_inStock = Item::where('equipment_status', 0)->count();
 
@@ -67,8 +79,8 @@ class ChartController extends Controller
     
     private function getEquipmentData($year)
     {
-        $monthlyCounts = Item::selectRaw('MONTH(created_at) as month, COUNT(*) as count')
-            ->whereYear('created_at', $year)
+        $monthlyCounts = Item::whereYear('date_acquired', $year)
+            ->selectRaw('MONTH(date_acquired) as month, COUNT(*) as count')
             ->groupBy('month')
             ->orderBy('month')
             ->pluck('count', 'month')
@@ -82,15 +94,15 @@ class ChartController extends Controller
         }
 
         return [
-            'labels' => array_slice($labels, 0, 5),
-            'values' => array_slice($values, 0, 5)
+            'labels' => $labels,
+            'values' => $values
         ];
     }
     
     private function getUserData($year)
     {
-        $monthlyCounts = Employees::selectRaw('MONTH(created_at) as month, COUNT(*) as count')
-            ->whereYear('created_at', $year)
+        $monthlyCounts = Employees::whereYear('created_at', $year)
+            ->selectRaw('MONTH(created_at) as month, COUNT(*) as count')
             ->groupBy('month')
             ->orderBy('month')
             ->pluck('count', 'month')
@@ -104,16 +116,16 @@ class ChartController extends Controller
         }
 
         return [
-            'labels' => array_slice($labels, 0, 5),
-            'values' => array_slice($values, 0, 5)
+            'labels' => $labels,
+            'values' => $values
         ];
     }
     
     private function getReturnedData($year)
     {
-        $monthlyCounts = AssignedItem::selectRaw('MONTH(updated_at) as month, COUNT(*) as count')
-            ->where('item_status', 'returned')
+        $monthlyCounts = AssignedItem::where('item_status', 'returned')
             ->whereYear('updated_at', $year)
+            ->selectRaw('MONTH(updated_at) as month, COUNT(*) as count')
             ->groupBy('month')
             ->orderBy('month')
             ->pluck('count', 'month')
@@ -127,16 +139,16 @@ class ChartController extends Controller
         }
 
         return [
-            'labels' => array_slice($labels, 0, 5),
-            'values' => array_slice($values, 0, 5)
+            'labels' => $labels,
+            'values' => $values
         ];
     }
     
     private function getDamagedData($year)
     {
-        $monthlyCounts = Item::selectRaw('MONTH(updated_at) as month, COUNT(*) as count')
-            ->where('equipment_status', 2)
+        $monthlyCounts = Item::where('equipment_status', 2)
             ->whereYear('updated_at', $year)
+            ->selectRaw('MONTH(updated_at) as month, COUNT(*) as count')
             ->groupBy('month')
             ->orderBy('month')
             ->pluck('count', 'month')
@@ -150,8 +162,8 @@ class ChartController extends Controller
         }
 
         return [
-            'labels' => array_slice($labels, 0, 5),
-            'values' => array_slice($values, 0, 5)
+            'labels' => $labels,
+            'values' => $values
         ];
     }
 }
