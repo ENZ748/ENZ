@@ -131,7 +131,7 @@ class AssignedItemController extends Controller
             $accountabilityItem->status = 1;
             $accountabilityItem->save();
         }
-    
+
         $assignedItem = Employees::where('id',$validatedData['employeeID'])->first();
         $user = Auth::user(); 
         $userId = $user->id;

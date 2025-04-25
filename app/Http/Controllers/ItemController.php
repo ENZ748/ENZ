@@ -51,17 +51,34 @@ public function store(Request $request)
             'date_acquired' => 'required|date',
         ]);
 
-    
-        $item = Item::create([
-            'categoryID'      => $validated['category_id'],
-            'brandID'         => $validated['brand_id'],
-            'unitID'          => $validated['unit_id'],
-            'serial_number'   => $request->serial_number,
-            'quantity'        => $request->quantity,
-            'equipment_status'=> 0,
-            'date_purchased'  => $request->date_purchased,
-            'date_acquired'   => $request->date_acquired,
-        ]);
+        $existingItem = Item::where('categoryID', $validated['category_id'])
+        ->where('brandID', $validated['brand_id'])
+        ->where('unitID', $validated['unit_id'])
+        ->where('serial_number', $validated['serial_number'])
+        ->first();
+
+        if ($existingItem) {
+            return response()->json([
+                "success" => false,
+                "message" => "Validation failed",
+                "errors" => [
+                    "serial_number" => ["Serial Number already exists!"]
+                ]
+            ], 422);
+        }
+        else{
+            $item = Item::create([
+                'categoryID'      => $validated['category_id'],
+                'brandID'         => $validated['brand_id'],
+                'unitID'          => $validated['unit_id'],
+                'serial_number'   => $request->serial_number,
+                'quantity'        => $request->quantity,
+                'equipment_status'=> 0,
+                'date_purchased'  => $request->date_purchased,
+                'date_acquired'   => $request->date_acquired,
+            ]);
+
+        }
         return response()->json([
             'success' => true,
             'message' => 'Item added successfully',
