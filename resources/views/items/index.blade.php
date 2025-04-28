@@ -31,13 +31,13 @@
         <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
             <!-- View Toggle -->
             <div class="flex space-x-2">
-                <button onclick="setView('table')" id="table-view-btn" 
-                        class="px-4 py-2 bg-blue-600 text-white rounded-md shadow hover:bg-blue-700 transition duration-200">
-                    <i class="fas fa-table mr-2"></i>Table View
-                </button>
                 <button onclick="setView('grid')" id="grid-view-btn" 
                         class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md shadow hover:bg-gray-300 transition duration-200">
                     <i class="fas fa-th-large mr-2"></i>Grid View
+                </button>
+                <button onclick="setView('table')" id="table-view-btn" 
+                        class="px-4 py-2 bg-blue-600 text-white rounded-md shadow hover:bg-blue-700 transition duration-200">
+                    <i class="fas fa-table mr-2"></i>Table View
                 </button>
             </div>
             
@@ -504,7 +504,7 @@
 
     // Initialize with table view
     document.addEventListener('DOMContentLoaded', function() {
-        setView('table');
+        setView('grid');
         
         // Show success message if exists
             // Show success message if session has success

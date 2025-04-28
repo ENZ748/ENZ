@@ -21,24 +21,27 @@
 
         <!-- Search Bar -->
         <div class="card-body">
-            <form action="{{ route('assigned_items.index') }}" method="GET">
-                <div class="input-group w-50">
-                    <input type="text" name="search" class="form-control" 
-                           placeholder="Search by employee, item, serial number..." 
-                           value="{{ request('search') }}">
-                    <div class="input-group-append">
-                        <button class="btn btn-primary" type="submit">
-                            <i class="fas fa-search"></i> Search
-                        </button>
-                        @if(request('search'))
-                            <a href="{{ route('assigned_items.index') }}" class="btn btn-outline-secondary">
-                                <i class="fas fa-times"></i> Clear
-                            </a>
-                        @endif
+            <div class="d-flex justify-content-end">
+                <form action="{{ route('assigned_items.index') }}" method="GET">
+                    <div class="input-group" style="width: 450px;">
+                        <input type="text" name="search" class="form-control" 
+                            placeholder="Search by employee, item, serial number..." 
+                            value="{{ request('search') }}">
+                        <div class="input-group-append">
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fas fa-search"></i> Search
+                            </button>
+                            @if(request('search'))
+                                <a href="{{ route('assigned_items.index') }}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-times"></i> Clear
+                                </a>
+                            @endif
+                        </div>
                     </div>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
+
             
         <div class="mb-4">
             <div class="d-flex justify-content-between align-items-center flex-wrap">
