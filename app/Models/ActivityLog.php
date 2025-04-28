@@ -19,4 +19,9 @@ class ActivityLog extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    public function employee()
+    {
+        return $this->belongsTo(Employees::class, 'user_id', 'user_id');
+    }
+
 }
