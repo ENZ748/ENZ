@@ -102,17 +102,28 @@ class AssignedItemController extends Controller
     
         $user_id = Auth::user()->id;
         $employee = Employees::where('user_id', $user_id)->first();
-    
-        $newItem = Item::create([
-            'categoryID'      => $item->categoryID,
-            'brandID'         => $item->brandID,
-            'unitID'          => $item->unitID,
-            'serial_number'   => $item->serial_number,
-            'quantity'        => 1,
-            'equipment_status'=> 1,
-            'date_purchased'  => $item->date_purchased,
-            'date_acquired'   => $item->date_acquired,
-        ]);
+        
+        $inUseItem = Item::where('serial_number', $validatedData['serial_number'])
+        ->where('equipment_status', 1)
+        ->where('quantity', 0) 
+        ->first();
+
+        if ($inUseItem) {
+            $inUseItem->increment('quantity');
+        }
+        else{
+        
+            $newItem = Item::create([
+                'categoryID'      => $item->categoryID,
+                'brandID'         => $item->brandID,
+                'unitID'          => $item->unitID,
+                'serial_number'   => $item->serial_number,
+                'quantity'        => 1,
+                'equipment_status'=> 1,
+                'date_purchased'  => $item->date_purchased,
+                'date_acquired'   => $item->date_acquired,
+            ]);
+        }
         
         AssignedItem::create([
             'employeeID'     => $validatedData['employeeID'],
@@ -263,7 +274,6 @@ class AssignedItemController extends Controller
         $itemsInUse->save();
 
         
-
        // Find an available item with matching specifications
         $itemStatus = Item::where('categoryID', $itemsInUse->categoryID)
         ->where('brandID', $itemsInUse->brandID)
