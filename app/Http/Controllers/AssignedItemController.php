@@ -137,12 +137,27 @@ class AssignedItemController extends Controller
         $itemStatus->quantity = $itemStatus->quantity - 1;
         $itemStatus->save();
     
-        $accountabilityItem = InStock::where('itemID', $item->id)->first();
+
+        $accountabilityItem = InStock::whereHas('item', function($query) use ($itemStatus) {
+            $query->where('categoryID', $itemStatus->categoryID)
+                  ->where('brandID', $itemStatus->brandID)
+                  ->where('unitID', $itemStatus->unitID)
+                  ->where('serial_number', $itemStatus->serial_number);
+        })
+        ->where('employeeID', $employee->id)
+        ->first();
+        
         if ($accountabilityItem) {
-            $accountabilityItem->status = 1;
+            if ($accountabilityItem->quantity != 0) {
+                $accountabilityItem->quantity -= 1; // Decrease quantity
+            } else {
+                $accountabilityItem->status = 1;  // Change status to 1
+            }
+            
+            // Save the model in both cases
             $accountabilityItem->save();
         }
-
+        
         $assignedItem = Employees::where('id',$validatedData['employeeID'])->first();
         $user = Auth::user(); 
         $userId = $user->id;
@@ -259,7 +274,7 @@ class AssignedItemController extends Controller
         // Get the current user ID
         $user_id = Auth::user()->id;
 
-        // Find the employee associated with the current user
+    // Find the employee associated with the current user
         $employee = Employees::where('user_id', $user_id)->first();
 
         
@@ -312,16 +327,25 @@ class AssignedItemController extends Controller
         $user = Auth::user(); 
         
         $userId = $user->id;  
-        
+        //Activity Logs
         ActivityLog::create([
             'user_id' => $userId,
             'activity_logs' => 'Confirmed Item',
         ]);
-        $inStock = InStock::where('itemID', $assignedItem->itemID)
+
+
+    //In Stock(Accountability for available items)
+        $inStock = InStock::whereHas('item', function($query) use ($itemsInUse) {
+            $query->where('categoryID', $itemsInUse->categoryID)
+                ->where('brandID', $itemsInUse->brandID)
+                ->where('unitID', $itemsInUse->unitID)
+                ->where('serial_number', $itemsInUse->serial_number);
+        })
         ->where('employeeID', $employee->id)
-        ->where('status', 0)->first();
+        ->where('status', 0)
+        ->first();
         
-        //In Stock(Accountability for available items)
+        
         if ($inStock) {
             // Update quantity if exists
             $inStock->quantity += 1;

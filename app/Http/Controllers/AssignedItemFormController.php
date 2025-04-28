@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Employees;
 use App\Models\AssignedItem;
 use App\Models\ItemHistory;
+
 class AssignedItemFormController extends Controller
 {
     public function index()
