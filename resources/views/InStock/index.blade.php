@@ -15,7 +15,6 @@
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Serial #</th>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
@@ -40,23 +39,6 @@
 
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-500">
                                         <span class="badge badge-success text-dark">Active</span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-500" class="text-right">
-                                        <div class="btn-group btn-group-sm" role="group">
-                                            <a href="{{ route('assigned_items.edit', $in_stock->id) }}" 
-                                               class="btn btn-outline-primary" title="Edit">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <button class="btn btn-outline-danger" data-toggle="modal" 
-                                                    data-target="#returnModal" 
-                                                    data-id="{{ $in_stock->id }}" 
-                                                    data-good="{{ route('assigned_items.good', $in_stock->id) }}" 
-                                                    data-damaged="{{ route('assigned_items.damaged', $in_stock->id) }}"
-                                                    title="Return">
-                                                <i class="fas fa-undo"></i>
-                                            </button>
-
-                                        </div>
                                     </td>
                                 </tr>
                             @empty
