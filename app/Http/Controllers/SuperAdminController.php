@@ -131,12 +131,87 @@ class SuperAdminController extends Controller
         return redirect()->route('superAdmin.dashboard')->with('success', 'Employee status updated successfully.');
     }
 
-    public function activityLog()
+    public function activityLog(Request $request)
     {
-        $activityLogs = ActivityLog::orderBy('created_at', 'desc')->get();
-
-        return view('activityLogs.index', compact('activityLogs'));
+        $search = $request->input('search');
         
+        $query = ActivityLog::with('employee')->orderBy('created_at', 'desc');
+        
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                // Search in activity logs text
+                $q->where('activity_logs', 'like', "%{$search}%")
+                  // Or search by employee number through the relationship
+                  ->orWhereHas('employee', function($q) use ($search) {
+                      $q->where('employee_number', 'like', "%{$search}%")
+                        // Search both first and last name as one combined search term
+                        ->orWhereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$search}%"]);
+                  });
+            });
+        }
+        
+        
+        $activityLogs = $query->paginate(15);
+    
+        return view('activityLogs.index', compact('activityLogs'));
     }
+
+    public function export(Request $request)
+{
+    $search = $request->input('search');
+    
+    $query = ActivityLog::with('employee')->orderBy('created_at', 'desc');
+    
+    if ($search) {
+        $query->where(function($q) use ($search) {
+            $q->where('activity_logs', 'like', "%{$search}%")
+              ->orWhereHas('employee', function($q) use ($search) {
+                  $q->where('employee_number', 'like', "%{$search}%")
+                    ->orWhere('first_name', 'like', "%{$search}%")
+                    ->orWhere('last_name', 'like', "%{$search}%");
+              });
+        });
+    }
+    
+    $fileName = 'activity_logs_' . date('Y-m-d') . '.csv';
+    
+    $headers = [
+        "Content-type"        => "text/csv",
+        "Content-Disposition" => "attachment; filename=$fileName",
+        "Pragma"              => "no-cache",
+        "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+        "Expires"             => "0"
+    ];
+
+    $callback = function() use ($query) {
+        $file = fopen('php://output', 'w');
+        
+        // Add CSV headers
+        fputcsv($file, [
+            'Employee Number', 
+            'Employee Name', 
+            'Activity', 
+            'Date', 
+            'Time'
+        ]);
+        
+        // Add data rows
+        $query->chunk(500, function($logs) use ($file) {
+            foreach ($logs as $log) {
+                fputcsv($file, [
+                    $log->employee->employee_number ?? 'N/A',
+                    ($log->employee->first_name ?? '') . ' ' . ($log->employee->last_name ?? ''),
+                    $log->activity_logs,
+                    $log->created_at->format('Y-m-d'),
+                    $log->created_at->format('H:i:s')
+                ]);
+            }
+        });
+        
+        fclose($file);
+    };
+
+    return response()->stream($callback, 200, $headers);
+}
 
 }

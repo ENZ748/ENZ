@@ -98,7 +98,8 @@ Route::middleware('auth')->group(function () {
 
     //Activity Logs
     Route::get('activity_logs', [SuperAdminController::class, 'activityLog'])->name('admin.activityLogs');
-
+    Route::get('/admin/activity-logs/export', [SuperAdminController::class, 'export'])
+    ->name('admin.activityLogs.export');
 //Admin
     Route::middleware([Admin::class])->get('/accountability', function () {
         return app('App\Http\Controllers\AssignController')->index();
