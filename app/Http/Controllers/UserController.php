@@ -22,111 +22,116 @@ class UserController extends Controller
             $query->where('usertype', 'user');
         })
         ->with(['users' => function ($query) {
-            $query->select('id', 'email', 'password');  // Select specific fields from the users table
+            $query->select('id', 'email', 'password');
         }])
         ->orderBy('hire_date', 'desc')
         ->get();
         
         return view('users.index', compact('employees'));
-        
     }
     
     public function create()
     {
-          return view('users.add');
+        return view('users.add');
     }
 
     public function store(Request $request)
     {
         $request->validate([
             'first_name' => 'required|string|max:255',
-            'last_name'=>  'required|string|max:255',
-            'employee_number' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'employee_number' => 'required|string|max:255|unique:employees,employee_number',
             'department' => 'required|string|max:255',
-            'hire_date' => 'required|date', 
+            'hire_date' => 'required|date',
+            'email' => 'required|string|email|max:255|ends_with:@enzconsultancy.com|unique:users,email',
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
+        // Create user first
+        $user = User::create([
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'usertype' => 'user',
+        ]);
+
+        // Then create employee with user_id
         Employees::create([
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'employee_number' => $request->employee_number,
             'department' => $request->department,
             'hire_date' => $request->hire_date,
-
+            'user_id' => $user->id,
         ]);
 
-        return redirect()-> route('user')->with('success', 'employee added  successfully');
-
+        return redirect()->route('user')->with('success', 'Employee added successfully');
     }
-    // Update
+
     public function edit($id)
     {
-         $employee = Employees::findOrFail($id);
-
-          return view('users.edit', compact('employee'));
+        $employee = Employees::with('users')->findOrFail($id);
+        return view('users.edit', compact('employee'));
     }
 
-    public function update(Request $request,$id)
+    public function update(Request $request, $id)
     {
-        $request->validate([
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        $employee = Employees::with('users')->findOrFail($id);
+        $user = $employee->users;
+
+        $rules = [
             'first_name' => 'required|string|max:255',
-            'last_name'=>  'required|string|max:255',
-            'employee_number' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'employee_number' => 'required|string|max:255|unique:employees,employee_number,'.$id,
             'department' => 'required|string|max:255',
-            'hire_date' => 'required|date', 
-        ]);
+            'hire_date' => 'required|date',
+        ];
 
-        $employee = Employees::findOrFail($id);
-        $employee->update([
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
-            'employee_number' => $request->employee_number,
-            'department' => $request->department,
-            'hire_date' => $request->hire_date,
-
-
-        ]);
-
-        $user = User::find($employee->user_id);
-
-        // Check if user exists
-        if ($user) {
-            // Update the user's email and password
-            $user->update([
-                'email' => $request->email,
-                'password' => Hash::make($request->password),
-            ]);
-        } else {
-            // Handle the case if the user is not found (optional)
-            return back()->withErrors(['error' => 'User not found!']);
+        // Only validate email if it's changed
+        if ($request->email !== $user->email) {
+            $rules['email'] = 'required|string|email|max:255|ends_with:@enzconsultancy.com|unique:users,email,'.$user->id;
         }
 
-        $user = Auth::user(); 
-      
-        $userId = $user->id;  
-        
-        ActivityLog::create([
-            'user_id' => $userId,
-            'activity_logs' => 'Update user account '. $request->employee_number,
+        // Only validate password if it's provided
+        if ($request->password) {
+            $rules['password'] = ['required', 'confirmed', Rules\Password::defaults()];
+        }
+
+        $validatedData = $request->validate($rules);
+
+        // Update employee data
+        $employee->update([
+            'first_name' => $validatedData['first_name'],
+            'last_name' => $validatedData['last_name'],
+            'employee_number' => $validatedData['employee_number'],
+            'department' => $validatedData['department'],
+            'hire_date' => $validatedData['hire_date'],
         ]);
 
-        return redirect()-> route('user')->with('success', 'Equipment Updated successfully');  
+        // Prepare user data for update
+        $userData = [];
+        if (isset($validatedData['email']) && $validatedData['email'] !== $user->email) {
+            $userData['email'] = $validatedData['email'];
+        }
+        if ($request->password) {
+            $userData['password'] = Hash::make($validatedData['password']);
+        }
 
-    }   
+        // Update user data if there are changes
+        if (!empty($userData)) {
+            $user->update($userData);
+        }
+
+        return redirect()->route('user')->with('success', 'Employee updated successfully');
+    }
 
     public function items($id)
     {
         $items = AssignedItem::where('employeeID', $id)
-        ->where('item_status', 'unreturned')->get();
+            ->where('item_status', 'unreturned')->get();
         
-        // Initialize an empty collection to hold the assigned items
         $assigned_items = collect();
     
-        // Loop through each accountability record
         foreach ($items as $item) {
-            // Retrieve employee and equipment details
             $equipment = Item::find($item->itemID);
             
             if ($equipment) {
@@ -135,45 +140,32 @@ class UserController extends Controller
                     'equipment_brand' => $equipment->brand->brand_name,
                     'equipment_unit' => $equipment->unit->unit_name,
                     'equipment_serialNumber' => $equipment->serial_number,
-
+                    'assigned_date' => $item->created_at->format('Y-m-d'),
                 ]);
             }
         }
     
-        // Return the assigned items to the view
         return response()->json($assigned_items);
     }
-    
-
 
     public function destroy($id)
     {
         Equipments::where('id', $id)->delete();
-
-        return redirect()-> route('Employees')->with('success', 'Equipment deleted successfully');  
+        return redirect()->route('Employees')->with('success', 'Equipment deleted successfully');  
     }
 
     public function toggleStatus($id)
     {
-        // Find the employee by ID
         $employee = Employees::findOrFail($id);
-
-        // Toggle the 'active' status
         $employee->active = !$employee->active;
-
-        // Save the updated employee record
         $employee->save();
 
-        $user = Auth::user(); 
-      
-        $userId = $user->id;  
-        
+        $user = Auth::user();      
         ActivityLog::create([
-            'user_id' => $userId,
+            'user_id' => $user->id,
             'activity_logs' => 'Update User Status',
         ]);
 
-        // Redirect back to the employee list page with a success message
         return redirect()->route('user')->with('success', 'Employee status updated successfully.');
     }
 }

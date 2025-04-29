@@ -97,7 +97,7 @@
                                                 </div>
                                                 <div>
                                                     <strong>{{ $employee->first_name }} {{ $employee->last_name }}</strong><br>
-                                                    <small class="text-muted">{{ $employee->email }}</small>
+                                                    <small class="text-muted">{{ $employee->users->email ?? 'N/A' }}</small>
                                                 </div>
                                             </div>
                                         </td>
@@ -367,10 +367,18 @@
         }
 
         function validateEditEmail(input) {
-            const email = input.value;
+            const originalEmail = input.getAttribute('data-original-email');
+            const currentEmail = input.value;
             const errorSpan = document.getElementById('edit_email_error');
             
-            if (!email.endsWith('@enzconsultancy.com')) {
+            // Skip validation if email hasn't changed
+            if (originalEmail && currentEmail === originalEmail) {
+                errorSpan.style.display = 'none';
+                input.classList.remove('is-invalid');
+                return true;
+            }
+            
+            if (!currentEmail.endsWith('@enzconsultancy.com')) {
                 errorSpan.style.display = 'block';
                 input.classList.add('is-invalid');
                 return false;
@@ -388,7 +396,14 @@
             document.getElementById('edit_employee_number').value = employee.employee_number || '';
             document.getElementById('edit_department').value = employee.department || '';
             document.getElementById('edit_hire_date').value = employee.hire_date || '';
-            document.getElementById('edit_email').value = employee.email || '';
+            document.getElementById('edit_email').value = employee.users?.email || '';
+            
+            // Store the original email in a data attribute
+            document.getElementById('edit_email').setAttribute('data-original-email', employee.users?.email || '');
+            
+            document.getElementById('edit_password').value = ''; // Clear password fields
+            document.getElementById('edit_confirm_password').value = '';
+            
             document.getElementById('editEmployeeForm').action = `/employee/update/${employee.id}`;
 
             // Clear any previous validation errors
@@ -400,11 +415,11 @@
 
         function validateEditForm() {
             // Reset all invalid states
-            const inputs = document.querySelectorAll('#editEmployeeForm input');
+            const requiredInputs = document.querySelectorAll('#editEmployeeForm input[required]');
             let isValid = true;
             
-            inputs.forEach(input => {
-                if (input.required && !input.value.trim()) {
+            requiredInputs.forEach(input => {
+                if (!input.value.trim()) {
                     input.classList.add('is-invalid');
                     isValid = false;
                 } else {
@@ -412,22 +427,30 @@
                 }
             });
 
-            // Validate email format
-            const emailValid = validateEditEmail(document.getElementById('edit_email'));
-            if (!emailValid) isValid = false;
+            // Validate email format only if it has changed
+            const emailInput = document.getElementById('edit_email');
+            const originalEmail = emailInput.getAttribute('data-original-email');
+            const currentEmail = emailInput.value;
+            
+            if (currentEmail !== originalEmail) {
+                const emailValid = validateEditEmail(emailInput);
+                if (!emailValid) isValid = false;
+            }
 
-            // Validate password match
+            // Validate password match only if password fields are not empty
             const password = document.getElementById("edit_password").value;
             const confirmPassword = document.getElementById("edit_confirm_password").value;
             const errorSpan = document.getElementById("edit_password_error");
 
-            if (password !== confirmPassword) {
-                errorSpan.style.display = "block";
-                document.getElementById("edit_confirm_password").classList.add('is-invalid');
-                isValid = false;
-            } else {
-                errorSpan.style.display = "none";
-                document.getElementById("edit_confirm_password").classList.remove('is-invalid');
+            if (password || confirmPassword) {
+                if (password !== confirmPassword) {
+                    errorSpan.style.display = "block";
+                    document.getElementById("edit_confirm_password").classList.add('is-invalid');
+                    isValid = false;
+                } else {
+                    errorSpan.style.display = "none";
+                    document.getElementById("edit_confirm_password").classList.remove('is-invalid');
+                }
             }
 
             if (isValid) {

@@ -5,25 +5,32 @@
 <h1 class="mb-4">In Stock</h1>
 
 <!-- Search Bar -->
-<div class="mb-4">
-    <form action="{{ route('instock') }}" method="GET">
-        <div class="flex">
-            <input type="text" name="search" placeholder="Search by employee, item, or serial..." 
-                   class="flex-grow px-4 py-2 border rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                   value="{{ request('search') }}">
-            <button type="submit" 
-                    class="bg-blue-500 text-white px-4 py-2 rounded-r-lg hover:bg-blue-600 transition duration-200">
-                Search
-            </button>
-            @if(request('search'))
-                <a href="{{ route('instock') }}" 
-                   class="ml-2 bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300 transition duration-200">
-                    Clear
-                </a>
-            @endif
+<div class="card-body">
+        <div class="d-flex justify-content-end">
+            <form action="{{ route('instock') }}" method="GET">
+                <div class="input-group mb-3" style="width: 450px;">
+                    <input type="text" 
+                           name="search" 
+                           class="form-control border-0" 
+                           placeholder="Search by employee name, item, serial number..." 
+                           value="{{ request('search') }}">
+                    <div class="input-group-append">
+                        <button class="btn btn-primary" type="submit">
+                            <i class="fas fa-search"></i>Search
+                        </button>
+                    </div>
+                    @if(request('search'))
+                        <div class="input-group-append">
+                            <a href="{{ route('instock') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times"></i>
+                            </a>
+                        </div>
+                    @endif
+                </div>
+            </form>
         </div>
-    </form>
-</div>
+    </div>
+
 
 <div id="table-view" class="bg-white rounded-xl shadow-md overflow-hidden mb-8">
                 <div class="overflow-x-auto">
