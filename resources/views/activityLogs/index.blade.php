@@ -1,7 +1,7 @@
 @extends('layouts.superAdminApp')
 
 @section('content')
-
+        
 <div class="container mx-auto px-4 py-8">
     <!-- Header Section -->
     <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
@@ -19,7 +19,7 @@
             Export Logs
         </a>
     </div>
-       
+        
     <!-- Search and Filter Section -->
     <div class="bg-white rounded-xl shadow-sm p-6 mb-8 border border-gray-100">
         <form action="{{ route('admin.activityLogs') }}" method="GET">
