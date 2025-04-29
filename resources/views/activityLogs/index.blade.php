@@ -19,7 +19,7 @@
             Export Logs
         </a>
     </div>
-        
+       
     <!-- Search and Filter Section -->
     <div class="bg-white rounded-xl shadow-sm p-6 mb-8 border border-gray-100">
         <form action="{{ route('admin.activityLogs') }}" method="GET">
