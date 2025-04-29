@@ -145,12 +145,39 @@
 <style>
     /* Enhanced Social Icons */
     .icon-container {
-        @apply h-8 w-8 rounded-full flex items-center justify-center transition-all duration-300;
+        height: 36px;
+        width: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .social-icon:hover .icon-container {
         transform: translateY(-2px) scale(1.1);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Remove all link borders and outlines */
+    a {
+        border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+        text-decoration: none !important;
+    }
+    
+    /* Remove focus states */
+    a:focus, a:active {
+        border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+    }
+    
+    /* Remove any bottom borders */
+    .border-b, .border-t {
+        border-bottom: none !important;
+        border-top: none !important;
     }
 
     /* Smooth transitions */
@@ -158,28 +185,33 @@
         transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    /* Gradient background animation */
+    /* Gradient animation */
+    .bg-gradient-to-r {
+        background-size: 200% 200%;
+        animation: gradientShift 10s ease infinite;
+    }
+
     @keyframes gradientShift {
         0% { background-position: 0% 50%; }
         50% { background-position: 100% 50%; }
         100% { background-position: 0% 50%; }
     }
 
-    .gradient-animate {
-        background-size: 200% 200%;
-        animation: gradientShift 8s ease infinite;
+    /* Focus styles */
+    button:focus, input:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
     }
 
-    /* Hover effects for dropdown */
-    .dropdown-hover:hover {
-        @apply bg-blue-600 text-white;
+    /* Smooth scrolling */
+    html {
+        scroll-behavior: smooth;
     }
 
-    /* Active state for mobile menu */
-    [x-cloak] { display: none !important; }
-
-    /* Focus styles for accessibility */
-    button:focus, a:focus {
-        @apply outline-none ring-2 ring-blue-300 ring-opacity-50;
+    /* Better font rendering */
+    body {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
     }
 </style>
