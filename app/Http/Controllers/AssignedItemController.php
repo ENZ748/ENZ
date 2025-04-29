@@ -103,16 +103,6 @@ class AssignedItemController extends Controller
         $user_id = Auth::user()->id;
         $employee = Employees::where('user_id', $user_id)->first();
         
-        $inUseItem = Item::where('serial_number', $validatedData['serial_number'])
-        ->where('equipment_status', 1)
-        ->where('quantity', 0) 
-        ->first();
-
-        if ($inUseItem) {
-            $inUseItem->increment('quantity');
-        }
-        else{
-        
             $newItem = Item::create([
                 'categoryID'      => $item->categoryID,
                 'brandID'         => $item->brandID,
@@ -123,7 +113,7 @@ class AssignedItemController extends Controller
                 'date_purchased'  => $item->date_purchased,
                 'date_acquired'   => $item->date_acquired,
             ]);
-        }
+        
         
         AssignedItem::create([
             'employeeID'     => $validatedData['employeeID'],
@@ -204,19 +194,79 @@ class AssignedItemController extends Controller
         ]);
     
         $assignedItem = AssignedItem::findOrFail($id);
+
+
+        $old_item = Item::where('id', $assignedItem->itemID)->first();
+
+        $update_InUse_item = Item::where('categoryID', $old_item->categoryID)
+            ->where('brandID', $old_item->brandID)
+            ->where('unitID', $old_item->unitID)
+            ->where('serial_number', $old_item->serial_number)
+            ->where('equipment_status', 1)
+            ->first();
+
+        if ($update_InUse_item) {
+            $update_InUse_item->quantity = 0;
+            $update_InUse_item->save();
+
+            $update_item = Item::where('categoryID', $old_item->categoryID)
+            ->where('brandID', $old_item->brandID)
+            ->where('unitID', $old_item->unitID)
+            ->where('serial_number', $old_item->serial_number)
+            ->where('equipment_status', 0)
+            ->first();
+            
+            if ($update_item) {
+                $update_item->quantity += 1;
+                $update_item->save();
+            }
+            
+            
+        }
+            
+            
         $item = Item::find($validatedData['serial_number']);
                 
         if (!$item) {
             return back()->withErrors(['serial_number' => 'The selected serial number is invalid.']);
         }
+
+
     
+       
+        $newItem = Item::create([
+            'categoryID'      => $item->categoryID,
+            'brandID'         => $item->brandID,
+            'unitID'          => $item->unitID,
+            'serial_number'   => $item->serial_number,
+            'quantity'        => 1,
+            'equipment_status'=> 1,
+            'date_purchased'  => $item->date_purchased,
+            'date_acquired'   => $item->date_acquired,
+        ]);
+
         $assignedItem->update([
             'employeeID' => $validatedData['employeeID'],
-            'itemID' => $item->id,
+            'itemID' => $newItem->id,
             'notes' => $validatedData['notes'],
             'assigned_date' => $validatedData['assigned_date'],
         ]);
-    
+
+        $itemStatus = Item::where('categoryID',$item->categoryID)
+        ->where('brandID',$item->brandID)
+        ->where('unitID',$item->unitID)
+        ->where('serial_number',$item->serial_number)
+        ->where('equipment_status', 0)
+        ->first();
+
+        if($itemStatus)
+        {
+            $itemStatus->quantity = $itemStatus->quantity - 1;
+            $itemStatus->save();
+        }
+       
+        
+
         $assignedEmployee = Employees::where('id',$validatedData['employeeID'])->first();
         $user = Auth::user(); 
         $userId = $user->id;  
@@ -276,7 +326,7 @@ class AssignedItemController extends Controller
 
     // Find the employee associated with the current user
         $employee = Employees::where('user_id', $user_id)->first();
-
+         
         
         // Find the assigned item by its ID
         $assignedItem = AssignedItem::findOrFail($id);

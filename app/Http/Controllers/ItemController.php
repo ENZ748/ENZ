@@ -15,7 +15,10 @@ class ItemController extends Controller
 {
     public function index()
     {
-    
+        Item::whereIn('equipment_status', [1, 2])
+        ->where('quantity', 0)
+        ->delete();
+
         $items = Item::with(['category', 'brand', 'unit'])
         ->where('quantity', '>', 0)
         ->orderBy('created_at', 'DESC')
@@ -24,6 +27,7 @@ class ItemController extends Controller
         $assigned_items = AssignedItem::all();
 
         $categories = Category::all();
+        
 
         return view('items.index', compact('items', 'categories','assigned_items'));
     }
@@ -187,6 +191,10 @@ public function store(Request $request)
 
     public function search(Request $request)
     {
+        Item::whereIn('equipment_status', [1, 2])
+        ->where('quantity', 0)
+        ->delete();
+        
         // Start with a query that eagerly loads related models and orders by latest
         $itemsQuery = Item::with(['category', 'brand', 'unit'])
                         ->where('quantity', '>', 0)
