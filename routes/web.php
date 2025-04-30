@@ -247,7 +247,6 @@ Route::middleware('auth')->group(function () {
     Route::get('confirm_return/{id}', [AssignedItemFormController::class, 'confirm_History'])->name('form.confirm_return');
     Route::get('confirm_accountability/{id}', [AssignedItemFormController::class, 'confirm_accountability'])->name('form.confirm_accountability');
 
-
 //InStock
     Route::get('InStock', [InStockController::class, 'index'])->name('instock');
 
