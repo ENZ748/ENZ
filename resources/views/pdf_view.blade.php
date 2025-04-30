@@ -11,6 +11,14 @@
             padding: 0;
             font-size: 12px;
         }
+        .logo-container {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .logo {
+            width: 150px; /* Medium size */
+            height: auto;
+        }
         h1 {
             text-align: center;
             font-size: 18px;
@@ -68,8 +76,10 @@
 </head>
 <body>
 
-<img src="data:image/png;base64,{{ $logo }}" alt="Logo" width="100">
-<h1>Accountability Form</h1>
+<div class="logo-container">
+    <img src="data:image/png;base64,{{ $logo }}" alt="Logo" class="logo">
+</div>
+<h1>ACCOUNTABILITY FORM</h1>
 
     <p><strong>Date:</strong> {{ \Carbon\Carbon::now()->format('M d, Y') }}</p>
     <p><strong>Issuance Number:</strong> ENZACT{{ \Carbon\Carbon::now()->format('Y') }}1</p>
@@ -112,14 +122,14 @@
         <!-- Employee Signature on the left -->
         <div class="signature-box">
             <div class="signature-line"></div>
-            <div class="signature-label">Employee's Signature</div>
+            <div class="signature-label">Signiture over printed name of the Employee's</div>
         </div>
 
         <!-- Manager Signature on the right -->
         <div class="signature-box">
             <div class="signature-name">Shaira Vae Sulit</div>
             <div class="signature-line"></div>
-            <div class="signature-label">Manager, People and Culture</div>
+            <div class="signature-label">Signiture over printed name of the Manager, People and Culture</div>
         </div>
     </div>
 

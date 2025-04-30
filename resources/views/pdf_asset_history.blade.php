@@ -12,10 +12,18 @@
             color: #333;
             background-color: #f8f8f8;
         }
+        .logo-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .logo {
+            width: 150px;
+            height: auto;
+        }
         .container {
-            padding: 30px;
+            padding: 20px;
             background-color: white;
-            margin: 20px auto;
+            margin: 10px auto;
             width: 90%;
             max-width: 800px;
             border-radius: 8px;
@@ -23,57 +31,66 @@
         }
         .header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             border-bottom: 2px solid #ddd;
-            padding-bottom: 20px;
+            padding-bottom: 15px;
         }
         .header h2 {
-            font-size: 28px;
+            font-size: 24px;
             font-weight: bold;
             color: #173753;
             margin: 10px 0;
         }
         .header p {
-            font-size: 16px;
+            font-size: 14px;
             color: #555;
+            margin: 5px 0;
         }
         .history-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            margin: 15px 0;
             border: 1px solid #ddd;
+            font-size: 12px;
         }
         .history-table th, .history-table td {
-            padding: 12px;
+            padding: 8px;
             border: 1px solid #ddd;
             text-align: left;
+            line-height: 1.2;
         }
         .history-table th {
             background-color: #173753;
             color: white;
             font-weight: bold;
+            padding: 8px;
         }
         .history-table td {
             background-color: #f9f9f9;
+            padding: 8px;
         }
         .history-table tr:nth-child(even) td {
             background-color: #f1f1f1;
         }
         .status {
             background-color: #6daedb;
-            padding: 8px;
+            padding: 4px 6px;
             border-radius: 4px;
             color: white;
             font-weight: bold;
+            font-size: 11px;
+            display: inline-block;
         }
         .notes {
             background-color: #2892d7;
-            padding: 8px;
+            padding: 4px 6px;
             border-radius: 4px;
             color: white;
+            font-size: 11px;
+            display: inline-block;
         }
         .signature-section {
-            margin-top: 40px;
+            margin-top: 30px;
             display: flex;
             justify-content: space-between;
             border-top: 2px solid #ddd;
@@ -82,28 +99,36 @@
         .signature-box {
             width: 45%;
             text-align: center;
+            margin-top: 50px;
         }
-        .signature-box .signature-line {
-            border-top: 1px solid #333;
-            width: 100%;
-            margin: 20px auto;
+        .signature-box .signature-space {
+            height: 60px;
+            border-bottom: 1px solid #333;
+            margin-bottom: 5px;
         }
         .signature-label {
-            font-size: 14px;
+            font-size: 12px;
             color: #555;
         }
-        .signature-name {
-            font-size: 16px;
-            font-weight: bold;
-            color: #173753;
-            margin-bottom: 10px;
+        .hr-section {
+            margin-top: 30px;
+            font-size: 12px;
+        }
+        .hr-section p {
+            margin: 5px 0;
+        }
+        .Date {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed #ccc;
         }
     </style>
 </head>
 <body>
+    
     <div class="container">
         <div class="header">
-            <h2>Asset History for {{ $employee->first_name }} {{ $employee->last_name }}</h2>
+            <h2>ASSET RETURN FORM</h2>
             <p><strong>Name of Item Holder:</strong> {{ $employee->first_name }} {{ $employee->last_name }}</p>
             <p><strong>Department:</strong> {{ $employee->department }}</p>
             <p><strong>Employee Number:</strong> {{ $employee->employee_number }}</p>
@@ -115,12 +140,12 @@
             <table class="history-table">
                 <thead>
                     <tr>
-                        <th>Category & Brand</th>
-                        <th>Unit</th>
-                        <th>Serial Number</th>
-                        <th>Assigned Date</th>
-                        <th>Return Date</th>
-                        <th>Notes</th>
+                        <th style="width: 20%;">Category & Brand</th>
+                        <th style="width: 15%;">Unit</th>
+                        <th style="width: 15%;">Serial Number</th>
+                        <th style="width: 15%;">Assigned Date</th>
+                        <th style="width: 15%;">Return Date</th>
+                        <th style="width: 25%;">Notes</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -157,23 +182,25 @@
 
         <div class="signature-section">
             <div class="signature-box">
-                <div class="signature-line"></div>
-                <div class="signature-label">Employee's Signature</div>
+                <div class="signature-space"></div>
+                <div class="signature-label">Signiture over printed name of the Returnes</div>
             </div>
 
             <div class="signature-box">
-                <div class="signature-name">Shaira Vae Sulit</div>
-                <div class="signature-line"></div>
-                <div class="signature-label">Manager, People and Culture</div>
+                <div class="signature-space"></div>
+                <div class="signature-label">Signiture over printed name of the Reciever</div>
             </div>
         </div>
 
-        <div style="margin-top: 40px;">
+        <div class="hr-section">
             <p><strong>For HR Use Only:</strong></p>
             <p><strong>Accountability Number:</strong> ________________________</p>
             <p><strong>Items Date Received:</strong> ________________________</p>
             <p><strong>Assets Date Validated:</strong> ________________________</p>
             <p><strong>Items Transferred To:</strong> ________________________</p>
+            <div class="transfer-date">
+                <p><strong>Date:</strong> {{ \Carbon\Carbon::now()->format('M d, Y') }}</p>
+            </div>
         </div>
     </div>
 </body>
