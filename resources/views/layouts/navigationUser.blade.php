@@ -86,7 +86,7 @@
                                     <span class="absolute -bottom-1 -right-1 bg-green-400 rounded-full h-3 w-3 border-2 border-blue-600"></span>
                                 </div>
                                 <span class="hidden lg:inline-block text-white font-medium max-w-[120px] truncate">
-                                    {{ Auth::user()->usertype }}
+                                {{ Auth::user()->employee?->first_name ?: 'No employee info' }}
                                 </span>
                                 <svg class="hidden lg:inline-block h-4 w-4 text-blue-300" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
