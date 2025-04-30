@@ -12,7 +12,7 @@
         
         <!-- Export -->
         <a href="{{ route('admin.activityLogs.export') }}?search={{ request('search') }}" 
-        class="flex items-center px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
             </svg>
@@ -123,46 +123,64 @@
         </div>
         
         <!-- Pagination -->
-        @if($activityLogs->hasPages())
-        <div class="bg-gray-50 px-6 py-3 flex items-center justify-between border-t border-gray-200">
-            <div class="flex-1 flex justify-between sm:hidden">
-                @if($activityLogs->onFirstPage())
-                <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-300 bg-white cursor-not-allowed">
-                    Previous
-                </span>
-                @else
-                <a href="{{ $activityLogs->previousPageUrl() }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                    Previous
-                </a>
-                @endif
-                
-                @if($activityLogs->hasMorePages())
-                <a href="{{ $activityLogs->nextPageUrl() }}" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                    Next
-                </a>
-                @else
-                <span class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-300 bg-white cursor-not-allowed">
-                    Next
-                </span>
-                @endif
-            </div>
-            
-            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-                <div>
-                    <p class="text-sm text-gray-700">
-                        Showing <span class="font-medium">{{ $activityLogs->firstItem() }}</span>
-                        to <span class="font-medium">{{ $activityLogs->lastItem() }}</span>
-                        of <span class="font-medium">{{ $activityLogs->total() }}</span> results
-                    </p>
-                </div>
-                <div>
-                    <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-                        {{ $activityLogs->withQueryString()->links() }}
-                    </nav>
-                </div>
-            </div>
+    @if($activityLogs->hasPages())
+    <div class="bg-white px-6 py-4 flex flex-col sm:flex-row items-center justify-between border-t border-gray-200 gap-4">
+        <!-- Showing results info -->
+        <div class="text-sm text-gray-700">
+            Showing <span class="font-medium">{{ $activityLogs->firstItem() }}</span> to 
+            <span class="font-medium">{{ $activityLogs->lastItem() }}</span> of 
+            <span class="font-medium">{{ $activityLogs->total() }}</span> results
         </div>
-        @endif
+
+        <!-- Pagination Links -->
+        <nav class="flex items-center gap-2">
+            <!-- Previous Button -->
+            @if($activityLogs->onFirstPage())
+            <span class="relative inline-flex items-center px-3 py-1.5 rounded-md border border-gray-300 bg-white text-sm font-medium text-gray-300 cursor-not-allowed">
+                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+            </span>
+            @else
+            <a href="{{ $activityLogs->previousPageUrl() }}" class="relative inline-flex items-center px-3 py-1.5 rounded-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+            </a>
+            @endif
+
+            <!-- Page Numbers -->
+            <div class="hidden sm:flex gap-1">
+                @foreach ($activityLogs->getUrlRange(1, $activityLogs->lastPage()) as $page => $url)
+                    @if ($page == $activityLogs->currentPage())
+                    <span class="relative inline-flex items-center px-3.5 py-1.5 border border-blue-500 bg-blue-50 text-sm font-medium text-blue-600 rounded-md">
+                        {{ $page }}
+                    </span>
+                    @else
+                    <a href="{{ $url }}" class="relative inline-flex items-center px-3.5 py-1.5 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-md">
+                        {{ $page }}
+                    </a>
+                    @endif
+                @endforeach
+            </div>
+
+            <!-- Next Button -->
+            @if($activityLogs->hasMorePages())
+            <a href="{{ $activityLogs->nextPageUrl() }}" class="relative inline-flex items-center px-3 py-1.5 rounded-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                </svg>
+            </a>
+            @else
+            <span class="relative inline-flex items-center px-3 py-1.5 rounded-md border border-gray-300 bg-white text-sm font-medium text-gray-300 cursor-not-allowed">
+                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                </svg>
+            </span>
+            @endif
+        </nav>
+    </div>
+    @endif
     </div>
 </div>
 <script>

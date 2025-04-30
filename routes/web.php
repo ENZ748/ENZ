@@ -258,6 +258,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/generate-pdf', [PDFController::class, 'generatePDF'])->name('generatePDF');
     Route::get('/Asset_historyGenerate-pdf', [PDFController::class, 'AssetHistoryGeneratePDF'])->name('AssetHistoryGeneratePDF');
     
+//Email
     Route::get('send-mail', [MailController::class, 'index']);
 
 
