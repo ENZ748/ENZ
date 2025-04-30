@@ -56,5 +56,8 @@ class Employees extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
-    
+    public function employees()
+{
+    return $this->hasOne(Employees::class); // still singular relationship
+}
 }

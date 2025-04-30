@@ -5,110 +5,129 @@
 <div class="container">
     <h1 class="dashboard-title">Inventory Overview</h1>
     <div class="cards">
-      <!-- TOTAL ITEMS Card -->
-      <div class="card card-items" onclick="showModal('items')">
+    <!-- TOTAL ITEMS Card -->
+    <div class="card card-items" onclick="showModal('items')">
         <div class="card-icon">
-          <span class="icon">📦</span>
+            <span class="icon">📦</span>
         </div>
         <div class="card-title">TOTAL ITEMS</div>
         <div class="card-value">{{$count_items}}</div>
-        <div class="card-indicator indicator-up">
-          ↑ 12.3% from last month
+        <div class="card-indicator indicator-{{ $itemsChange > 0 ? 'up' : ($itemsChange < 0 ? 'down' : 'neutral') }}">
+            @if($itemsChange > 0)
+                ↑ {{$itemsChange}}% from last month
+            @elseif($itemsChange < 0)
+                ↓ {{abs($itemsChange)}}% from last month
+            @else
+                → No change from last month
+            @endif
         </div>
-      </div>
-      
-      <!-- TOTAL CATEGORIES Card -->
-      <div class="card card-categories" onclick="showModal('categories')">
+    </div>
+    
+    <!-- TOTAL CATEGORIES Card -->
+    <div class="card card-categories" onclick="showModal('categories')">
         <div class="card-icon">
-          <span class="icon">🏷️</span>
+            <span class="icon">🏷️</span>
         </div>
         <div class="card-title">TOTAL CATEGORIES</div>
         <div class="card-value">{{$count_categories}}</div>
-        <div class="card-indicator indicator-up">
-          ↑ 4 new categories
+        <div class="card-indicator indicator-{{ $newCategoriesThisMonth > 0 ? 'up' : 'neutral' }}">
+            @if($newCategoriesThisMonth > 0)
+                ↑ {{$newCategoriesThisMonth}} new categories this month
+            @else
+                → No new categories this month
+            @endif
         </div>
-      </div>
-      
-      <!-- RETURNED Card -->
-      <div class="card card-returned" onclick="showModal('returned')">
+    </div>
+    
+    <!-- RETURNED Card -->
+    <div class="card card-returned" onclick="showModal('returned')">
         <div class="card-icon">
-          <span class="icon">↩️</span>
+            <span class="icon">↩️</span>
         </div>
         <div class="card-title">RETURNED</div>
         <div class="card-value">{{$count_returned_items}}</div>
-        <div class="card-indicator indicator-down">
-          ↓ 2.4% from last month
+        <div class="card-indicator indicator-{{ $returnsChange > 0 ? 'up' : ($returnsChange < 0 ? 'down' : 'neutral') }}">
+            @if($returnsChange > 0)
+                ↑ {{$returnsChange}}% from last month
+            @elseif($returnsChange < 0)
+                ↓ {{abs($returnsChange)}}% from last month
+            @else
+                → No change from last month
+            @endif
         </div>
-      </div>
-      
-      <!-- STOCK Card -->
-      <div class="card card-stock" onclick="showModal('stock')">
+    </div>
+    
+    <!-- STOCK Card -->
+    <div class="card card-stock" onclick="showModal('stock')">
         <div class="card-icon">
-          <span class="icon">📊</span>
+            <span class="icon">📊</span>
         </div>
         <div class="card-title">IN STOCK</div>
         <div class="card-value">{{$count_inStock}}</div>
         <div class="card-indicator indicator-neutral">
-          76.4% of total inventory
+            {{$stockPercentage}}% of total inventory
         </div>
-      </div>
     </div>
-  </div>
-  
-  <!-- Modal for Items -->
-  <div id="modal-items" class="modal">
+</div>
+
+<!-- Modal for Items -->
+<div id="modal-items" class="modal">
     <div class="modal-content">
-      <span class="close-modal" onclick="closeModal('items')">&times;</span>
-      <h2 class="modal-title">Total Items Details</h2>
-      <div class="modal-details">
-        <p><strong>Current Total:</strong> {{$count_items}} items</p>
-        <p><strong>Change:</strong> +12.3% from last month (21,850 items)</p>
-        <p><strong>New Additions:</strong> 3,145 items this month</p>
-        <p><strong>Discontinued:</strong> 457 items this month</p>
-      </div>
+        <span class="close-modal" onclick="closeModal('items')">&times;</span>
+        <h2 class="modal-title">Total Items Details</h2>
+        <div class="modal-details">
+            <p><strong>Current Total:</strong> {{$count_items}} items</p>
+            <p><strong>Added this month:</strong> {{$currentMonthItems}} items</p>
+            <p><strong>Last month total:</strong> {{$lastMonthItems}} items</p>
+        </div>
     </div>
-  </div>
-  
-  <!-- Modal for Categories -->
-  <div id="modal-categories" class="modal">
+</div>
+
+<!-- Modal for Categories -->
+<div id="modal-categories" class="modal">
     <div class="modal-content">
-      <span class="close-modal" onclick="closeModal('categories')">&times;</span>
-      <h2 class="modal-title">Categories Details</h2>
-      <div class="modal-details">
-        <p><strong>Total Categories:</strong> {{$count_categories}}</p>
-        <p><strong>New Categories:</strong> Electronics, Home Décor, Outdoor Tools, Personal Care</p>
-        <p><strong>Largest Category:</strong> Kitchen Appliances (2,345 items)</p>
-        <p><strong>Smallest Category:</strong> Specialty Tools (78 items)</p>
-      </div>
+        <span class="close-modal" onclick="closeModal('categories')">&times;</span>
+        <h2 class="modal-title">Categories Details</h2>
+        <div class="modal-details">
+            <p><strong>Total Categories:</strong> {{$count_categories}}</p>
+            @if($largestCategory)
+                <p><strong>Largest Category:</strong> {{$largestCategory->category_name}} ({{$largestCategory->items_count}} items)</p>
+            @endif
+            @if($smallestCategory && $smallestCategory->id != $largestCategory->id)
+                <p><strong>Smallest Category:</strong> {{$smallestCategory->category_name}} ({{$smallestCategory->items_count}} items)</p>
+            @endif
+            <p><strong>Average items per category:</strong> 
+                {{$count_categories > 0 ? round($count_items / $count_categories, 1) : 0}}
+            </p>
+        </div>
     </div>
-  </div>
-  
-  <!-- Modal for Returned Items -->
-  <div id="modal-returned" class="modal">
+</div>
+
+<!-- Modal for Returned Items -->
+<div id="modal-returned" class="modal">
     <div class="modal-content">
-      <span class="close-modal" onclick="closeModal('returned')">&times;</span>
-      <h2 class="modal-title">Returned Items Details</h2>
-      <div class="modal-details">
-        <p><strong>Total Returns:</strong> {{$count_returned_items}} items</p>
-        <p><strong>Change:</strong> -2.4% from last month (1,275 items)</p>
-        <p><strong>Top Return Reason:</strong> Product defect (42%)</p>
-        <p><strong>Most Returned Category:</strong> Electronics (23% of returns)</p>
-      </div>
+        <span class="close-modal" onclick="closeModal('returned')">&times;</span>
+        <h2 class="modal-title">Returned Items Details</h2>
+        <div class="modal-details">
+            <p><strong>Total Returns:</strong> {{$count_returned_items}} items</p>
+            <p><strong>Returns this month:</strong> {{$returnedThisMonth}}</p>
+            <p><strong>Overall return rate:</strong> {{$returnRate}}%</p>
+        </div>
     </div>
-  </div>
-  
-  <!-- Modal for Stock -->
-  <div id="modal-stock" class="modal">
+</div>
+
+<!-- Modal for Stock -->
+<div id="modal-stock" class="modal">
     <div class="modal-content">
-      <span class="close-modal" onclick="closeModal('stock')">&times;</span>
-      <h2 class="modal-title">In Stock Details</h2>
-      <div class="modal-details">
-        <p><strong>Items In Stock:</strong> {{$count_inStock}} total</p>
-        <p><strong>Low Stock Alert:</strong> 342 items below minimum threshold</p>
-        <p><strong>Out of Stock:</strong> 125 items</p>
-        <p><strong>Restock Expected:</strong> 532 items arriving next week</p>
-      </div>
+        <span class="close-modal" onclick="closeModal('stock')">&times;</span>
+        <h2 class="modal-title">In Stock Details</h2>
+        <div class="modal-details">
+            <p><strong>Items In Stock:</strong> {{$count_inStock}}</p>
+            <p><strong>Low Stock Items (≤{{$lowStockThreshold}}):</strong> {{$lowStockItems}}</p>
+            <p><strong>Out of Stock Items:</strong> {{$outOfStockItems}}</p>
+        </div>
     </div>
+</div>
   </div>
    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
