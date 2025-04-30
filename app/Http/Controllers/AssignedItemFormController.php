@@ -12,16 +12,39 @@ class AssignedItemFormController extends Controller
     public function index()
     {
         $employees = Employees::whereHas('users', function ($query) {
-            $query->where('usertype', 'user');
+            $query->whereIn('usertype', ['user', 'admin'])
+                ->where('id', '!=', auth()->id());
         })
         ->orderBy('hire_date', 'desc')
-        ->get();
-        
-        
-        return view('assigned_item_forms.index', compact('employees'));
+        ->paginate(10); // Add pagination with 10 items per page
 
+        return view('assigned_item_forms.index', compact('employees'));
     }
 
+    public function search(Request $request)
+    {
+        $search = $request->input('search');
+
+        $employees = Employees::whereHas('users', function ($query) {
+            $query->whereIn('usertype', ['user', 'admin'])
+                ->where('id', '!=', auth()->id());
+        })
+        ->when($search, function ($query) use ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('first_name', 'like', "%{$search}%")
+                  ->orWhere('last_name', 'like', "%{$search}%")
+                  ->orWhere('employee_number', 'like', "%{$search}%")
+                  ->orWhere('department', 'like', "%{$search}%")
+                  ->orWhereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$search}%"]);
+            });
+        })
+            
+        ->orderBy('hire_date', 'desc')
+        ->paginate(10)
+        ->appends(['search' => $search]);
+
+        return view('assigned_item_forms.index', compact('employees', 'search'));
+    }
 
     public function accountability_form($id)
     {
@@ -49,16 +72,14 @@ class AssignedItemFormController extends Controller
 
     public function confirm_accountability($id)
     {
-
         $employee = Employees::findOrFail($id);
         $assigned_items = AssignedItem::where('employeeID', $employee->id)
         ->where('status', 0)
         ->get();
        
-        // Update the status of the assigned items to 1 (or any other status you wish)
         foreach ($assigned_items as $assigned_item) {
-            $assigned_item->status = 1; // Update the status to 1 (you can change this if needed)
-            $assigned_item->save(); // Save the change to the database
+            $assigned_item->status = 1;
+            $assigned_item->save();
         }
 
         return redirect('form');
@@ -66,22 +87,16 @@ class AssignedItemFormController extends Controller
 
     public function confirm_History($id)
     {
-
         $employee = Employees::findOrFail($id);
         $history_items = ItemHistory::where('employeeID', $employee->id)
         ->where('status', 0)
         ->get();
 
-       
-        // Update the status of the assigned items to 1 (or any other status you wish)
         foreach ($history_items as $history_item) {
-            $history_item->status = 1; // Update the status to 1 (you can change this if needed)
-            $history_item->save(); // Save the change to the database
+            $history_item->status = 1;
+            $history_item->save();
         }
-
 
         return redirect('form');
     }
-    
-    
 }

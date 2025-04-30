@@ -99,8 +99,13 @@
 
 
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-500">
-                                    <span class="badge badge-success text-dark">Active</span>
+                                    @if ($assignedItem->status == 0)
+                                        <span class="badge badge-warning text-dark">Pending</span>
+                                    @else
+                                        <span class="badge badge-success text-dark">Signed</span>
+                                    @endif
                                 </td>
+
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-500" class="text-right">
                                     <div class="btn-group btn-group-sm" role="group">
                                         <button class="btn btn-outline-primary edit-btn" 
