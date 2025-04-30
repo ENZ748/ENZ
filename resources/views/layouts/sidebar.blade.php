@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Responsive Sidebar</title>
+    <title>Stable Sidebar Navigation</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
@@ -26,7 +26,7 @@
         .sidebar {
             position: fixed;
             top: 0;
-            left: -250px; /* Start hidden on mobile */
+            left: -250px;
             height: 100vh;
             width: var(--sidebar-width);
             background: linear-gradient(180deg, var(--primary-color), var(--primary-dark));
@@ -40,7 +40,7 @@
         }
         
         .sidebar.open {
-            left: 0; /* Show when open */
+            left: 0;
         }
         
         .sidebar img {
@@ -62,14 +62,15 @@
         .sidebar .nav {
             flex: 1;
             overflow-y: auto;
-            padding: 0 10px;
+            padding: 0 15px;
             margin-top: 20px;
         }
         
         .sidebar .nav-item {
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             border-radius: 8px;
             overflow: hidden;
+            height: 44px;
         }
         
         .sidebar .nav-link {
@@ -78,35 +79,62 @@
             text-decoration: none;
             display: flex;
             align-items: center;
-            transition: all 0.2s ease;
+            transition: background-color var(--transition-speed) ease;
             border-radius: 8px;
             font-weight: 500;
+            white-space: nowrap;
+            height: 100%;
+            box-sizing: border-box;
         }
         
         .sidebar .nav-link i {
             width: 24px;
             text-align: center;
-            margin-right: 12px;
+            margin-right: 15px;
             font-size: 1.1rem;
+            flex-shrink: 0;
+            transition: none; /* Remove transition from icons */
+        }
+        
+        .sidebar .nav-link span {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex-grow: 1;
+            transition: none; /* Remove transition from text */
         }
         
         .sidebar .nav-link:hover {
             background-color: rgba(255, 255, 255, 0.15);
-            transform: translateX(5px);
         }
         
         .sidebar .nav-link.active {
             background-color: var(--primary-light);
             color: var(--primary-dark);
             font-weight: 600;
+            transform: none; /* Remove any transform */
         }
         
         .sidebar .nav-link.active i {
             color: var(--primary-dark);
+            /* No position changes */
+        }
+        
+        /* Ensure all icons have same styling */
+        .sidebar .nav-link i.fa-file-invoice,
+        .sidebar .nav-link i.fa-history,
+        .sidebar .nav-link i.fa-tachometer-alt,
+        .sidebar .nav-link i.fa-box,
+        .sidebar .nav-link i.fa-users,
+        .sidebar .nav-link i.fa-file-contract,
+        .sidebar .nav-link i.fa-warehouse {
+            width: 24px;
+            margin-right: 15px;
+            font-size: 1.1rem;
         }
         
         .content {
-            margin-left: 0; /* Start with no margin on mobile */
+            margin-left: 0;
             padding: 20px;
             transition: all var(--transition-speed);
             min-height: 100vh;
@@ -159,19 +187,19 @@
         /* Desktop styles */
         @media (min-width: 769px) {
             .sidebar {
-                left: 0; /* Always visible on desktop */
+                left: 0;
             }
             
             .content {
-                margin-left: var(--sidebar-width); /* Add margin for sidebar */
+                margin-left: var(--sidebar-width);
             }
             
             .toggle-btn {
-                display: none; /* Hide toggle button on desktop */
+                display: none;
             }
             
             .overlay {
-                display: none !important; /* Never show overlay on desktop */
+                display: none !important;
             }
         }
     </style>
@@ -189,43 +217,43 @@
         
         <ul class="nav flex-column">
             <li class="nav-item">
-                <a class="nav-link active" href="{{route('chart')}}" onclick="closeSidebarOnMobile()">
+                <a class="nav-link" href="{{route('chart')}}" onclick="handleNavClick(this)">
                     <i class="fas fa-tachometer-alt"></i> 
                     <span>Dashboard</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{route('items')}}" onclick="closeSidebarOnMobile()">
+                <a class="nav-link" href="{{route('items')}}" onclick="handleNavClick(this)">
                     <i class="fas fa-box"></i> 
                     <span>Inventory</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{route('user')}}" onclick="closeSidebarOnMobile()">
+                <a class="nav-link" href="{{route('user')}}" onclick="handleNavClick(this)">
                     <i class="fas fa-users"></i> 
                     <span>Users</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{route('assigned_items.index')}}" onclick="closeSidebarOnMobile()">
+                <a class="nav-link" href="{{route('assigned_items.index')}}" onclick="handleNavClick(this)">
                     <i class="fas fa-file-invoice"></i> 
                     <span>Accountability</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{route('instock')}}" onclick="closeSidebarOnMobile()">
+                <a class="nav-link" href="{{route('instock')}}" onclick="handleNavClick(this)">
                     <i class="fas fa-warehouse"></i> 
                     <span>In Stock</span>
                 </a>
             </li> 
             <li class="nav-item">
-                <a class="nav-link" href="{{route('assigned_items.forms')}}" onclick="closeSidebarOnMobile()">
+                <a class="nav-link" href="{{route('assigned_items.forms')}}" onclick="handleNavClick(this)">
                     <i class="fas fa-file-contract"></i> 
                     <span>Forms</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{route('item.history')}}" onclick="closeSidebarOnMobile()">
+                <a class="nav-link" href="{{route('item.history')}}" onclick="handleNavClick(this)">
                     <i class="fas fa-history"></i> 
                     <span>History</span>
                 </a>
@@ -244,7 +272,6 @@
             sidebar.classList.toggle("open");
             overlay.classList.toggle("show");
             
-            // Disable scrolling when sidebar is open on mobile
             if (sidebar.classList.contains("open")) {
                 document.body.style.overflow = "hidden";
             } else {
@@ -252,8 +279,16 @@
             }
         }
         
-        function closeSidebarOnMobile() {
-            // Only close if on mobile view
+        function handleNavClick(clickedLink) {
+            // Remove active class from all links
+            document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Add active class to clicked link without changing position
+            clickedLink.classList.add('active');
+            
+            // Close sidebar on mobile
             if (window.innerWidth <= 768) {
                 toggleSidebar();
             }
@@ -273,16 +308,14 @@
             }
         });
         
-        // Highlight active menu item based on current URL
+        // Highlight active menu item based on page load
         document.addEventListener('DOMContentLoaded', function() {
             const currentUrl = window.location.href;
             const navLinks = document.querySelectorAll('.sidebar .nav-link');
             
             navLinks.forEach(link => {
-                if (link.href === currentUrl) {
+                if (currentUrl.includes(link.getAttribute('href'))) {
                     link.classList.add('active');
-                } else {
-                    link.classList.remove('active');
                 }
             });
         });
