@@ -91,10 +91,10 @@
         <div class="modal-details">
             <p><strong>Total Categories:</strong> {{$count_categories}}</p>
             @if($largestCategory)
-                <p><strong>Largest Category:</strong> {{$largestCategory->name}} ({{$largestCategory->items_count}} items)</p>
+                <p><strong>Largest Category:</strong> {{$largestCategory->category_name}} ({{$largestCategory->items_count}} items)</p>
             @endif
             @if($smallestCategory && $smallestCategory->id != $largestCategory->id)
-                <p><strong>Smallest Category:</strong> {{$smallestCategory->name}} ({{$smallestCategory->items_count}} items)</p>
+                <p><strong>Smallest Category:</strong> {{$smallestCategory->category_name}} ({{$smallestCategory->items_count}} items)</p>
             @endif
             <p><strong>Average items per category:</strong> 
                 {{$count_categories > 0 ? round($count_items / $count_categories, 1) : 0}}
