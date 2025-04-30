@@ -246,6 +246,7 @@ Route::middleware('auth')->group(function () {
     Route::get('asset_return_form/{id}', [AssignedItemFormController::class, 'asset_return_form'])->name('form.asset_return');
     Route::get('confirm_return/{id}', [AssignedItemFormController::class, 'confirm_History'])->name('form.confirm_return');
     Route::get('confirm_accountability/{id}', [AssignedItemFormController::class, 'confirm_accountability'])->name('form.confirm_accountability');
+    Route::get('/form/search', [AssignedItemFormController::class, 'search'])->name('form.search');
 
 //InStock
     Route::get('InStock', [InStockController::class, 'index'])->name('instock');
@@ -257,6 +258,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/generate-pdf', [PDFController::class, 'generatePDF'])->name('generatePDF');
     Route::get('/Asset_historyGenerate-pdf', [PDFController::class, 'AssetHistoryGeneratePDF'])->name('AssetHistoryGeneratePDF');
     
+//Email
     Route::get('send-mail', [MailController::class, 'index']);
 
 
