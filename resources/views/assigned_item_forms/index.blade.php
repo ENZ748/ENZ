@@ -184,8 +184,8 @@
                                 <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
-                                <h3 class="mt-2 text-lg font-medium text-gray-900">No assigned assets</h3>
-                                <p class="mt-1 text-gray-500">This employee currently has no assets assigned to them.</p>
+                                <h3 class="mt-2 text-lg font-medium text-gray-900">No pending assigned assets</h3>
+                                <p class="mt-1 text-gray-500">This employee currently has no pending assets assigned to them.</p>
                             </div>
                         @endif
                     </div>
@@ -211,123 +211,120 @@
         </div>
 
         <!-- Asset Return Modal -->
-        <div id="asset-return-modal-{{ $employee->id }}" class="fixed inset-0 z-50 hidden overflow-y-auto">
-            <div class="flex items-center justify-center min-h-screen p-4 text-center">
-                <!-- Background overlay -->
-                <div class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity" aria-hidden="true"></div>
-                
-                <!-- Modal container -->
-                <div class="relative inline-block w-full max-w-4xl text-left align-middle transform bg-white rounded-xl shadow-2xl overflow-hidden transition-all">
-                    <!-- Header -->
-                    <div class="px-6 py-4 bg-gradient-to-r from-green-600 to-green-700 flex items-center justify-between">
-                        <div class="flex items-center space-x-3">
-                            <div class="p-2 rounded-lg bg-green-700/20">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                                </svg>
-                            </div>
-                            <div>
-                                <h2 class="text-xl font-bold text-white">Asset Return</h2>
-                                <p class="text-green-100 text-sm">{{ $employee->first_name }} {{ $employee->last_name }}</p>
-                            </div>
-                        </div>
-                        <button onclick="closeModal('asset-return-modal-{{ $employee->id }}')" class="text-white hover:text-green-200 transition-colors">
-                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
+<div id="asset-return-modal-{{ $employee->id }}" class="fixed inset-0 z-50 hidden overflow-y-auto">
+    <div class="flex items-center justify-center min-h-screen p-4 text-center">
+        <!-- Background overlay -->
+        <div class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity" aria-hidden="true"></div>
+        
+        <!-- Modal container -->
+        <div class="relative inline-block w-full max-w-4xl text-left align-middle transform bg-white rounded-xl shadow-2xl overflow-hidden transition-all">
+            <!-- Header -->
+            <div class="px-6 py-4 bg-gradient-to-r from-green-600 to-green-700 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="p-2 rounded-lg bg-green-700/20">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                        </svg>
                     </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-white">Asset Return</h2>
+                        <p class="text-green-100 text-sm">{{ $employee->first_name }} {{ $employee->last_name }}</p>
+                    </div>
+                </div>
+                <button onclick="closeModal('asset-return-modal-{{ $employee->id }}')" class="text-white hover:text-green-200 transition-colors">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
 
-                    <!-- Content -->
-                    <div class="p-6 max-h-[65vh] overflow-y-auto">
-                        @if(count($employee->assigned_items) > 0)
-                            <form action="{{ route('form.asset_return', $employee->id) }}" method="POST">
-                                @csrf
-
-                                @if($employee->item_history->where('status', 0)->count() > 0)
-                                    <div class="mb-6">
-                                        <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">Items to Return</h3>
-                                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                            @foreach($employee->item_history->where('status', 0) as $history_item)
-                                                <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-                                                    <div class="p-4">
-                                                        <div class="flex justify-between items-start">
-                                                            <h3 class="font-medium text-gray-800">{{ $history_item->item->category->category_name }}</h3>
-                                                            <span class="inline-block px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">{{ $history_item->item->brand->brand_name }}</span>
-                                                        </div>
-                                                        
-                                                        <div class="mt-3 space-y-2">
-                                                            <div class="flex items-center text-sm text-gray-600">
-                                                                <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
-                                                                </svg>
-                                                                {{ $history_item->item->unit->unit_name }}
-                                                            </div>
-                                                            <div class="flex items-center text-sm text-gray-600">
-                                                                <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
-                                                                </svg>
-                                                                {{ $history_item->item->serial_number }}
-                                                            </div>
-                                                            <div class="flex items-center text-sm text-gray-600">
-                                                                <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                                                </svg>
-                                                                Assigned: {{ \Carbon\Carbon::parse($history_item->assigned_date)->format('M d, Y') }}
-                                                            </div>
-                                                            <div class="flex items-center text-sm text-gray-600">
-                                                                <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                                                </svg>
-                                                                Returned: <span class="ml-1 px-2 py-0.5 text-xs font-medium bg-green-100 text-green-800 rounded-full">{{ \Carbon\Carbon::parse($history_item->returned_date)->format('M d, Y') }}</span>
-                                                            </div>
-                                                        </div>
-                                                        
-                                                        @if($history_item->return_notes)
-                                                            <div class="mt-3 p-3 bg-green-50 rounded-md border border-green-100">
-                                                                <h4 class="text-xs font-semibold text-green-700 mb-1">RETURN NOTES</h4>
-                                                                <p class="text-sm text-green-800">{{ $history_item->return_notes }}</p>
-                                                            </div>
-                                                        @endif
-                                                    </div>
+            <!-- Content -->
+            <div class="p-6 max-h-[65vh] overflow-y-auto">
+                @if($employee->item_history->where('status', 0)->count() > 0)
+                    <form action="{{ route('form.asset_return', $employee->id) }}" method="POST">
+                        @csrf
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">Items to Return</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                @foreach($employee->item_history->where('status', 0) as $history_item)
+                                    <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                                        <div class="p-4">
+                                            <div class="flex justify-between items-start">
+                                                <h3 class="font-medium text-gray-800">{{ $history_item->item->category->category_name }}</h3>
+                                                <span class="inline-block px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">{{ $history_item->item->brand->brand_name }}</span>
+                                            </div>
+                                            
+                                            <div class="mt-3 space-y-2">
+                                                <div class="flex items-center text-sm text-gray-600">
+                                                    <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                                                    </svg>
+                                                    {{ $history_item->item->unit->unit_name }}
                                                 </div>
-                                            @endforeach
+                                                <div class="flex items-center text-sm text-gray-600">
+                                                    <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+                                                    </svg>
+                                                    {{ $history_item->item->serial_number }}
+                                                </div>
+                                                <div class="flex items-center text-sm text-gray-600">
+                                                    <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                    </svg>
+                                                    Assigned: {{ \Carbon\Carbon::parse($history_item->assigned_date)->format('M d, Y') }}
+                                                </div>
+                                                <div class="flex items-center text-sm text-gray-600">
+                                                    <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                    </svg>
+                                                    Returned: <span class="ml-1 px-2 py-0.5 text-xs font-medium bg-green-100 text-green-800 rounded-full">{{ \Carbon\Carbon::parse($history_item->returned_date)->format('M d, Y') }}</span>
+                                                </div>
+                                            </div>
+                                            
+                                            @if($history_item->return_notes)
+                                                <div class="mt-3 p-3 bg-green-50 rounded-md border border-green-100">
+                                                    <h4 class="text-xs font-semibold text-green-700 mb-1">RETURN NOTES</h4>
+                                                    <p class="text-sm text-green-800">{{ $history_item->return_notes }}</p>
+                                                </div>
+                                            @endif
                                         </div>
                                     </div>
-                                @endif
-                            </form>
-                        @else
-                            <div class="py-12 text-center">
-                                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                <h3 class="mt-2 text-lg font-medium text-gray-900">No assets to return</h3>
-                                <p class="mt-1 text-gray-500">This employee currently has no assets that need to be returned.</p>
+                                @endforeach
                             </div>
-                        @endif
+                        </div>
+                    </form>
+                @else
+                    <div class="py-12 text-center">
+                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <h3 class="mt-2 text-lg font-medium text-gray-900">No pending assets to return</h3>
+                        <p class="mt-1 text-gray-500">This employee currently has no pending assets that need to be returned.</p>
                     </div>
+                @endif
+            </div>
 
-                    <!-- Footer -->
-                    <div class="bg-gray-50 px-6 py-4 border-t border-gray-200 flex justify-between items-center">
-                        <div class="text-sm text-gray-500">
-                            @if($employee->item_history->where('status', 0)->count() > 0)
-                                {{ $employee->item_history->where('status', 0)->count() }} items to process
-                            @endif
-                        </div>
-                        <div class="flex space-x-3">
-                            <button onclick="closeModal('asset-return-modal-{{ $employee->id }}')" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none">
-                                Cancel
-                            </button>
-                            @if(count($employee->assigned_items) > 0)
-                                <a href="{{ route('form.confirm_return', $employee->id) }}" class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                                    Process Return
-                                </a>
-                            @endif
-                        </div>
-                    </div>
+            <!-- Footer -->
+            <div class="bg-gray-50 px-6 py-4 border-t border-gray-200 flex justify-between items-center">
+                <div class="text-sm text-gray-500">
+                    @if($employee->item_history->where('status', 0)->count() > 0)
+                        {{ $employee->item_history->where('status', 0)->count() }} items to process
+                    @endif
+                </div>
+                <div class="flex space-x-3">
+                    <button onclick="closeModal('asset-return-modal-{{ $employee->id }}')" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none">
+                        Cancel
+                    </button>
+                    @if($employee->item_history->where('status', 0)->count() > 0)
+                        <a href="{{ route('form.confirm_return', $employee->id) }}" class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                            Process Return
+                        </a>
+                    @endif
                 </div>
             </div>
         </div>
+    </div>
+</div>
         @endforeach
     @endif
 </div>

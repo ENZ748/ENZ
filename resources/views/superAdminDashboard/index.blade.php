@@ -566,15 +566,10 @@
             }
         });
 
-        // Validate email format only if it has changed
+        // Always validate email format (but skip uniqueness check if unchanged)
         const emailInput = document.getElementById('edit_email');
-        const originalEmail = emailInput.getAttribute('data-original-email');
-        const currentEmail = emailInput.value;
-        
-        if (currentEmail !== originalEmail) {
-            const emailValid = validateEditEmail(emailInput);
-            if (!emailValid) isValid = false;
-        }
+        const emailValid = validateEditEmail(emailInput);
+        if (!emailValid) isValid = false;
 
         // Validate password match only if password fields are not empty
         const password = document.getElementById("edit_password").value;
