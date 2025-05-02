@@ -131,6 +131,10 @@ Route::middleware('auth')->group(function () {
         return app('App\Http\Controllers\ItemHistoryController')->index();
     })->middleware(['auth', 'verified'])->name('item.history');
 
+    Route::middleware([Admin::class])->get('/item/admin/assets', function () {
+        return app('App\Http\Controllers\AdminAccountabilityController')->index();
+    })->middleware(['auth', 'verified'])->name('admin.accountability');
+
     Route::get('/assigned-items/history', [ItemHistoryController::class, 'history'])
     ->name('assigned-items.history');
 });
