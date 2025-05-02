@@ -15,9 +15,6 @@ class ItemController extends Controller
 {
     public function index()
     {
-        Item::whereIn('equipment_status', [1, 2])
-        ->where('quantity', 0)
-        ->delete();
 
         $items = Item::with(['category', 'brand', 'unit'])
         ->where('quantity', '>', 0)
@@ -191,9 +188,6 @@ public function store(Request $request)
 
     public function search(Request $request)
     {
-        Item::whereIn('equipment_status', [1, 2])
-        ->where('quantity', 0)
-        ->delete();
         
         // Start with a query that eagerly loads related models and orders by latest
         $itemsQuery = Item::with(['category', 'brand', 'unit'])
