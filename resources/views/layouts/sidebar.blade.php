@@ -258,6 +258,13 @@
                     <span>History</span>
                 </a>
             </li>
+
+            <li class="nav-item">
+    <a class="nav-link" href="{{route('admin.accountability')}}" onclick="handleNavClick(this)">
+        <i class="fas fa-clipboard-list"></i> 
+        <span>My Accountability</span>
+    </a>
+</li>
         </ul>
     </div>
 

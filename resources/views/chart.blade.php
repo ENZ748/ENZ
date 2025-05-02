@@ -226,7 +226,7 @@
         @endforeach
     };
 
-    // Modern color palette
+    // Base color palette (used for non-monthly charts)
     const colors = {
         blue: { bg: 'rgba(58, 123, 213, 0.7)', border: 'rgba(58, 123, 213, 1)' },
         red: { bg: 'rgba(255, 107, 107, 0.7)', border: 'rgba(255, 107, 107, 1)' },
@@ -236,7 +236,7 @@
         green: { bg: 'rgba(46, 204, 113, 0.7)', border: 'rgba(46, 204, 113, 1)' }
     };
 
-    // Chart configuration with fixed height
+    // Chart configuration
     const chartOptions = {
         responsive: true,
         maintainAspectRatio: false,
@@ -270,16 +270,36 @@
     // Chart instances
     let chart1, chart2, chart3, chart4;
 
-    // Initialize all charts with consistent height
+    // Generate unique monthly colors using golden ratio approach
+    function generateUniqueMonthlyColors(month, count) {
+        const colors = [];
+        const goldenRatio = 0.618033988749895;
+        const hueStart = (month * 30) % 360; // 30° per month
+        
+        for (let i = 0; i < count; i++) {
+            // Use golden ratio to distribute hues evenly
+            const hue = (hueStart + (i * goldenRatio * 360)) % 360;
+            // Fixed saturation and lightness for consistency
+            const saturation = 70 + (i % 3) * 5; // 70-80%
+            const lightness = 60 + (i % 2) * 5; // 60-65%
+            
+            colors.push(`hsla(${hue}, ${saturation}%, ${lightness}%, 0.7)`);
+        }
+        
+        return colors;
+    }
+
+    // Initialize all charts
     function initializeCharts(year) {
         const dataForYear = chartDataByYear[year];
+        const currentMonth = new Date().getMonth() + 1; // 1-12
         
         if (!dataForYear) {
             console.error(`No data available for year ${year}`);
             return;
         }
         
-        // Equipment Chart
+        // Equipment Chart (static colors)
         if (chart1) chart1.destroy();
         chart1 = new Chart(document.getElementById('chart1'), {
             type: 'bar',
@@ -297,7 +317,7 @@
             options: chartOptions
         });
 
-        // User Chart
+        // User Chart (static colors)
         if (chart2) chart2.destroy();
         chart2 = new Chart(document.getElementById('chart2'), {
             type: 'line',
@@ -316,8 +336,12 @@
             options: chartOptions
         });
 
-        // Returned Items Chart
+        // Returned Items Chart (unique monthly colors)
         if (chart3) chart3.destroy();
+        const returnedColors = generateUniqueMonthlyColors(
+            currentMonth, 
+            dataForYear.returned.values.length
+        );
         chart3 = new Chart(document.getElementById('chart3'), {
             type: 'pie',
             data: {
@@ -325,11 +349,7 @@
                 datasets: [{
                     label: 'Returned Items',
                     data: dataForYear.returned.values,
-                    backgroundColor: [
-                        colors.teal.bg,
-                        colors.purple.bg,
-                        colors.orange.bg
-                    ],
+                    backgroundColor: returnedColors,
                     borderColor: '#fff',
                     borderWidth: 1
                 }]
@@ -351,8 +371,12 @@
             }
         });
 
-        // Damaged Items Chart
+        // Damaged Items Chart (unique monthly colors with offset)
         if (chart4) chart4.destroy();
+        const damagedColors = generateUniqueMonthlyColors(
+            currentMonth + 12, // Different seed than returned items
+            dataForYear.damaged.values.length
+        );
         chart4 = new Chart(document.getElementById('chart4'), {
             type: 'doughnut',
             data: {
@@ -360,10 +384,7 @@
                 datasets: [{
                     label: 'Damaged Items',
                     data: dataForYear.damaged.values,
-                    backgroundColor: [
-                        colors.orange.bg,
-                        'rgba(201, 203, 207, 0.7)'
-                    ],
+                    backgroundColor: damagedColors,
                     borderColor: '#fff',
                     borderWidth: 1
                 }]
@@ -397,7 +418,7 @@
             initializeCharts(selectedYear);
         });
     });
-</script> 
+</script>
 
   <style>
     /* From Uiverse.io by Lokesh1379 */ 
