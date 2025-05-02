@@ -126,7 +126,6 @@ class AssignedItemController extends Controller
         $itemStatus = Item::where('id',$item->id)->first();
         $itemStatus->quantity = $itemStatus->quantity - 1;
         $itemStatus->save();
-    
 
         $accountabilityItem = InStock::whereHas('item', function($query) use ($itemStatus) {
             $query->where('categoryID', $itemStatus->categoryID)
@@ -408,8 +407,6 @@ class AssignedItemController extends Controller
             ]);
         }
         
-
-        
                
         // Update the item status to "returned"
         $assignedItem->item_status = 'returned';
@@ -491,6 +488,7 @@ class AssignedItemController extends Controller
         InStock::create([
             'employeeID' => $employee->id,
             'itemID' => $assignedItem->itemID,
+            'status' => 1,
 
         ]);
 
