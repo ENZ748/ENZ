@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Employees;
 use App\Models\ActivityLog;
 
+use Illuminate\Validation\Rule;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Hash;
@@ -70,7 +71,7 @@ class SuperAdminController extends Controller
             \DB::commit();
 
             // Redirect to the dashboard or a different page after successful registration
-            return redirect()->route('admin')->with('success', 'User and Employee created successfully!');
+            return redirect()->route('superAdmin.dashboard')->with('success', 'User and Employee created successfully!');
         } catch (\Exception $e) {
             // Rollback the transaction if something goes wrong
             \DB::rollback();
@@ -91,29 +92,49 @@ class SuperAdminController extends Controller
           return view('users.edit', compact('employee'));
     }
 
-    public function update(Request $request,$id)
+    public function update(Request $request, $id)
     {
+        $employee = Employees::findOrFail($id);
+        
         $request->validate([
             'first_name' => 'required|string|max:255',
-            'last_name'=>  'required|string|max:255',
+            'last_name' => 'required|string|max:255',
             'employee_number' => 'required|string|max:255',
             'department' => 'required|string|max:255',
-            'hire_date' => 'required|date', 
+            'hire_date' => 'required|date',
+            'email' => [
+                'required', 
+                'string', 
+                'lowercase', 
+                'email', 
+                'max:255', 
+                Rule::unique('users')->ignore($employee->users->id ?? null)
+            ],
+            'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        $employee = Employees::findOrFail($id);
+        // Update employee details
         $employee->update([
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'employee_number' => $request->employee_number,
             'department' => $request->department,
             'hire_date' => $request->hire_date,
-
         ]);
 
-        return redirect()-> route('superAdmin.dashboard')->with('success', 'Equipment Updated successfully');  
+        // Update user details if they exist
+        if ($employee->users) {
+            $userData = ['email' => $request->email];
+            
+            if ($request->filled('password')) {
+                $userData['password'] = Hash::make($request->password);
+            }
+            
+            $employee->users->update($userData);
+        }
 
-    }   
+        return redirect()->route('superAdmin.dashboard')->with('success', 'Admin updated successfully');
+    }
 
 
     public function toggleStatus($id)
