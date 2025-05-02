@@ -127,7 +127,6 @@
 
         <!-- Manager Signature on the right -->
         <div class="signature-box">
-            <div class="signature-name">Shaira Vae Sulit</div>
             <div class="signature-line"></div>
             <div class="signature-label">Signiture over printed name of the Manager, People and Culture</div>
         </div>
