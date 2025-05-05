@@ -266,4 +266,22 @@ Route::middleware('auth')->group(function () {
     Route::get('send-mail', [MailController::class, 'index']);
 
 
+
+    use App\Http\Controllers\FileController;
+
+    Route::get('/files/upload', [FileController::class, 'create'])
+    ->name('files.create');
+
+    // Handle file upload
+    Route::post('/files/upload', [FileController::class, 'store'])
+        ->name('files.store');
+
+    // List all files
+    Route::get('/files', [FileController::class, 'index'])
+        ->name('files.index');
+
+    // Download file
+    Route::get('/files/download/{file}', [FileController::class, 'download'])
+        ->name('files.download');
+        
     require __DIR__.'/auth.php';    

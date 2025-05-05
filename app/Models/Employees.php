@@ -50,7 +50,10 @@ class Employees extends Model
         return $this->hasMany(InUse::class, 'employeeID');
     }
 
-
+    public function files()
+    {
+        return $this->hasMany(UploadedFile::class);
+    }
 
     public function users()
     {

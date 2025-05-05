@@ -62,6 +62,18 @@
                         </a>
                     </div>
                 </div>
+                <form action="{{ route('files.store') }}" method="POST" enctype="multipart/form-data" class="compact-upload-form">
+    @csrf
+    <div class="file-upload-box">
+        <input type="file" id="file" name="file" required class="file-input" onchange="showFileName(this)">
+        <label for="file" class="file-label">
+            <span id="fileNameDisplay" class="file-name">No file selected</span>
+            <span class="browse-btn">Choose File</span>
+        </label>
+        <button type="submit" class="upload-btn">Upload</button>
+    </div>
+</form>
+
                 
                 <!-- View Toggle Buttons -->
                 <div class="flex border border-gray-200 rounded-lg overflow-hidden shadow-sm">
@@ -674,5 +686,85 @@ updatePhilippineTime();
 // Update every minute
 setInterval(updatePhilippineTime, 60000);
 </script>
+
+
+<script>
+function showFileName(input) {
+    const fileNameDisplay = document.getElementById('fileNameDisplay');
+    if (input.files.length > 0) {
+        fileNameDisplay.textContent = input.files[0].name;
+        fileNameDisplay.classList.add('has-file');
+    } else {
+        fileNameDisplay.textContent = 'No file selected';
+        fileNameDisplay.classList.remove('has-file');
+    }
+}
+</script>
+
+<style>
+.compact-upload-form {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.file-upload-box {
+    display: flex;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.file-input {
+    display: none;
+}
+
+.file-label {
+    flex-grow: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background: #f8f9fa;
+    cursor: pointer;
+}
+
+.file-name {
+    color: #666;
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+}
+
+.file-name.has-file {
+    color: #333;
+    font-weight: 500;
+}
+
+.browse-btn {
+    background: #e9ecef;
+    color: #495057;
+    padding: 6px 12px;
+    border-radius: 3px;
+    font-size: 13px;
+    border: 1px solid #ced4da;
+    margin-left: 10px;
+}
+
+.upload-btn {
+    background: #4a6bff;
+    color: white;
+    border: none;
+    padding: 0 16px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+.upload-btn:hover {
+    background: #3a5bef;
+}
+</style>
 @endsection
 
