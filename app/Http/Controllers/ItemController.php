@@ -6,8 +6,10 @@ use App\Models\Brand;
 use App\Models\Unit;
 use App\Models\Item;
 use App\Models\Employees;
-
+use App\Models\InStock;
 use App\Models\AssignedItem;
+
+use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Http\Request;
 
@@ -264,6 +266,56 @@ public function store(Request $request)
         } else {
             $item->update(['equipment_status' => 0]);
         }
+
+            // Get the current user ID
+            $user_id = Auth::user()->id;
+
+            // Find the employee associated with the current user
+            $employee = Employees::where('user_id', $user_id)->first();
+
+            //In Stock(Accountability for available items)
+            $inStock = InStock::whereHas('item', function($query) use ($item) {
+                $query->where('categoryID', $item->categoryID)
+                    ->where('brandID', $item->brandID)
+                    ->where('unitID', $item->unitID)
+                    ->where('serial_number', $item->serial_number);
+            })
+            ->where('employeeID', $employee->id)
+            ->where('status', 0)
+            ->first();
+            
+            
+            if ($inStock) {
+                // Update quantity if exists
+                $inStock->quantity += 1;
+                $inStock->save();
+            } else {
+                InStock::create([
+                    'employeeID' => $employee->id,
+                    'itemID' => $assignedItem->itemID,
+                     
+                ]);
+            }
+
+
+            //In Stock(Accountability for available items)
+            $inStockDamaged = InStock::whereHas('item', function($query) use ($item) {
+                $query->where('categoryID', $item->categoryID)
+                    ->where('brandID', $item->brandID)
+                    ->where('unitID', $item->unitID)
+                    ->where('serial_number', $item->serial_number);
+            })
+            ->where('employeeID', $employee->id)
+            ->where('status', 1)
+            ->first();
+            
+            
+            if ($inStockDamaged) {
+                // Update quantity if exists
+                $inStockDamaged->quantity -= 1;
+                $inStockDamaged->save();
+            }
+
     
         return redirect()->back()->with('success', 'Item marked as repaired');
     }
