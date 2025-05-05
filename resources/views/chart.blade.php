@@ -105,7 +105,7 @@
         <div class="modal-details">
             <p><strong>Total Returns:</strong> {{$count_returned_items}} items</p>
             <p><strong>Returns this month:</strong> {{$returnedThisMonth}}</p>
-        </div>
+         </div>
     </div>
 </div>
 
