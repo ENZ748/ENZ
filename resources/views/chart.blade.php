@@ -47,13 +47,7 @@
         <div class="card-title">RETURNED</div>
         <div class="card-value">{{$count_returned_items}}</div>
         <div class="card-indicator indicator-{{ $returnsChange > 0 ? 'up' : ($returnsChange < 0 ? 'down' : 'neutral') }}">
-            @if($returnsChange > 0)
-                ↑ {{$returnsChange}}% from last month
-            @elseif($returnsChange < 0)
-                ↓ {{abs($returnsChange)}}% from last month
-            @else
-                → No change from last month
-            @endif
+
         </div>
     </div>
     
@@ -111,7 +105,6 @@
         <div class="modal-details">
             <p><strong>Total Returns:</strong> {{$count_returned_items}} items</p>
             <p><strong>Returns this month:</strong> {{$returnedThisMonth}}</p>
-            <p><strong>Overall return rate:</strong> {{$returnRate}}%</p>
         </div>
     </div>
 </div>

@@ -62,6 +62,13 @@ class ChartController extends Controller
     }
     
     // Main counts
+
+    $currentMonthItems = Item::where('quantity', '>', 0)
+                       ->whereYear('date_acquired', Carbon::now()->year)
+                       ->whereMonth('date_acquired', Carbon::now()->month)
+                       ->count();
+
+
 $count_items = Item::where('quantity', '>', 0)->count();
 $count_categories = Category::count();
 $count_returned_items = AssignedItem::where('item_status', 'returned')->count();
@@ -74,7 +81,7 @@ $lastMonthItems = Item::where('quantity', '>', 0)
                      ->whereYear('date_acquired', Carbon::now()->subMonth()->year)
                      ->whereMonth('date_acquired', Carbon::now()->subMonth()->month)
                      ->count();
-$itemsChange = $lastMonthItems > 0 ? round((($count_items - $lastMonthItems) / $lastMonthItems * 100), 1) : 100;
+$itemsChange = $lastMonthItems > 0 ? round((($currentMonthItems - $lastMonthItems) / $lastMonthItems * 100), 1) : 0;
 
 // Categories calculations
 $newCategoriesThisMonth = Category::whereYear('created_at', Carbon::now()->year)
@@ -92,10 +99,7 @@ $returnsChange = $lastMonthReturns > 0 ? round((($count_returned_items - $lastMo
 $stockPercentage = $count_items > 0 ? round(($count_inStock / $count_items * 100), 1) : 0;
 
 // For modals
-$currentMonthItems = Item::where('quantity', '>', 0)
-                       ->whereYear('date_acquired', Carbon::now()->year)
-                       ->whereMonth('date_acquired', Carbon::now()->month)
-                       ->count();
+
 
 $categoriesWithCount = Category::withCount(['items' => function($query) {
                               $query->where('quantity', '>', 0);
