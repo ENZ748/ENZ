@@ -17,7 +17,7 @@
                     <input type="text" 
                            name="search" 
                            class="form-control border-0" 
-                           placeholder="Search by employee name, item, serial number..." 
+                           placeholder="Search" 
                            value="{{ request('search') }}">
                     <div class="input-group-append">
                         <button class="btn btn-primary" type="submit">
@@ -64,15 +64,18 @@
                             <tr>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employee</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Forms</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Signed Items</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Returned Signed Items</th>
+
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                        @foreach ($employees as $employee)
+                    @foreach ($employees as $employee)
                         <tr class="hover:bg-gray-50 transition duration-150">
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                        <div class="text-sm font-medium text-gray-900">{{ $employee->first_name }} {{ $employee->last_name }}</div>
-                                        <div class="text-sm text-gray-500">{{ $employee->employee_number }}</div>
+                                <div class="text-sm font-medium text-gray-900">{{ $employee->first_name }} {{ $employee->last_name }}</div>
+                                <div class="text-sm text-gray-500">{{ $employee->employee_number }}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-500">
                                 <div class="text-sm text-gray-900">{{ $employee->department }}</div>
@@ -81,7 +84,7 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-500">
                                 <div class="flex space-x-2">
                                     <button onclick="openModal('accountability-modal-{{ $employee->id }}')" 
-                                       class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
+                                    class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                         </svg>
@@ -89,7 +92,7 @@
                                     </button>
                                     
                                     <button onclick="openModal('asset-return-modal-{{ $employee->id }}')" 
-                                       class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors">
+                                    class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
                                         </svg>
@@ -97,8 +100,43 @@
                                     </button>
                                 </div>
                             </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-500">
+                                @if($employee->files->count() > 0)
+                                    @foreach($employee->files as $file)
+                                        <div class="mb-2">
+                                            <a href="{{ route('files.download', ['employee' => $employee->id, 'file' => $file->id]) }}" 
+                                            class="inline-flex items-center px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                                </svg>
+                                                Signed Accountability
+                                            </a>
+                                        </div>
+                                    @endforeach
+                                @else
+                                    <span class="text-gray-400 text-sm">No files</span>
+                                @endif
+                            </td>
+
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-500">
+                                @if($employee->files->count() > 0)
+                                    @foreach($employee->files as $file)
+                                        <div class="mb-2">
+                                            <a href="{{ route('files.download', ['employee' => $employee->id, 'file' => $file->id]) }}" 
+                                            class="inline-flex items-center px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                                </svg>
+                                                Returned Signed Accountability
+                                            </a>
+                                        </div>
+                                    @endforeach
+                                @else
+                                    <span class="text-gray-400 text-sm">No files</span>
+                                @endif
+                            </td>
                         </tr>
-                        @endforeach
+                    @endforeach
                     </tbody>
                 </table>
             </div>

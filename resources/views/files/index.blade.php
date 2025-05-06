@@ -21,6 +21,7 @@
             </tr>
         </thead>
         <tbody>
+
             @foreach($files as $file)
                 <tr>
                     <td>{{ $file->original_name }}</td>
@@ -34,6 +35,7 @@
                     </td>
                 </tr>
             @endforeach
+            
         </tbody>
     </table>
     

@@ -50,8 +50,13 @@ class FileController extends Controller
     }
 
     // Download file
-    public function download(UploadedFile $file)
+    public function download(Employees $employee, UploadedFile $file)
     {
+        // Verify the file belongs to the employee
+        if ($file->employeeID != $employee->id) {  // Note: using employeeID
+            abort(403, 'Unauthorized action.');
+        }
+    
         return Storage::download($file->storage_path, $file->original_name);
     }
 }

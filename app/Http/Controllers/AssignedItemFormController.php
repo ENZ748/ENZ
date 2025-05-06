@@ -6,19 +6,23 @@ use Illuminate\Http\Request;
 use App\Models\Employees;
 use App\Models\AssignedItem;
 use App\Models\ItemHistory;
+use App\Models\File;
+use App\Models\UploadedFile;
 
 class AssignedItemFormController extends Controller
 {
     public function index()
     {
         $employees = Employees::whereHas('users', function ($query) {
-            $query->whereIn('usertype', ['user', 'admin'])
-                ->where('id', '!=', auth()->id());
-        })
-        ->orderBy('hire_date', 'desc')
-        ->paginate(10); // Add pagination with 10 items per page
-
-        return view('assigned_item_forms.index', compact('employees'));
+                $query->whereIn('usertype', ['user', 'admin'])
+                    ->where('id', '!=', auth()->id());
+            })
+            ->orderBy('hire_date', 'desc')
+            ->paginate(10);
+            
+        $files = UploadedFile::with('employee')->get(); // Eager load employee relationship
+        
+        return view('assigned_item_forms.index', compact('employees', 'files'));
     }
 
     public function search(Request $request)

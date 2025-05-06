@@ -63,16 +63,16 @@
                     </div>
                 </div>
                 <form action="{{ route('files.store') }}" method="POST" enctype="multipart/form-data" class="compact-upload-form">
-    @csrf
-    <div class="file-upload-box">
-        <input type="file" id="file" name="file" required class="file-input" onchange="showFileName(this)">
-        <label for="file" class="file-label">
-            <span id="fileNameDisplay" class="file-name">No file selected</span>
-            <span class="browse-btn">Choose File</span>
-        </label>
-        <button type="submit" class="upload-btn">Upload</button>
-    </div>
-</form>
+                    @csrf
+                    <div class="file-upload-box">
+                        <input type="file" id="file" name="file" required class="file-input" onchange="showFileName(this)">
+                        <label for="file" class="file-label">
+                            <span id="fileNameDisplay" class="file-name">No file selected</span>
+                            <span class="browse-btn">Choose File</span>
+                        </label>
+                        <button type="submit" class="upload-btn">Upload</button>
+                    </div>
+                </form>
 
                 
                 <!-- View Toggle Buttons -->
@@ -236,6 +236,18 @@
                             Return Form
                         </a>
                     </div>
+                    
+                    <form action="{{ route('files.store') }}" method="POST" enctype="multipart/form-data" class="compact-upload-form">
+                        @csrf
+                        <div class="file-upload-box">
+                            <input type="file" id="file" name="file" required class="file-input" onchange="showFileName(this)">
+                            <label for="file" class="file-label">
+                                <span id="fileNameDisplay" class="file-name">No file selected</span>
+                                <span class="browse-btn">Choose File</span>
+                            </label>
+                            <button type="submit" class="upload-btn">Upload</button>
+                        </div>
+                    </form>
                 </div>
                 
                 <!-- View Toggle Buttons for History -->

@@ -281,7 +281,7 @@ Route::middleware('auth')->group(function () {
         ->name('files.index');
 
     // Download file
-    Route::get('/files/download/{file}', [FileController::class, 'download'])
-        ->name('files.download');
-        
+    Route::get('/employees/{employee}/files/{file}/download', [FileController::class, 'download'])
+    ->name('files.download');
+      
     require __DIR__.'/auth.php';    
