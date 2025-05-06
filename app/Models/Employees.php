@@ -55,6 +55,11 @@ class Employees extends Model
         return $this->hasMany(UploadedFile::class,'employeeID');
     }
 
+    public function returnedSignedItems()
+    {
+        return $this->hasMany(ReturnSignedItem::class, 'employeeID');
+    }
+    
     public function users()
     {
         return $this->belongsTo(User::class, 'user_id');

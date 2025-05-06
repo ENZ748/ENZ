@@ -119,10 +119,10 @@
                             </td>
 
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-500">
-                                @if($employee->files->count() > 0)
-                                    @foreach($employee->files as $file)
+                                @if($employee->returnedSignedItems->count() > 0)
+                                    @foreach($employee->returnedSignedItems as $returnedSignedItem)
                                         <div class="mb-2">
-                                            <a href="{{ route('files.download', ['employee' => $employee->id, 'file' => $file->id]) }}" 
+                                            <a href="{{ route('return_files.download', ['employee' => $employee->id, 'returnedSignedItem' => $returnedSignedItem->id]) }}" 
                                             class="inline-flex items-center px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
@@ -176,6 +176,19 @@
                         @if($employee->assigned_items->where('status', 0)->count() > 0)
                             <div class="mb-6">
                                 <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">Assigned Assets</h3>
+                                
+                                <form action="{{ route('return_files.store') }}" method="POST" enctype="multipart/form-data" class="compact-upload-form">
+                                    @csrf
+                                    <div class="file-upload-box">
+                                        <input type="file" id="returnfile" name="returnfile" required class="file-input" onchange="returnshowFileName(this)">
+                                        <label for="returnfile" class="file-label">
+                                            <span id="returnfileNameDisplay" class="returnfile-name">No file selected</span>
+                                            <span class="browse-btn">Choose File</span>
+                                        </label>
+                                        <button type="submit" class="upload-btn">Upload</button>
+                                    </div>
+                                </form>
+
                                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                     @foreach($employee->assigned_items->where('status', 0) as $assigned_item)
                                         <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
@@ -368,49 +381,73 @@
 </div>
 
 <script>
-// Updated modal functions
-function openModal(modalId) {
-    document.getElementById(modalId).classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-}
+    // Updated modal functions
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
 
-function closeModal(modalId) {
-    document.getElementById(modalId).classList.add('hidden');
-    document.body.style.overflow = 'auto';
-}
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
 
-// Clear search function
-function clearSearch() {
-    window.location.href = "{{ route('assigned_items.forms') }}";
-}
+    // Clear search function
+    function clearSearch() {
+        window.location.href = "{{ route('assigned_items.forms') }}";
+    }
 
-// Close modal when clicking outside
-window.addEventListener('click', function(event) {
-    @foreach($employees as $employee)
-        if (event.target === document.getElementById('accountability-modal-{{ $employee->id }}')) {
-            closeModal('accountability-modal-{{ $employee->id }}');
-        }
-        if (event.target === document.getElementById('asset-return-modal-{{ $employee->id }}')) {
-            closeModal('asset-return-modal-{{ $employee->id }}');
-        }
-    @endforeach
-});
-
-// Close modal with Escape key
-document.addEventListener('keydown', function(event) {
-    if (event.key === 'Escape') {
+    // Close modal when clicking outside
+    window.addEventListener('click', function(event) {
         @foreach($employees as $employee)
-            if (!document.getElementById('accountability-modal-{{ $employee->id }}').classList.contains('hidden')) {
+            if (event.target === document.getElementById('accountability-modal-{{ $employee->id }}')) {
                 closeModal('accountability-modal-{{ $employee->id }}');
             }
-            if (!document.getElementById('asset-return-modal-{{ $employee->id }}').classList.contains('hidden')) {
+            if (event.target === document.getElementById('asset-return-modal-{{ $employee->id }}')) {
                 closeModal('asset-return-modal-{{ $employee->id }}');
             }
         @endforeach
-    }
-});
-</script>
+    });
 
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            @foreach($employees as $employee)
+                if (!document.getElementById('accountability-modal-{{ $employee->id }}').classList.contains('hidden')) {
+                    closeModal('accountability-modal-{{ $employee->id }}');
+                }
+                if (!document.getElementById('asset-return-modal-{{ $employee->id }}').classList.contains('hidden')) {
+                    closeModal('asset-return-modal-{{ $employee->id }}');
+                }
+            @endforeach
+        }
+    });
+</script>
+<script>
+    function showFileName(input) {
+        const fileNameDisplay = document.getElementById('fileNameDisplay');
+        if (input.files.length > 0) {
+            fileNameDisplay.textContent = input.files[0].name;
+            fileNameDisplay.classList.add('has-file');
+        } else {
+            fileNameDisplay.textContent = 'No file selected';
+            fileNameDisplay.classList.remove('has-file');
+        }
+    }
+
+    function returnshowFileName(input) {
+        const returnfileNameDisplay = document.getElementById('returnfileNameDisplay');
+        if (input.files.length > 0) {
+            returnfileNameDisplay.textContent = input.files[0].name;
+            returnfileNameDisplay.classList.add('has-file');
+        } else {
+            returnfileNameDisplay.textContent = 'No file selected';
+            returnfileNameDisplay.classList.remove('has-file');
+        }
+    }
+
+
+</script>
 <style>
     .asset-card {
         transition: all 0.3s ease;
@@ -435,6 +472,72 @@ document.addEventListener('keydown', function(event) {
     /* Prevent scrolling when modal is open */
     body.overflow-hidden {
         overflow: hidden;
+    }
+</style>
+
+<style>
+    .compact-upload-form {
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
+    .file-upload-box {
+        display: flex;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .file-input {
+        display: none;
+    }
+
+    .file-label {
+        flex-grow: 1;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 12px;
+        background: #f8f9fa;
+        cursor: pointer;
+    }
+
+    .file-name {
+        color: #666;
+        font-size: 14px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 200px;
+    }
+
+    .file-name.has-file {
+        color: #333;
+        font-weight: 500;
+    }
+
+    .browse-btn {
+        background: #e9ecef;
+        color: #495057;
+        padding: 6px 12px;
+        border-radius: 3px;
+        font-size: 13px;
+        border: 1px solid #ced4da;
+        margin-left: 10px;
+    }
+
+    .upload-btn {
+        background: #4a6bff;
+        color: white;
+        border: none;
+        padding: 0 16px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background 0.2s;
+    }
+
+    .upload-btn:hover {
+        background: #3a5bef;
     }
 </style>
 @endsection

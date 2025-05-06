@@ -236,13 +236,13 @@
                             Return Form
                         </a>
                     </div>
-                    
-                    <form action="{{ route('files.store') }}" method="POST" enctype="multipart/form-data" class="compact-upload-form">
+
+                    <form action="{{ route('return_files.store') }}" method="POST" enctype="multipart/form-data" class="compact-upload-form">
                         @csrf
                         <div class="file-upload-box">
-                            <input type="file" id="file" name="file" required class="file-input" onchange="showFileName(this)">
-                            <label for="file" class="file-label">
-                                <span id="fileNameDisplay" class="file-name">No file selected</span>
+                            <input type="file" id="returnfile" name="returnfile" required class="file-input" onchange="returnshowFileName(this)">
+                            <label for="returnfile" class="file-label">
+                                <span id="returnfileNameDisplay" class="returnfile-name">No file selected</span>
                                 <span class="browse-btn">Choose File</span>
                             </label>
                             <button type="submit" class="upload-btn">Upload</button>
@@ -401,382 +401,242 @@
     </div>
 </div>
 
-<style>
-    /* Enhanced Dark Mode Styles */
-    .dark {
-        --tw-bg-opacity: 1;
-        --tw-text-opacity: 1;
-    }
-    
-    .dark .bg-white {
-        background-color: #1f2937 !important;
-    }
-    
-    /* Text Colors */
-    .dark .text-gray-800,
-    .dark .text-gray-900 {
-        color: rgba(249, 250, 251, var(--tw-text-opacity)) !important;
-    }
-    
-    .dark .text-gray-700 {
-        color: rgba(229, 231, 235, var(--tw-text-opacity)) !important;
-    }
-    
-    .dark .text-gray-600 {
-        color: rgba(209, 213, 219, var(--tw-text-opacity)) !important;
-    }
-    
-    .dark .text-gray-500 {
-        color: rgba(156, 163, 175, var(--tw-text-opacity)) !important;
-    }
-    
-    /* Backgrounds */
-    .dark .bg-gray-50 {
-        background-color: #374151 !important;
-    }
-    
-    /* Active Items (Blue) */
-    .dark .bg-blue-100 {
-        background-color: #1e40af !important;
-    }
-    
-    .dark .text-blue-600,
-    .dark .text-blue-800 {
-        color: #93c5fd !important;
-    }
-    
-    /* Returned Items (Green) */
-    .dark .bg-green-100 {
-        background-color: #065f46 !important;
-    }
-    
-    .dark .text-green-600,
-    .dark .text-green-800 {
-        color: #6ee7b7 !important;
-    }
-    
-    /* Borders */
-    .dark .border-gray-100,
-    .dark .border-gray-200,
-    .dark .border-gray-300,
-    .dark .border {
-        border-color: #4b5563 !important;
-    }
-    
-    /* Hover States */
-    .dark .hover\:bg-gray-50:hover {
-        background-color: #4b5563 !important;
-    }
-    
-    /* Cards */
-    .dark .bg-white {
-        background-color: #1f2937 !important;
-    }
-    
-    /* Buttons */
-    .dark .bg-white {
-        background-color: #374151 !important;
-    }
-    
-    /* Tables */
-    .dark .divide-gray-200 {
-        border-color: #4b5563 !important;
-    }
-    
-    /* Empty States */
-    .dark .text-gray-900 {
-        color: #f9fafb !important;
-    }
-    
-    /* Ensure all text is visible in dark mode */
-    .dark {
-        color: #e5e7eb !important;
-    }
-    
-    /* Specific component overrides */
-    .dark .bg-gradient-to-br {
-        background-image: linear-gradient(to bottom right, #1e3a8a, #1e1b4b) !important;
-    }
-    
-    /* Form elements */
-    .dark input,
-    .dark select,
-    .dark textarea {
-        background-color: #1f2937 !important;
-        border-color: #4b5563 !important;
-        color: #f3f4f6 !important;
-    }
-    
-    /* Links and buttons */
-    .dark a {
-        color: #93c5fd !important;
-    }
-    
-    .dark button {
-        color: #f3f4f6 !important;
-    }
-    
-    /* Shadows - make them more visible in dark mode */
-    .dark .shadow-lg {
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.25) !important;
-    }
-    
-    /* Status badges */
-    .dark .bg-blue-100 {
-        background-color: rgba(30, 64, 175, 0.2) !important;
-    }
-    
-    .dark .bg-green-100 {
-        background-color: rgba(6, 95, 70, 0.2) !important;
-    }
-    
-    /* Card headers */
-    .dark .bg-gradient-to-r.from-blue-600.to-indigo-700,
-    .dark .bg-gradient-to-r.from-green-600.to-teal-700 {
-        background-image: linear-gradient(to right, var(--tw-gradient-from), var(--tw-gradient-to)) !important;
-    }
-    
-    /* Ensure white text remains white in dark mode */
-    .dark .text-white {
-        color: white !important;
-    }
-    
-    /* Icons */
-    .dark svg:not([class*="text-"]) {
-        color: #e5e7eb !important;
-    }
-    
-    /* Override any specific text colors that might be too light */
-    .dark .text-blue-100 {
-        color: #bfdbfe !important;
-    }
-    
-    .dark .text-green-100 {
-        color: #a7f3d0 !important;
-    }
-</style>
+
 
 <script>
     // Add this to your existing script section
-const themeToggle = document.getElementById('theme-toggle');
-const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
-const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+    const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
 
-// Check for saved theme preference or use system preference
-if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-    document.documentElement.classList.add('dark');
-    themeToggleLightIcon.classList.remove('hidden');
-} else {
-    document.documentElement.classList.remove('dark');
-    themeToggleDarkIcon.classList.remove('hidden');
-}
-
-// Toggle button click handler
-themeToggle.addEventListener('click', function() {
-    // Toggle icons
-    themeToggleDarkIcon.classList.toggle('hidden');
-    themeToggleLightIcon.classList.toggle('hidden');
-    
-    // Update localStorage and apply theme
-    if (document.documentElement.classList.contains('dark')) {
-        document.documentElement.classList.remove('dark');
-        localStorage.setItem('color-theme', 'light');
-    } else {
+    // Check for saved theme preference or use system preference
+    if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
         document.documentElement.classList.add('dark');
-        localStorage.setItem('color-theme', 'dark');
+        themeToggleLightIcon.classList.remove('hidden');
+    } else {
+        document.documentElement.classList.remove('dark');
+        themeToggleDarkIcon.classList.remove('hidden');
     }
-});
-document.addEventListener('DOMContentLoaded', function() {
-    // Current Assets View Toggle
-    const gridViewBtn = document.getElementById('grid-view-btn');
-    const tableViewBtn = document.getElementById('table-view-btn');
-    const gridView = document.getElementById('grid-view');
-    const tableView = document.getElementById('table-view');
-    
-    gridViewBtn.addEventListener('click', function() {
-        gridView.classList.remove('hidden');
-        tableView.classList.add('hidden');
-        gridViewBtn.classList.remove('bg-white', 'text-gray-700');
-        gridViewBtn.classList.add('bg-blue-600', 'text-white');
-        tableViewBtn.classList.remove('bg-blue-600', 'text-white');
-        tableViewBtn.classList.add('bg-white', 'text-gray-700');
-        
-        // Store preference in localStorage
-        localStorage.setItem('currentAssetsView', 'grid');
-    });
-    
-    tableViewBtn.addEventListener('click', function() {
-        gridView.classList.add('hidden');
-        tableView.classList.remove('hidden');
-        tableViewBtn.classList.remove('bg-white', 'text-gray-700');
-        tableViewBtn.classList.add('bg-blue-600', 'text-white');
-        gridViewBtn.classList.remove('bg-blue-600', 'text-white');
-        gridViewBtn.classList.add('bg-white', 'text-gray-700');
-        
-        // Store preference in localStorage
-        localStorage.setItem('currentAssetsView', 'table');
-    });
-    
-    // History Assets View Toggle
-    const historyGridBtn = document.getElementById('history-grid-btn');
-    const historyTableBtn = document.getElementById('history-table-btn');
-    const historyGridView = document.getElementById('history-grid-view');
-    const historyTableView = document.getElementById('history-table-view');
-    
-    historyGridBtn.addEventListener('click', function() {
-        historyGridView.classList.remove('hidden');
-        historyTableView.classList.add('hidden');
-        historyGridBtn.classList.remove('bg-white', 'text-gray-700');
-        historyGridBtn.classList.add('bg-green-600', 'text-white');
-        historyTableBtn.classList.remove('bg-green-600', 'text-white');
-        historyTableBtn.classList.add('bg-white', 'text-gray-700');
-        
-        // Store preference in localStorage
-        localStorage.setItem('historyAssetsView', 'grid');
-    });
-    
-    historyTableBtn.addEventListener('click', function() {
-        historyGridView.classList.add('hidden');
-        historyTableView.classList.remove('hidden');
-        historyTableBtn.classList.remove('bg-white', 'text-gray-700');
-        historyTableBtn.classList.add('bg-green-600', 'text-white');
-        historyGridBtn.classList.remove('bg-green-600', 'text-white');
-        historyGridBtn.classList.add('bg-white', 'text-gray-700');
-        
-        // Store preference in localStorage
-        localStorage.setItem('historyAssetsView', 'table');
-    });
-    
-    // Check for saved view preferences
-    const currentAssetsView = localStorage.getItem('currentAssetsView');
-    const historyAssetsView = localStorage.getItem('historyAssetsView');
-    
-    if (currentAssetsView === 'table') {
-        tableViewBtn.click();
-    }
-    
-    if (historyAssetsView === 'table') {
-        historyTableBtn.click();
-    }
-    
-    // Add tooltips to action buttons
-    tippy('[data-tippy-content]', {
-        theme: 'light-border',
-        animation: 'scale',
-        duration: [200, 150],
-        arrow: true
-    });
-});
-// Update the time every minute
-function updatePhilippineTime() {
-    const options = { 
-        timeZone: 'Asia/Manila',
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true
-    };
-    
-    const formatter = new Intl.DateTimeFormat('en-US', options);
-    const parts = formatter.formatToParts(new Date());
-    
-    let formattedDate = {};
-    parts.forEach(part => {
-        formattedDate[part.type] = part.value;
-    });
-    
-    const timeString = `${formattedDate.weekday}, ${formattedDate.month} ${formattedDate.day}, ${formattedDate.year} ${formattedDate.hour}:${formattedDate.minute} ${formattedDate.dayPeriod}`;
-    document.getElementById('philippine-time').textContent = timeString; 
-}
 
-// Initial call
-updatePhilippineTime();
+    // Toggle button click handler
+    themeToggle.addEventListener('click', function() {
+        // Toggle icons
+        themeToggleDarkIcon.classList.toggle('hidden');
+        themeToggleLightIcon.classList.toggle('hidden');
+        
+        // Update localStorage and apply theme
+        if (document.documentElement.classList.contains('dark')) {
+            document.documentElement.classList.remove('dark');
+            localStorage.setItem('color-theme', 'light');
+        } else {
+            document.documentElement.classList.add('dark');
+            localStorage.setItem('color-theme', 'dark');
+        }
+    });
+    document.addEventListener('DOMContentLoaded', function() {
+        // Current Assets View Toggle
+        const gridViewBtn = document.getElementById('grid-view-btn');
+        const tableViewBtn = document.getElementById('table-view-btn');
+        const gridView = document.getElementById('grid-view');
+        const tableView = document.getElementById('table-view');
+        
+        gridViewBtn.addEventListener('click', function() {
+            gridView.classList.remove('hidden');
+            tableView.classList.add('hidden');
+            gridViewBtn.classList.remove('bg-white', 'text-gray-700');
+            gridViewBtn.classList.add('bg-blue-600', 'text-white');
+            tableViewBtn.classList.remove('bg-blue-600', 'text-white');
+            tableViewBtn.classList.add('bg-white', 'text-gray-700');
+            
+            // Store preference in localStorage
+            localStorage.setItem('currentAssetsView', 'grid');
+        });
+        
+        tableViewBtn.addEventListener('click', function() {
+            gridView.classList.add('hidden');
+            tableView.classList.remove('hidden');
+            tableViewBtn.classList.remove('bg-white', 'text-gray-700');
+            tableViewBtn.classList.add('bg-blue-600', 'text-white');
+            gridViewBtn.classList.remove('bg-blue-600', 'text-white');
+            gridViewBtn.classList.add('bg-white', 'text-gray-700');
+            
+            // Store preference in localStorage
+            localStorage.setItem('currentAssetsView', 'table');
+        });
+        
+        // History Assets View Toggle
+        const historyGridBtn = document.getElementById('history-grid-btn');
+        const historyTableBtn = document.getElementById('history-table-btn');
+        const historyGridView = document.getElementById('history-grid-view');
+        const historyTableView = document.getElementById('history-table-view');
+        
+        historyGridBtn.addEventListener('click', function() {
+            historyGridView.classList.remove('hidden');
+            historyTableView.classList.add('hidden');
+            historyGridBtn.classList.remove('bg-white', 'text-gray-700');
+            historyGridBtn.classList.add('bg-green-600', 'text-white');
+            historyTableBtn.classList.remove('bg-green-600', 'text-white');
+            historyTableBtn.classList.add('bg-white', 'text-gray-700');
+            
+            // Store preference in localStorage
+            localStorage.setItem('historyAssetsView', 'grid');
+        });
+        
+        historyTableBtn.addEventListener('click', function() {
+            historyGridView.classList.add('hidden');
+            historyTableView.classList.remove('hidden');
+            historyTableBtn.classList.remove('bg-white', 'text-gray-700');
+            historyTableBtn.classList.add('bg-green-600', 'text-white');
+            historyGridBtn.classList.remove('bg-green-600', 'text-white');
+            historyGridBtn.classList.add('bg-white', 'text-gray-700');
+            
+            // Store preference in localStorage
+            localStorage.setItem('historyAssetsView', 'table');
+        });
+        
+        // Check for saved view preferences
+        const currentAssetsView = localStorage.getItem('currentAssetsView');
+        const historyAssetsView = localStorage.getItem('historyAssetsView');
+        
+        if (currentAssetsView === 'table') {
+            tableViewBtn.click();
+        }
+        
+        if (historyAssetsView === 'table') {
+            historyTableBtn.click();
+        }
+        
+        // Add tooltips to action buttons
+        tippy('[data-tippy-content]', {
+            theme: 'light-border',
+            animation: 'scale',
+            duration: [200, 150],
+            arrow: true
+        });
+    });
+    // Update the time every minute
+    function updatePhilippineTime() {
+        const options = { 
+            timeZone: 'Asia/Manila',
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+        };
+        
+        const formatter = new Intl.DateTimeFormat('en-US', options);
+        const parts = formatter.formatToParts(new Date());
+        
+        let formattedDate = {};
+        parts.forEach(part => {
+            formattedDate[part.type] = part.value;
+        });
+        
+        const timeString = `${formattedDate.weekday}, ${formattedDate.month} ${formattedDate.day}, ${formattedDate.year} ${formattedDate.hour}:${formattedDate.minute} ${formattedDate.dayPeriod}`;
+        document.getElementById('philippine-time').textContent = timeString; 
+    }
 
-// Update every minute
-setInterval(updatePhilippineTime, 60000);
+    // Initial call
+    updatePhilippineTime();
+
+    // Update every minute
+    setInterval(updatePhilippineTime, 60000);
 </script>
 
 
 <script>
-function showFileName(input) {
-    const fileNameDisplay = document.getElementById('fileNameDisplay');
-    if (input.files.length > 0) {
-        fileNameDisplay.textContent = input.files[0].name;
-        fileNameDisplay.classList.add('has-file');
-    } else {
-        fileNameDisplay.textContent = 'No file selected';
-        fileNameDisplay.classList.remove('has-file');
+    function showFileName(input) {
+        const fileNameDisplay = document.getElementById('fileNameDisplay');
+        if (input.files.length > 0) {
+            fileNameDisplay.textContent = input.files[0].name;
+            fileNameDisplay.classList.add('has-file');
+        } else {
+            fileNameDisplay.textContent = 'No file selected';
+            fileNameDisplay.classList.remove('has-file');
+        }
     }
-}
+
+    function returnshowFileName(input) {
+        const returnfileNameDisplay = document.getElementById('returnfileNameDisplay');
+        if (input.files.length > 0) {
+            returnfileNameDisplay.textContent = input.files[0].name;
+            returnfileNameDisplay.classList.add('has-file');
+        } else {
+            returnfileNameDisplay.textContent = 'No file selected';
+            returnfileNameDisplay.classList.remove('has-file');
+        }
+    }
+
+
 </script>
 
 <style>
-.compact-upload-form {
-    max-width: 400px;
-    margin: 0 auto;
-}
+    .compact-upload-form {
+        max-width: 400px;
+        margin: 0 auto;
+    }
 
-.file-upload-box {
-    display: flex;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    overflow: hidden;
-}
+    .file-upload-box {
+        display: flex;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        overflow: hidden;
+    }
 
-.file-input {
-    display: none;
-}
+    .file-input {
+        display: none;
+    }
 
-.file-label {
-    flex-grow: 1;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 12px;
-    background: #f8f9fa;
-    cursor: pointer;
-}
+    .file-label {
+        flex-grow: 1;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 12px;
+        background: #f8f9fa;
+        cursor: pointer;
+    }
 
-.file-name {
-    color: #666;
-    font-size: 14px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 200px;
-}
+    .file-name {
+        color: #666;
+        font-size: 14px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 200px;
+    }
 
-.file-name.has-file {
-    color: #333;
-    font-weight: 500;
-}
+    .file-name.has-file {
+        color: #333;
+        font-weight: 500;
+    }
 
-.browse-btn {
-    background: #e9ecef;
-    color: #495057;
-    padding: 6px 12px;
-    border-radius: 3px;
-    font-size: 13px;
-    border: 1px solid #ced4da;
-    margin-left: 10px;
-}
+    .browse-btn {
+        background: #e9ecef;
+        color: #495057;
+        padding: 6px 12px;
+        border-radius: 3px;
+        font-size: 13px;
+        border: 1px solid #ced4da;
+        margin-left: 10px;
+    }
 
-.upload-btn {
-    background: #4a6bff;
-    color: white;
-    border: none;
-    padding: 0 16px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background 0.2s;
-}
+    .upload-btn {
+        background: #4a6bff;
+        color: white;
+        border: none;
+        padding: 0 16px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background 0.2s;
+    }
 
-.upload-btn:hover {
-    background: #3a5bef;
-}
+    .upload-btn:hover {
+        background: #3a5bef;
+    }
 </style>
 @endsection
 
