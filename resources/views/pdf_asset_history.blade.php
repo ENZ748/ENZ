@@ -12,9 +12,14 @@
             color: #333;
             background-color: #f8f8f8;
         }
-        .logo-container {
+        .logo-header {
             text-align: center;
-            margin: 20px 0;
+            padding: 20px 0;
+            background-color: white;
+        }
+        .logo-container {
+            display: inline-block;
+            margin: 0 auto;
         }
         .logo {
             width: 150px;
@@ -125,6 +130,11 @@
     </style>
 </head>
 <body>
+    <div class="logo-header">
+        <div class="logo-container">
+            <img src="{{ public_path('ENZPDF.png') }}" alt="Logo" class="logo">
+        </div>
+    </div>
     
     <div class="container">
         <div class="header">
