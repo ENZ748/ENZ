@@ -5,15 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ReturnSignedItem extends Model
+class ReturnFile extends Model
 {
     use HasFactory;
 
-    protected $table = 'return_signed_items';
+    protected $table = 'return_file_items';
 
     protected $fillable = [
         'employeeID',
-        'original_name',
+        'original_name',    
         'storage_path',
         'mime_type',
         'size',
@@ -25,8 +25,4 @@ class ReturnSignedItem extends Model
         return $this->belongsTo(Employees::class, 'employeeID');
     }
 
-    public function itemHistories()
-    {
-        return $this->hasMany(ItemHistory::class, 'fileID');
-    }
 }

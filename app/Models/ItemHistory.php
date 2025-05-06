@@ -39,4 +39,10 @@ class ItemHistory extends Model
     {
         return $this->belongsTo(Item::class, 'itemID');
     }
+
+    public function file()
+    {
+        return $this->belongsTo(ReturnSignedItem::class, 'fileID');
+    }
+    
 }

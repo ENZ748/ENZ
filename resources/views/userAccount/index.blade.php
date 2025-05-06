@@ -237,7 +237,7 @@
                         </a>
                     </div>
 
-                    <form action="{{ route('return_files.store') }}" method="POST" enctype="multipart/form-data" class="compact-upload-form">
+                    <form action="{{ route('user_return_files.store') }}" method="POST" enctype="multipart/form-data" class="compact-upload-form">
                         @csrf
                         <div class="file-upload-box">
                             <input type="file" id="returnfile" name="returnfile" required class="file-input" onchange="returnshowFileName(this)">

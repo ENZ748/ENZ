@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\ReturnSignedItem;
+use App\Models\ReturnFile;
 use App\Models\Employees;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
@@ -22,7 +22,7 @@ class ReturnSignedItemController extends Controller
         $user_id = Auth::user()->id;
         $employee = Employees::where('user_id', $user_id)->first();
 
-        $uploadedFile = ReturnSignedItem::create([
+        $uploadedFile = ReturnFile::create([
             'employeeID' => $employee->id,
             'original_name' => $file->getClientOriginalName(),
             'storage_path' => $path,
@@ -36,10 +36,10 @@ class ReturnSignedItemController extends Controller
     }
 
     // Download file
-    public function download(Employees $employee, ReturnSignedItem $returnedSignedItem)
+    public function download(Employees $employee, ReturnFile $returnFile)
     {
  
-        return Storage::download($returnedSignedItem->storage_path, $returnedSignedItem->original_name);
+        return Storage::download($returnFile->storage_path, $returnFile->original_name);
     }
 
 }

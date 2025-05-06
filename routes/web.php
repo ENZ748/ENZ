@@ -282,26 +282,35 @@ Route::middleware('auth')->group(function () {
 
     // Download file
     Route::get('/employees/{employee}/files/{file}/download', [FileController::class, 'download'])
-    ->name('files.download');
+        ->name('files.download');
 
 
     use App\Http\Controllers\ReturnSignedItemController;
     Route::get('/return_files/upload', [ReturnSignedItemController::class, 'create'])
-    ->name('return_files.create');
+        ->name('return_files.create');
 
-    // Handle file upload
-    Route::post('/return_files/upload', [ReturnSignedItemController::class, 'store'])
-        ->name('return_files.store');
+    Route::post('/user_return_files/upload', [ReturnSignedItemController::class, 'store'])
+    ->name('user_return_files.store');
 
+        
     // List all return_files
     Route::get('/return_files', [ReturnSignedItemController::class, 'index'])
         ->name('return_files.index');
 
     // Download file
 // In routes/web.php
-    Route::get('/employees/{employee}/return_files/{returnedSignedItem}/download', 
+    Route::get('/employees/{employee}/return_files/{returnFile}/download', 
     [ReturnSignedItemController::class, 'download'])
     ->name('return_files.download');
 
+
+//Item History upload file
+    Route::post('/return_files/employee/{id}', [ItemHistoryController::class, 'store'])
+    ->name('return_files.store');
+    
+//Item History Download file
+    Route::get('/return_files/{returnedSignedItem}/download', 
+    [ItemHistoryController::class, 'download'])
+    ->name('return_files_history.download');
 
     require __DIR__.'/auth.php';    

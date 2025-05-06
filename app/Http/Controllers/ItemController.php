@@ -292,7 +292,7 @@ public function store(Request $request)
             } else {
                 InStock::create([
                     'employeeID' => $employee->id,
-                    'itemID' => $assignedItem->itemID,
+                    'itemID' => $item->id,
                      
                 ]);
             }

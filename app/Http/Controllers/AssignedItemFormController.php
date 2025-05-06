@@ -9,6 +9,7 @@ use App\Models\ItemHistory;
 use App\Models\File;
 use App\Models\UploadedFile;
 use App\Models\ReturnSignedItem;
+use App\Models\ReturnFile;
 
 class AssignedItemFormController extends Controller
 {
@@ -20,11 +21,11 @@ class AssignedItemFormController extends Controller
             })
             ->orderBy('hire_date', 'desc')
             ->paginate(10);
-            
+        
         $files = UploadedFile::with('employee')->get(); // Eager load employee relationship
-        $returnedSignedItems = ReturnSignedItem::with('employee')->get(); // Eager load employee relationship
+        $returnfiles = ReturnFile::with('employee')->get(); // Eager load employee relationship
 
-        return view('assigned_item_forms.index', compact('employees', 'files','returnedSignedItems'));
+        return view('assigned_item_forms.index', compact('employees', 'files','returnfiles'));
     }
 
     public function search(Request $request)
@@ -98,11 +99,15 @@ class AssignedItemFormController extends Controller
         ->where('status', 0)
         ->get();
 
+        $returnSignedItem = ReturnSignedItem::where('employeeID', $employee->id)->latest()->first();
+
         foreach ($history_items as $history_item) {
             $history_item->status = 1;
+            $history_item->fileID = $returnSignedItem->id;
             $history_item->save();
         }
 
         return redirect('form');
     }
+
 }

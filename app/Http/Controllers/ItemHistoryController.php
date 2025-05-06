@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\ItemHistory;
+use App\Models\ReturnSignedItem;
+use Illuminate\Support\Facades\Storage;
 
 class ItemHistoryController extends Controller
 {
@@ -20,7 +22,7 @@ class ItemHistoryController extends Controller
     {
         $search = $request->input('search');
 
-        $assignedItems = ItemHistory::with(['employee', 'item.category', 'item.brand', 'item.unit'])
+        $assignedItems = ItemHistory::with(['employee', 'item.category', 'item.brand', 'item.unit','file'])
             ->when($search, function ($query) use ($search) {
                 $query->where(function ($q) use ($search) {
                     // Search by employee name
@@ -50,4 +52,33 @@ class ItemHistoryController extends Controller
 
         return view('itemHistory.index', compact('assignedItems'));
     }
+
+    public function store(Request $request, $id)
+    {
+        $request->validate([
+            'returnfile' => 'required|file|max:2048', // 2MB max
+        ]);
+
+        $file = $request->file('returnfile');
+        $path = $file->store('uploads');
+
+        $uploadedFile = ReturnSignedItem::create([
+            'employeeID' => $id,
+            'original_name' => $file->getClientOriginalName(),
+            'storage_path' => $path,
+            'mime_type' => $file->getMimeType(),
+            'size' => $file->getSize(),
+
+        ]);
+        
+        return redirect()->route('assigned_items.forms')
+            ->with('success', 'File uploaded successfully!');
+    }
+
+    public function download(ReturnSignedItem $returnedSignedItem)
+    {
+ 
+        return Storage::download($returnedSignedItem->storage_path, $returnedSignedItem->original_name);
+    }
+
 }

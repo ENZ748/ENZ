@@ -59,6 +59,11 @@ class Employees extends Model
     {
         return $this->hasMany(ReturnSignedItem::class, 'employeeID');
     }
+
+    public function returnfiles()
+    {
+        return $this->hasMany(ReturnFile::class, 'employeeID');
+    }
     
     public function users()
     {
