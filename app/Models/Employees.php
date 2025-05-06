@@ -52,7 +52,7 @@ class Employees extends Model
 
     public function files()
     {
-        return $this->hasMany(UploadedFile::class);
+        return $this->hasMany(UploadedFile::class,'employeeID');
     }
 
     public function users()
@@ -60,7 +60,7 @@ class Employees extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
     public function employees()
-{
-    return $this->hasOne(Employees::class); // still singular relationship
-}
+    {
+        return $this->hasOne(Employees::class); // still singular relationship
+    }
 }
