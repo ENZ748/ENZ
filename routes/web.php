@@ -283,5 +283,25 @@ Route::middleware('auth')->group(function () {
     // Download file
     Route::get('/employees/{employee}/files/{file}/download', [FileController::class, 'download'])
     ->name('files.download');
-      
+
+
+    use App\Http\Controllers\ReturnSignedItemController;
+    Route::get('/return_files/upload', [ReturnSignedItemController::class, 'create'])
+    ->name('return_files.create');
+
+    // Handle file upload
+    Route::post('/return_files/upload', [ReturnSignedItemController::class, 'store'])
+        ->name('return_files.store');
+
+    // List all return_files
+    Route::get('/return_files', [ReturnSignedItemController::class, 'index'])
+        ->name('return_files.index');
+
+    // Download file
+// In routes/web.php
+    Route::get('/employees/{employee}/return_files/{returnedSignedItem}/download', 
+    [ReturnSignedItemController::class, 'download'])
+    ->name('return_files.download');
+
+
     require __DIR__.'/auth.php';    

@@ -8,6 +8,7 @@ use App\Models\AssignedItem;
 use App\Models\ItemHistory;
 use App\Models\File;
 use App\Models\UploadedFile;
+use App\Models\ReturnSignedItem;
 
 class AssignedItemFormController extends Controller
 {
@@ -21,8 +22,9 @@ class AssignedItemFormController extends Controller
             ->paginate(10);
             
         $files = UploadedFile::with('employee')->get(); // Eager load employee relationship
-        
-        return view('assigned_item_forms.index', compact('employees', 'files'));
+        $returnedSignedItems = ReturnSignedItem::with('employee')->get(); // Eager load employee relationship
+
+        return view('assigned_item_forms.index', compact('employees', 'files','returnedSignedItems'));
     }
 
     public function search(Request $request)
