@@ -191,16 +191,20 @@
                                 </div>
                                 <div class="invalid-feedback">Please provide a valid email.</div>
                             </div>
-                            <div class="col-md-6 position-relative">
+                            <div class="col-md-6">
                                 <label class="form-label">Password</label>
-                                <input type="password" id="password" name="password" class="form-control" required>
-                                <i class="bi bi-eye-slash password-toggle" onclick="togglePassword('password', this)"></i>
+                                <div class="input-wrapper">
+                                    <input type="password" id="password" name="password" class="form-control" required>
+                                    <i class="bi bi-eye-slash password-toggle" onclick="togglePassword('password', this)"></i>
+                                </div>
                                 <div class="invalid-feedback">Please provide a password.</div>
                             </div>
-                            <div class="col-md-6 position-relative">
+                            <div class="col-md-6">
                                 <label class="form-label">Confirm Password</label>
-                                <input type="password" id="confirm_password" name="password_confirmation" class="form-control" required>
-                                <i class="bi bi-eye-slash password-toggle" onclick="togglePassword('confirm_password', this)"></i>
+                                <div class="input-wrapper">
+                                    <input type="password" id="confirm_password" name="password_confirmation" class="form-control" required>
+                                    <i class="bi bi-eye-slash password-toggle" onclick="togglePassword('confirm_password', this)"></i>
+                                </div>
                                 <div id="password_error" class="text-danger small mt-1" style="display: none;">
                                     <i class="bi bi-exclamation-triangle-fill"></i> Passwords do not match
                                 </div>
@@ -276,16 +280,21 @@
                                 </div>
                                 <div class="invalid-feedback">Please provide a valid email.</div>
                             </div>
-                            <div class="col-md-6 position-relative">
+                            <div class="col-md-6">
                                 <label class="form-label">Password</label>
-                                <input type="password" id="edit_password" name="password" class="form-control" required>
-                                <i class="bi bi-eye-slash password-toggle" onclick="togglePassword('edit_password', this)"></i>
+                                <div class="input-wrapper">
+                                    <input type="password" id="edit_password" name="password" class="form-control" required>
+                                    <i class="bi bi-eye-slash password-toggle" onclick="togglePassword('edit_password', this)"></i>
+                                </div>
                                 <div class="invalid-feedback">Please provide a password.</div>
                             </div>
-                            <div class="col-md-6 position-relative">
+
+                            <div class="col-md-6">
                                 <label class="form-label">Confirm Password</label>
-                                <input type="password" id="edit_confirm_password" name="password_confirmation" class="form-control" required>
-                                <i class="bi bi-eye-slash password-toggle" onclick="togglePassword('edit_confirm_password', this)"></i>
+                                <div class="input-wrapper">
+                                    <input type="password" id="edit_confirm_password" name="password_confirmation" class="form-control" required>
+                                    <i class="bi bi-eye-slash password-toggle" onclick="togglePassword('edit_confirm_password', this)"></i>
+                                </div>
                                 <div id="edit_password_error" class="text-danger small mt-1" style="display: none;">
                                     <i class="bi bi-exclamation-triangle-fill"></i> Passwords do not match
                                 </div>
@@ -714,6 +723,24 @@
             }
         });
     </script>
+
+    <Style>
+        <style>
+        .password-toggle {
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #6c757d;
+            z-index: 2;
+        }
+        .input-wrapper {
+            position: relative;
+        }   
+    </Style>
+
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 @endsection

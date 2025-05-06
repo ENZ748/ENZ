@@ -34,7 +34,7 @@ class SuperAdminController extends Controller
     {
         // Validate the request
         $request->validate([
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
@@ -105,7 +105,6 @@ class SuperAdminController extends Controller
             'email' => [
                 'required', 
                 'string', 
-                'lowercase', 
                 'email', 
                 'max:255', 
                 Rule::unique('users')->ignore($employee->users->id ?? null)
