@@ -60,7 +60,6 @@ class Employees extends Model
         return $this->hasMany(ReturnFile::class, 'employeeID');
     }
 
-
     public function assetSignedItems()
     {
         return $this->hasMany(AssetSignedItem::class, 'employeeID');
@@ -71,6 +70,15 @@ class Employees extends Model
         return $this->hasMany(ReturnSignedItem::class, 'employeeID');
     }
 
+    public function assetForm()
+    {
+        return $this->hasMany(AssetForm::class, 'employeeID');
+    }
+
+    public function returnForm()
+    {
+        return $this->hasMany(ReturnForm::class, 'returnID');
+    }
 
 
     

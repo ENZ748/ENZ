@@ -43,4 +43,9 @@ class AssignedItem extends Model
     {
         return $this->belongsTo(AssetSignedItem::class, 'fileID');
     }
+
+    public function assetForm()
+    {
+        return $this->hasMany(AssetForm::class, 'assignedID');
+    }
 }

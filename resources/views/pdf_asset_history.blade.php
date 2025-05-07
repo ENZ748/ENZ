@@ -123,12 +123,12 @@
             <p><strong>Name of Item Holder:</strong> {{ $employee->first_name }} {{ $employee->last_name }}</p>
             <p><strong>Department:</strong> {{ $employee->department }}</p>
             <p><strong>Employee Number:</strong> {{ $employee->employee_number }}</p>
-            <p><strong>Original Issuance Number:</strong> ENZACT{{ \Carbon\Carbon::now()->format('Y') }}{{ substr(md5($employee->employee_number . implode('', $history_items->pluck('item.id')->toArray())), 0, 6) }}</p>
+            <p><strong>Original Issuance Number:</strong> {{ $return_forms->first()->issuance_number ?? 'N/A' }}</p>
             <p><strong>Reason for Returning Assets:</strong> Returned items as per company policy</p>
-            <p><strong>Total Assets Returned:</strong> {{ count($history_items) }} Asset(s)</p>
+            <p><strong>Total Assets Returned:</strong> {{ count($return_forms) }} Asset(s)</p>
         </div>
 
-        @if(count($history_items) > 0)
+        @if(count($return_forms) > 0)
             <table>
                 <thead>
                     <tr>
@@ -142,21 +142,21 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($history_items as $history_item)
+                    @foreach($return_forms as $return_form)
                         <tr>
                             <td>
-                                {{ $history_item->item->category->category_name }} - 
-                                {{ $history_item->item->brand->brand_name }}
+                                {{ $return_form->returnItem->item->category->category_name }} - 
+                                {{ $return_form->returnItem->item->brand->brand_name }}
                             </td>
-                            <td>{{ $history_item->item->unit->unit_name }}</td>
-                            <td>{{ $history_item->item->serial_number }}</td>
-                            <td>{{ \Carbon\Carbon::parse($history_item->assigned_date)->format('M d, Y') }}</td>
+                            <td>{{ $return_form->returnItem->item->unit->unit_name }}</td>
+                            <td>{{ $return_form->returnItem->item->serial_number }}</td>
+                            <td>{{ \Carbon\Carbon::parse($return_form->returnItem->assigned_date)->format('M d, Y') }}</td>
                             <td>
-                                    {{ \Carbon\Carbon::parse($history_item->created_at)->format('M d, Y') }}
+                                    {{ \Carbon\Carbon::parse($return_form->returnItem->created_at)->format('M d, Y') }}
                             </td>
                             <td>
-                                @if($history_item->notes)
-                                        {{ Str::limit($history_item->notes, 50) }}
+                                @if($return_form->returnItem->notes)
+                                        {{ Str::limit($return_form->returnItem->notes, 50) }}
                                 @else
                                     No Notes
                                 @endif
