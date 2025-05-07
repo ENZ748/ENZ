@@ -170,6 +170,18 @@
                             </svg>
                         </button>
                     </div>
+                   <!-- Assets Signed Files Form -->
+                    <form action="{{ route('assets_signed_files.store', ['id' => $employee->id]) }}" method="POST" enctype="multipart/form-data" id="assetsSignedForm">
+                        @csrf
+                        <div class="file-upload-box">
+                            <input type="file" id="assetFile" name="file" required class="file-input">
+                            <label for="assetFile" class="file-label">
+                                <span id="assetFileNameDisplay" class="file-name">No file selected</span>
+                                <span class="browse-btn">Choose File</span>
+                            </label>
+                            <button type="submit" class="upload-btn">Upload Asset File</button>
+                        </div>
+                    </form>
 
                     <!-- Content -->
                     <div class="p-6 max-h-[65vh] overflow-y-auto">
@@ -177,17 +189,7 @@
                             <div class="mb-6">
                                 <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">Assigned Assets</h3>
                                 
-                                <form action="{{ route('files.store') }}" method="POST" enctype="multipart/form-data" class="compact-upload-form">
-                                    @csrf
-                                    <div class="file-upload-box">
-                                        <input type="file" id="returnfile" name="returnfile" required class="file-input" onchange="returnshowFileName(this)">
-                                        <label for="returnfile" class="file-label">
-                                            <span id="returnfileNameDisplay" class="returnfile-name">No file selected</span>
-                                            <span class="browse-btn">Choose File</span>
-                                        </label>
-                                        <button type="submit" class="upload-btn">Upload</button>
-                                    </div>
-                                </form>
+
 
                                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                     @foreach($employee->assigned_items->where('status', 0) as $assigned_item)
@@ -296,15 +298,16 @@
                         <div class="mb-6">
                             <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">Items to Return</h3>
 
-                            <form action="{{ route('return_files.store', ['id' => $employee->id]) }}" method="POST" enctype="multipart/form-data">
-                            @csrf
+                            <!-- Return Files Form -->
+                            <form action="{{ route('return_files.store', ['id' => $employee->id]) }}" method="POST" enctype="multipart/form-data" id="returnFilesForm">
+                                @csrf
                                 <div class="file-upload-box">
-                                    <input type="file" id="returnfile" name="returnfile" required class="file-input" onchange="returnshowFileName(this)">
-                                    <label for="returnfile" class="file-label">
-                                        <span id="returnfileNameDisplay" class="returnfile-name">No file selected</span>
+                                    <input type="file" id="returnFile" name="returnfile" required class="file-input">
+                                    <label for="returnFile" class="file-label">
+                                        <span id="returnFileNameDisplay" class="returnfile-name">No file selected</span>
                                         <span class="browse-btn">Choose File</span>
                                     </label>
-                                    <button type="submit" class="upload-btn">Upload</button>
+                                    <button type="submit" class="upload-btn">Upload Return File</button>
                                 </div>
                             </form>
 
@@ -438,27 +441,50 @@
     });
 </script>
 <script>
-    function showFileName(input) {
-        const fileNameDisplay = document.getElementById('fileNameDisplay');
-        if (input.files.length > 0) {
-            fileNameDisplay.textContent = input.files[0].name;
-            fileNameDisplay.classList.add('has-file');
+    document.addEventListener('DOMContentLoaded', function() {
+    // Assets Signed Files Form
+    const assetFileInput = document.getElementById('assetFile');
+    const assetFileNameDisplay = document.getElementById('assetFileNameDisplay');
+    
+    assetFileInput.addEventListener('change', function() {
+        if (this.files.length > 0) {
+            assetFileNameDisplay.textContent = this.files[0].name;
+            assetFileNameDisplay.classList.add('has-file');
         } else {
-            fileNameDisplay.textContent = 'No file selected';
-            fileNameDisplay.classList.remove('has-file');
+            assetFileNameDisplay.textContent = 'No file selected';
+            assetFileNameDisplay.classList.remove('has-file');
         }
-    }
+    });
 
-    function returnshowFileName(input) {
-        const returnfileNameDisplay = document.getElementById('returnfileNameDisplay');
-        if (input.files.length > 0) {
-            returnfileNameDisplay.textContent = input.files[0].name;
-            returnfileNameDisplay.classList.add('has-file');
+    // Return Files Form
+    const returnFileInput = document.getElementById('returnFile');
+    const returnFileNameDisplay = document.getElementById('returnFileNameDisplay');
+    
+    returnFileInput.addEventListener('change', function() {
+        if (this.files.length > 0) {
+            returnFileNameDisplay.textContent = this.files[0].name;
+            returnFileNameDisplay.classList.add('has-file');
         } else {
-            returnfileNameDisplay.textContent = 'No file selected';
-            returnfileNameDisplay.classList.remove('has-file');
+            returnFileNameDisplay.textContent = 'No file selected';
+            returnFileNameDisplay.classList.remove('has-file');
         }
-    }
+    });
+
+    // Form submission handlers
+    document.getElementById('assetsSignedForm').addEventListener('submit', function(e) {
+        if (assetFileInput.files.length === 0) {
+            e.preventDefault();
+            alert('Please select an asset file to upload');
+        }
+    });
+
+    document.getElementById('returnFilesForm').addEventListener('submit', function(e) {
+        if (returnFileInput.files.length === 0) {
+            e.preventDefault();
+            alert('Please select a return file to upload');
+        }
+    });
+});
 
 
 </script>

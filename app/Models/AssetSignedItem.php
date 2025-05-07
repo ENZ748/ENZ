@@ -1,0 +1,28 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class AssetSignedItem extends Model
+{
+    use HasFactory;
+
+    protected $table = 'assets_signed_items';
+
+    protected $fillable = [
+        'employeeID',
+        'original_name',    
+        'storage_path',
+        'mime_type',
+        'size',
+        'returned_at',
+    ];
+
+    public function employee()
+    {
+        return $this->belongsTo(Employees::class, 'employeeID');
+    }
+
+}

@@ -18,6 +18,7 @@ use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\SuperAdminDashboardController;
 use App\Http\Controllers\InStockController;
 use App\Http\Controllers\MailController;
+use App\Http\Controllers\AssetSignedItemController;
 
 use App\Http\Middleware\Admin;
 use App\Http\Middleware\SuperAdmin;
@@ -303,6 +304,9 @@ Route::middleware('auth')->group(function () {
     [ReturnSignedItemController::class, 'download'])
     ->name('return_files.download');
 
+//Accountability Signed
+    Route::post('/assets_signed_files/employee/{id}', [AssetSignedItemController::class, 'store'])
+    ->name('assets_signed_files.store');
 
 //Item History upload file
     Route::post('/return_files/employee/{id}', [ItemHistoryController::class, 'store'])

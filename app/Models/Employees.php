@@ -55,15 +55,24 @@ class Employees extends Model
         return $this->hasMany(UploadedFile::class,'employeeID');
     }
 
+    public function returnfiles()
+    {
+        return $this->hasMany(ReturnFile::class, 'employeeID');
+    }
+
+
+    public function assetSignedItems()
+    {
+        return $this->hasMany(AssetSignedItem::class, 'employeeID');
+    }
+
     public function returnedSignedItems()
     {
         return $this->hasMany(ReturnSignedItem::class, 'employeeID');
     }
 
-    public function returnfiles()
-    {
-        return $this->hasMany(ReturnFile::class, 'employeeID');
-    }
+
+
     
     public function users()
     {
