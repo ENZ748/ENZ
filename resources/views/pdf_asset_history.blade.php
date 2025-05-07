@@ -10,24 +10,20 @@
             margin: 0;
             padding: 0;
             color: #333;
-            background-color: #f8f8f8;
+            background-color:rgb(255, 255, 255);
+        }
+        .logo-header {
+            text-align: center;
+            padding: 20px 0;
+            background-color: white;
         }
         .logo-container {
-            text-align: center;
-            margin: 20px 0;
+            display: inline-block;
+            margin: 0 auto;
         }
         .logo {
             width: 150px;
             height: auto;
-        }
-        .container {
-            padding: 20px;
-            background-color: white;
-            margin: 10px auto;
-            width: 90%;
-            max-width: 800px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         .header {
             text-align: center;
@@ -46,31 +42,23 @@
             color: #555;
             margin: 5px 0;
         }
-        .history-table {
+        table {
             width: 100%;
             border-collapse: collapse;
-            margin: 15px 0;
-            border: 1px solid #ddd;
+            margin: 15px 0 20px;
             font-size: 12px;
+            table-layout: fixed;
         }
-        .history-table th, .history-table td {
-            padding: 8px;
-            border: 1px solid #ddd;
+        th, td {
+            padding: 6px;
             text-align: left;
-            line-height: 1.2;
+            border: 1px solid #ddd;
+            word-wrap: break-word;
         }
-        .history-table th {
+
+        th {
             background-color: #173753;
             color: white;
-            font-weight: bold;
-            padding: 8px;
-        }
-        .history-table td {
-            background-color: #f9f9f9;
-            padding: 8px;
-        }
-        .history-table tr:nth-child(even) td {
-            background-color: #f1f1f1;
         }
         .status {
             background-color: #6daedb;
@@ -125,27 +113,32 @@
     </style>
 </head>
 <body>
-    
-    <div class="container">
+    <div class="logo-header">
+        <div class="logo-container">
+            <img src="{{ public_path('ENZPDF.png') }}" alt="Logo" class="logo">
+        </div>
+    </div>
         <div class="header">
             <h2>ASSET RETURN FORM</h2>
             <p><strong>Name of Item Holder:</strong> {{ $employee->first_name }} {{ $employee->last_name }}</p>
             <p><strong>Department:</strong> {{ $employee->department }}</p>
             <p><strong>Employee Number:</strong> {{ $employee->employee_number }}</p>
+            <p><strong>Original Issuance Number:</strong> ENZACT{{ \Carbon\Carbon::now()->format('Y') }}{{ substr(md5($employee->employee_number . implode('', $history_items->pluck('item.id')->toArray())), 0, 6) }}</p>
             <p><strong>Reason for Returning Assets:</strong> Returned items as per company policy</p>
             <p><strong>Total Assets Returned:</strong> {{ count($history_items) }} Asset(s)</p>
         </div>
 
         @if(count($history_items) > 0)
-            <table class="history-table">
+            <table>
                 <thead>
                     <tr>
-                        <th style="width: 20%;">Category & Brand</th>
-                        <th style="width: 15%;">Unit</th>
-                        <th style="width: 15%;">Serial Number</th>
-                        <th style="width: 15%;">Assigned Date</th>
-                        <th style="width: 15%;">Return Date</th>
-                        <th style="width: 25%;">Notes</th>
+                        <th>Category & Brand</th>
+                        <th>Unit</th>
+                        <th>Serial Number</th>
+                        <th>Assigned Date</th>
+                        <th>Return Date</th>
+                        <th>Notes</th>
+                        <th>Code</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -159,17 +152,13 @@
                             <td>{{ $history_item->item->serial_number }}</td>
                             <td>{{ \Carbon\Carbon::parse($history_item->assigned_date)->format('M d, Y') }}</td>
                             <td>
-                                <span class="status">
                                     {{ \Carbon\Carbon::parse($history_item->created_at)->format('M d, Y') }}
-                                </span>
                             </td>
                             <td>
                                 @if($history_item->notes)
-                                    <div class="notes">
                                         {{ Str::limit($history_item->notes, 50) }}
-                                    </div>
                                 @else
-                                    <span>No Notes</span>
+                                    No Notes
                                 @endif
                             </td>
                         </tr>
@@ -193,7 +182,7 @@
         </div>
 
         <div class="hr-section">
-            <p><strong>For HR Use Only:</strong></p>
+            <p><i>For HR Use Only:</i></p>
             <p><strong>Accountability Number:</strong> ________________________</p>
             <p><strong>Items Date Received:</strong> ________________________</p>
             <p><strong>Assets Date Validated:</strong> ________________________</p>
@@ -202,6 +191,5 @@
                 <p><strong>Date:</strong> {{ \Carbon\Carbon::now()->format('M d, Y') }}</p>
             </div>
         </div>
-    </div>
 </body>
 </html>

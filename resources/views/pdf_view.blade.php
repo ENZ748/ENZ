@@ -82,7 +82,7 @@
 <h1>ACCOUNTABILITY FORM</h1>
 
     <p><strong>Date:</strong> {{ \Carbon\Carbon::now()->format('M d, Y') }}</p>
-    <p><strong>Issuance Number:</strong> ENZACT{{ \Carbon\Carbon::now()->format('Y') }}1</p>
+    <p><strong>Issuance Number:</strong> {{ \Carbon\Carbon::now()->format('Y') }}{{ sprintf('%06d', crc32($employee->employee_number . implode('', $assigned_items->pluck('item.id')->toArray()) . \Carbon\Carbon::now()->format('Ymd')) % 1000000) }}</p>
     <p><strong>Department:</strong> {{ $employee->department }}</p>
     <p><strong>Name of Item Holder:</strong> {{ $employee->first_name }} {{ $employee->last_name }}</p>
     <p><strong>Employee Number:</strong> {{ $employee->employee_number }}</p>
