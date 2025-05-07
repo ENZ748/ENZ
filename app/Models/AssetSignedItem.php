@@ -25,4 +25,8 @@ class AssetSignedItem extends Model
         return $this->belongsTo(Employees::class, 'employeeID');
     }
 
+    public function assetSignedItems()
+    {
+        return $this->hasMany(AssignedItem::class, 'fileID');
+    }
 }

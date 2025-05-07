@@ -170,8 +170,17 @@
                             </svg>
                         </button>
                     </div>
+
+
+                    <!-- Content -->
+                    <div class="p-6 max-h-[65vh] overflow-y-auto">
+                        @if($employee->assigned_items->where('status', 0)->count() > 0)
+                            <div class="mb-6">
+                                <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">Assigned Assets</h3>
+                                
+
                    <!-- Assets Signed Files Form -->
-                    <form action="{{ route('assets_signed_files.store', ['id' => $employee->id]) }}" method="POST" enctype="multipart/form-data" id="assetsSignedForm">
+                   <form action="{{ route('assets_signed_files.store', ['id' => $employee->id]) }}" method="POST" enctype="multipart/form-data" id="assetsSignedForm">
                         @csrf
                         <div class="file-upload-box">
                             <input type="file" id="assetFile" name="file" required class="file-input">
@@ -182,15 +191,6 @@
                             <button type="submit" class="upload-btn">Upload Asset File</button>
                         </div>
                     </form>
-
-                    <!-- Content -->
-                    <div class="p-6 max-h-[65vh] overflow-y-auto">
-                        @if($employee->assigned_items->where('status', 0)->count() > 0)
-                            <div class="mb-6">
-                                <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">Assigned Assets</h3>
-                                
-
-
                                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                     @foreach($employee->assigned_items->where('status', 0) as $assigned_item)
                                         <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
@@ -310,7 +310,7 @@
                                     <button type="submit" class="upload-btn">Upload Return File</button>
                                 </div>
                             </form>
-
+    
                             <form action="{{ route('form.asset_return', $employee->id) }}" method="POST">
                             @csrf
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -484,7 +484,7 @@
             alert('Please select a return file to upload');
         }
     });
-});
+}); 
 
 
 </script>

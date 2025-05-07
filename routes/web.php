@@ -308,6 +308,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/assets_signed_files/employee/{id}', [AssetSignedItemController::class, 'store'])
     ->name('assets_signed_files.store');
 
+    Route::get('/assets_files/{assetSignedItem}/download', 
+    [AssetSignedItemController::class, 'download'])
+    ->name('asset_files.download');
+
 //Item History upload file
     Route::post('/return_files/employee/{id}', [ItemHistoryController::class, 'store'])
     ->name('return_files.store');

@@ -10,6 +10,7 @@ use App\Models\File;
 use App\Models\UploadedFile;
 use App\Models\ReturnSignedItem;
 use App\Models\ReturnFile;
+use App\Models\AssetSignedItem;
 
 class AssignedItemFormController extends Controller
 {
@@ -83,9 +84,22 @@ class AssignedItemFormController extends Controller
         $assigned_items = AssignedItem::where('employeeID', $employee->id)
         ->where('status', 0)
         ->get();
-       
+
+        $signedItem = AssetSignedItem::where('employeeID', $employee->id)->first();
+
+        if ($signedItem) {
+            $itemCount = AssetSignedItem::where('employeeID', $employee->id)->count();
+            
+            if ($itemCount > 1) {
+                $signedItem = AssetSignedItem::where('employeeID', $employee->id)
+                    ->latest()
+                    ->first();
+            }
+        } 
+
         foreach ($assigned_items as $assigned_item) {
             $assigned_item->status = 1;
+            $assigned_item->fileID = $signedItem->id;
             $assigned_item->save();
         }
 

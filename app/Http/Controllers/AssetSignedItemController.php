@@ -34,9 +34,9 @@ class AssetSignedItemController extends Controller
     }
 
     // Download file
-    public function download(Employees $employee, ReturnFile $returnFile)
+    public function download(Employees $employee, AssetSignedItem $assetSignedItem)
     {
  
-        return Storage::download($returnFile->storage_path, $returnFile->original_name);
+        return Storage::download($assetSignedItem->storage_path, $assetSignedItem->original_name);
     }
 }

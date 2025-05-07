@@ -15,6 +15,7 @@ use App\Models\User;
 use App\Models\InStock;
 use App\Models\InUse;
 use App\Models\DamagedItem;
+use App\Models\AssetSignedItem;
 
 use Illuminate\Http\Request;
 
@@ -23,7 +24,7 @@ class AssignedItemController extends Controller
     // In your controller method
     public function index(Request $request)
     {
-        $query = AssignedItem::with(['employee', 'item.category', 'item.brand', 'item.unit'])
+        $query = AssignedItem::with(['employee', 'item.category', 'item.brand', 'item.unit','file'])
                     ->where('item_status','unreturned')->latest();
     
         if ($request->has('search')) {
@@ -499,5 +500,36 @@ class AssignedItemController extends Controller
 
         // Redirect back with a success message
         return redirect()->route('assigned_items.index')->with('success', 'Item marked as returned.');
+    }
+
+
+    public function signedStore(Request $request, $id)
+    {
+        $request->validate([
+            'file' => 'required|file|max:2048', // 2MB max
+        ]);
+    
+        $employee = Employees::findOrFail($id);
+        $file = $request->file('file');
+        $path = $file->store('assets_signed_files');
+    
+        // Save to database
+        $uploadedFile = AssetSignedItem::create([
+            'employeeID' => $employee->id,
+            'original_name' => $file->getClientOriginalName(),
+            'storage_path' => $path,
+            'mime_type' => $file->getMimeType(),
+            'size' => $file->getSize(),
+            'type' => 'asset_signed'
+        ]);
+    
+        return back()->with('success', 'Asset file uploaded successfully');
+    }
+
+    // Download file
+    public function download(Employees $employee, AssetSignedItem $assetSignedItem)
+    {
+ 
+        return Storage::download($assetSignedItem->storage_path, $assetSignedItem->original_name);
     }
 }

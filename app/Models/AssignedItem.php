@@ -38,4 +38,9 @@ class AssignedItem extends Model
     {
         return $this->belongsTo(Item::class, 'itemID');
     }
+
+    public function file()
+    {
+        return $this->belongsTo(AssetSignedItem::class, 'fileID');
+    }
 }
