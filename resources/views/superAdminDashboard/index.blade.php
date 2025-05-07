@@ -246,11 +246,10 @@
                             <label class="form-label">Department</label>
                             <select name="department" class="form-select" required>
                                 <option value="" selected disabled>Select Department</option>
-                                <option value="IT">IT</option>
-                                <option value="Marketing">Marketing</option>
-                                <option value="HR">HR</option>
-                                <option value="Sales">Sales</option>
-                                <option value="Accounting">Accounting</option>
+                                <option value="Admin and Accounts">Admin and Accounts</option>
+                                <option value="Business Strategy and Growth">Business Strategy and Growth</option>
+                                <option value="Human Resources and Organizational Development">Human Resources and Organizational Development</option>
+                                <option value="Service Processing">Service Processing</option>
                             </select>
                             <div class="invalid-feedback">Please select a department.</div>
                         </div>
@@ -271,16 +270,20 @@
                             </div>
                             <div class="invalid-feedback">Please provide a valid email.</div>
                         </div>
-                        <div class="col-md-6 position-relative">
+                        <div class="col-md-6">
                             <label class="form-label">Password</label>
-                            <input type="password" id="password" name="password" class="form-control" required>
-                            <i class="bi bi-eye-slash password-toggle" onclick="togglePassword('password', this)"></i>
+                            <div class="input-wrapper">
+                                <input type="password" id="password" name="password" class="form-control" required>
+                                <i class="bi bi-eye-slash password-toggle" onclick="togglePassword('password', this)"></i>
+                            </div>
                             <div class="invalid-feedback">Please provide a password.</div>
                         </div>
-                        <div class="col-md-6 position-relative">
+                        <div class="col-md-6">
                             <label class="form-label">Confirm Password</label>
-                            <input type="password" id="confirm_password" name="password_confirmation" class="form-control" required>
-                            <i class="bi bi-eye-slash password-toggle" onclick="togglePassword('confirm_password', this)"></i>
+                            <div class="input-wrapper">
+                                <input type="password" id="confirm_password" name="password_confirmation" class="form-control" required>
+                                <i class="bi bi-eye-slash password-toggle" onclick="togglePassword('confirm_password', this)"></i>
+                            </div>
                             <div id="password_error" class="text-danger small mt-1" style="display: none;">
                                 <i class="bi bi-exclamation-triangle-fill"></i> Passwords do not match
                             </div>
@@ -332,11 +335,10 @@
                             <label class="form-label">Department</label>
                             <select id="edit_department" name="department" class="form-select" required>
                                 <option value="" disabled>Select Department</option>
-                                <option value="IT">IT</option>
-                                <option value="Marketing">Marketing</option>
-                                <option value="HR">HR</option>
-                                <option value="Sales">Sales</option>
-                                <option value="Accounting">Accounting</option>
+                                <option value="Admin and Accounts">Admin and Accounts</option>
+                                <option value="Business Strategy and Growth">Business Strategy and Growth</option>
+                                <option value="Human Resources and Organizational Development">Human Resources and Organizational Development</option>
+                                <option value="Service Processing">Service Processing</option>
                             </select>
                             <div class="invalid-feedback">Please select a department.</div>
                         </div>
@@ -847,6 +849,20 @@
         }
     });
 </script>
+<style>
+    .password-toggle {
+        position: absolute;
+        top: 50%;
+        right: 15px;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: #6c757d;
+        z-index: 2;
+    }
+    .input-wrapper {
+        position: relative;
+    }
+</style>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 @endsection

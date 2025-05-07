@@ -145,9 +145,6 @@
                             
                             <div class="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center">
                                 <span class="text-xs text-gray-500">Asset ID: {{ $assigned_item->item->id }}</span>
-                                <button class="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center">
-                                    Details <i class="fas fa-chevron-right ml-1 text-xs"></i>
-                                </button>
                             </div>
                         </div>
                     </div>
@@ -332,9 +329,6 @@
                                 
                                 <div class="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center">
                                     <span class="text-xs text-gray-500">Asset ID: {{ $history_item->item->id }}</span>
-                                    <button class="text-green-600 hover:text-green-800 text-sm font-medium flex items-center">
-                                        Details <i class="fas fa-chevron-right ml-1 text-xs"></i>
-                                    </button>
                                 </div>
                             </div>
                         </div>
