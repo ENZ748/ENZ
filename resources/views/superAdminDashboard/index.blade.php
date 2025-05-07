@@ -246,11 +246,10 @@
                             <label class="form-label">Department</label>
                             <select name="department" class="form-select" required>
                                 <option value="" selected disabled>Select Department</option>
-                                <option value="IT">IT</option>
-                                <option value="Marketing">Marketing</option>
-                                <option value="HR">HR</option>
-                                <option value="Sales">Sales</option>
-                                <option value="Accounting">Accounting</option>
+                                <option value="Admin and Accounts">Admin and Accounts</option>
+                                <option value="Business Strategy and Growth">Business Strategy and Growth</option>
+                                <option value="Human Resources and Organizational Development">Human Resources and Organizational Development</option>
+                                <option value="Service Processing">Service Processing</option>
                             </select>
                             <div class="invalid-feedback">Please select a department.</div>
                         </div>
@@ -336,11 +335,10 @@
                             <label class="form-label">Department</label>
                             <select id="edit_department" name="department" class="form-select" required>
                                 <option value="" disabled>Select Department</option>
-                                <option value="IT">IT</option>
-                                <option value="Marketing">Marketing</option>
-                                <option value="HR">HR</option>
-                                <option value="Sales">Sales</option>
-                                <option value="Accounting">Accounting</option>
+                                <option value="Admin and Accounts">Admin and Accounts</option>
+                                <option value="Business Strategy and Growth">Business Strategy and Growth</option>
+                                <option value="Human Resources and Organizational Development">Human Resources and Organizational Development</option>
+                                <option value="Service Processing">Service Processing</option>
                             </select>
                             <div class="invalid-feedback">Please select a department.</div>
                         </div>
