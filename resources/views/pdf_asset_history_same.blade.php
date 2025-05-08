@@ -138,7 +138,6 @@
                         <th>Assigned Date</th>
                         <th>Return Date</th>
                         <th>Notes</th>
-                        <th>Code</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -161,7 +160,6 @@
                                     No Notes
                                 @endif
                             </td>
-                            <td>{{$return_form->issuance_number}}</td>
                         </tr>
                     @endforeach
                 </tbody>

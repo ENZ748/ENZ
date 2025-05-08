@@ -96,7 +96,7 @@ class AssignedItemFormController extends Controller
                     ->first();
             }
         } 
-
+ 
         foreach ($assigned_items as $assigned_item) {
             $assigned_item->status = 1;
             $assigned_item->fileID = $signedItem->id;
