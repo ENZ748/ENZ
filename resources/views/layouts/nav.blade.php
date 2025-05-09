@@ -33,6 +33,11 @@
                         <i class="fas fa-file-invoice mr-2 text-blue-300 group-hover:text-white"></i>
                         <span class="font-medium">Activity Logs</span>
                     </a>
+                    <a href="{{route('superAdmin.accountability')}}" 
+                       class="px-4 py-2 rounded-lg text-white hover:bg-blue-600/50 transition-all duration-300 flex items-center group border-none focus:border-none focus:outline-none active:border-none">
+                        <i class="fas fa-file-invoice mr-2 text-blue-300 group-hover:text-white"></i>
+                        <span class="font-medium">My Accountability</span>
+                    </a>
                 </div>
             </div>
 

@@ -19,6 +19,7 @@ use App\Http\Controllers\SuperAdminDashboardController;
 use App\Http\Controllers\InStockController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\AssetSignedItemController;
+use App\Http\Controllers\SuperAdminAccountabilityController;
 
 use App\Http\Middleware\Admin;
 use App\Http\Middleware\SuperAdmin;
@@ -88,6 +89,7 @@ Route::middleware('auth')->group(function () {
 //Super Adminnnn
     //Dashboard
     Route::middleware([SuperAdmin::class])->get('/superAdmin/Dashboard', [SuperAdminDashboardController::class, 'index'])->name('superAdmin.dashboard');
+    Route::middleware([SuperAdmin::class])->get('/my_assets', [SuperAdminAccountabilityController::class, 'index'])->name('superAdmin.accountability');
 
     Route::middleware([SuperAdmin::class])->get('/superAdmin', [SuperAdminController::class, 'index'])->name('superAdmin.index');
     Route::get('admin/create', [SuperAdminController::class, 'create'])->name('admin.create');
@@ -320,5 +322,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/return_files/{returnedSignedItem}/download', 
     [ItemHistoryController::class, 'download'])
     ->name('return_files_history.download');
+
 
     require __DIR__.'/auth.php';    
