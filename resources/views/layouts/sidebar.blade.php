@@ -136,7 +136,7 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="history">
+                <a class="nav-link" href="{{route('item.history')}}">
                     <i class="fas fa-file-invoice"></i> History
                 </a>
             </li>

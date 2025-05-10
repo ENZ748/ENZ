@@ -24,25 +24,22 @@ class BrandController extends Controller
     // Store the new category in the database
     public function store(Request $request, $categoryID)
     {
-        // Validate the incoming data
-        $request->validate([
+        $validated = $request->validate([
             'brand_name' => 'required|string|max:255',
         ]);
+
         if (Brand::where('brand_name', $request->brand_name)
-        ->where('categoryID', $categoryID)
-        ->exists()) {
-        return back()->withErrors(['brand_name' => 'This brand name already exists in this category.']);
+            ->where('categoryID', $categoryID)
+            ->exists()) {
+            return response()->json(['error' => 'This brand name already exists in this category.']);
         }
-    
-    
-        // Create a new brand and save it to the database
+
         Brand::create([
-            'brand_name' => $request->brand_name,
-            'categoryID' => $categoryID,
+            'brand_name' => $validated['brand_name'],
+            'categoryID' => $categoryID
         ]);
-    
-        // Redirect to the brands index page for that category
-        return redirect()->route('brands.index', $categoryID)->with('success', 'Brand created successfully!');
+
+        return response()->json(['success' => 'Brand created successfully!']);
     }
     
     public function edit($id, $categoryID)
@@ -57,25 +54,22 @@ class BrandController extends Controller
 
     public function update(Request $request, $id, $categoryID)
     {
-        $validated =  $request->validate([
+        $validated = $request->validate([
             'brand_name' => 'required|string|max:255',
         ]);
-        
+
         if (Brand::where('brand_name', $request->brand_name)
-        ->where('categoryID', $categoryID)
-        ->exists()) {
-        return back()->withErrors(['brand_name' => 'This brand name already exists in this category.']);
+            ->where('categoryID', $categoryID)
+            ->where('id', '!=', $id)
+            ->exists()) {
+            return response()->json(['error' => 'This brand name already exists in this category.']);
         }
 
         $brand = Brand::findOrFail($id);
-
         $brand->brand_name = $validated['brand_name'];
-
         $brand->save();
 
-        return redirect()->route('brands.index', ['id' => $brand->id, 'categoryID' => $categoryID])
-        ->with('success', 'Brand Updated Successfully!');
-
+        return response()->json(['success' => 'Brand updated successfully!']);
     }
 
     public function destroy($id,$categoryID)
