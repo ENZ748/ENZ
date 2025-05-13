@@ -135,33 +135,19 @@
                         <th>Category & Brand</th>
                         <th>Unit</th>
                         <th>Serial Number</th>
-                        <th>Assigned Date</th>
-                        <th>Return Date</th>
-                        <th>Notes</th>
                         <th>Code</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($return_forms as $return_form)
+                    @foreach($item_forms as $item_form )
                         <tr>
                             <td>
-                                {{ $return_form->returnItem->item->category->category_name }} - 
-                                {{ $return_form->returnItem->item->brand->brand_name }}
+                            {{ $item_form->asset_form->assignedItem->item->category->category_name ?? 'N/A' }}- 
+                            {{ $item_form->asset_form->assignedItem->item->brand->brand_name ?? 'N/A' }}
                             </td>
-                            <td>{{ $return_form->returnItem->item->unit->unit_name }}</td>
-                            <td>{{ $return_form->returnItem->item->serial_number }}</td>
-                            <td>{{ \Carbon\Carbon::parse($return_form->returnItem->assigned_date)->format('M d, Y') }}</td>
-                            <td>
-                                    {{ \Carbon\Carbon::parse($return_form->returnItem->created_at)->format('M d, Y') }}
-                            </td>
-                            <td>
-                                @if($return_form->returnItem->notes)
-                                        {{ Str::limit($return_form->returnItem->notes, 50) }}
-                                @else
-                                    No Notes
-                                @endif
-                            </td>
-                            <td>{{$return_form->issuance_number}}</td>
+                            <td>{{ $item_form->asset_form->assignedItem->item->unit->unit_name ?? 'N/A' }}</td>
+                            <td>{{ $item_form->asset_form->assignedItem->item->unit->serial_number ?? 'N/A' }}</td>
+                            <td>{{$item_form->asset_form->issuance_number}}</td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -173,12 +159,12 @@
         <div class="signature-section">
             <div class="signature-box">
                 <div class="signature-space"></div>
-                <div class="signature-label">Signiture over printed name of the Returnes</div>
+                <div class="signature-label">Signature over printed name of the Returns</div>
             </div>
 
             <div class="signature-box">
                 <div class="signature-space"></div>
-                <div class="signature-label">Signiture over printed name of the Reciever</div>
+                <div class="signature-label">Signature over printed name of the Reciever</div>
             </div>
         </div>
 

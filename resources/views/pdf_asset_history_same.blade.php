@@ -141,7 +141,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($return_forms as $return_form)
+                    @foreach($ as $return_form)
                         <tr>
                             <td>
                                 {{ $return_form->returnItem->item->category->category_name }} - 

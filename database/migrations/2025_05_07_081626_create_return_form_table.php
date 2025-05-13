@@ -13,8 +13,7 @@ return new class extends Migration
     {
         Schema::create('return_form', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('employeeID')->constrained('employees')->onDelete('cascade'); 
-            $table->foreignId('returnID')->constrained('item_history')->onDelete('cascade');
+            $table->foreignId('asset_formID')->constrained('asset_form')->onDelete('cascade'); 
             $table->string('issuance_number'); 
             $table->timestamps();
         });

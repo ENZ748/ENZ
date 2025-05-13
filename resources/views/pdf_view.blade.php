@@ -101,10 +101,9 @@
         <tbody>
             @foreach($item_forms as $item_form)
                 <tr>
-                    <td>{{ $item_form->assignedItem->item->category->category_name ?? 'N/A' }}</td>
-                    <td>{{ $item_form->assignedItem->item->brand->brand_name ?? 'N/A' }}</td>
+                    <td>{{ $item_form->assignedItem->item->category->category_name ?? 'N/A' }} - {{ $item_form->assignedItem->item->brand->brand_name ?? 'N/A' }}</td>
                     <td>{{ $item_form->assignedItem->item->unit->unit_name ?? 'N/A' }}</td>
-
+                    <td>{{ $item_form->assignedItem->item->serial_number ?? 'N/A' }}</td>
                 </tr>
             @endforeach
         </tbody>

@@ -28,4 +28,9 @@ class AssetForm extends Model
         return $this->belongsTo(AssignedItem::class, 'assignedID');
     }
 
+    public function returnForm()
+    {
+        return $this->hasMany(ReturnForm::class, 'asset_formID');
+    }
+
 }
