@@ -14,6 +14,7 @@ use App\Models\AssetSignedItem;
 
 class AssignedItemFormController extends Controller
 {
+    
     public function index()
     {
         $employees = Employees::whereHas('users', function ($query) {

@@ -139,17 +139,18 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($item_forms as $item_form )
-                        <tr>
-                            <td>
-                            {{ $item_form->asset_form->assignedItem->item->category->category_name ?? 'N/A' }}- 
-                            {{ $item_form->asset_form->assignedItem->item->brand->brand_name ?? 'N/A' }}
-                            </td>
-                            <td>{{ $item_form->asset_form->assignedItem->item->unit->unit_name ?? 'N/A' }}</td>
-                            <td>{{ $item_form->asset_form->assignedItem->item->unit->serial_number ?? 'N/A' }}</td>
-                            <td>{{$item_form->asset_form->issuance_number}}</td>
-                        </tr>
+                    @foreach($return_forms as $return_form)
+                    <tr>
+                        <td>
+                            {{ $return_form->itemHistory->item->category->category_name ?? 'N/A' }} -
+                            {{ $return_form->itemHistory->item->brand->brand_name ?? 'N/A' }}
+                        </td>
+                        <td>{{ $return_form->itemHistory->item->unit->unit_name ?? 'N/A' }}</td>
+                        <td>{{ $return_form->itemHistory->item->serial_number ?? 'N/A' }}</td>
+                        <td>{{ $return_form->issuance_number }}</td>
+                    </tr>
                     @endforeach
+
                 </tbody>
             </table>
         @else

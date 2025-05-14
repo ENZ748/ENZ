@@ -13,7 +13,8 @@ class ReturnForm extends Model
 
     protected $fillable = [
         'asset_formID',
-        'issuance_number'
+        'issuance_number',
+        'returnID'
     ];
 
 
@@ -22,9 +23,10 @@ class ReturnForm extends Model
         return $this->belongsTo(AssetForm::class, 'asset_formID');
     }
 
-    public function returnItem()
+    public function itemHistory()
     {
         return $this->belongsTo(ItemHistory::class, 'returnID');
     }
+    
 
 }
