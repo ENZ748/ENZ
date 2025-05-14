@@ -147,7 +147,7 @@
                         </td>
                         <td>{{ $return_form->itemHistory->item->unit->unit_name ?? 'N/A' }}</td>
                         <td>{{ $return_form->itemHistory->item->serial_number ?? 'N/A' }}</td>
-                        <td>{{ $return_form->issuance_number }}</td>
+                        <td>{{ $return_form->asset_form->issuance_number }}</td>
                     </tr>
                     @endforeach
 
