@@ -99,6 +99,10 @@ Route::middleware('auth')->group(function () {
     Route::put('admin/update/{id}', [SuperAdminController::class, 'update'])->name('admin.update');
     Route::patch('/admin/{id}/toggleStatus', [SuperAdminController::class, 'toggleStatus'])->name('admin.toggleStatus');
 
+    Route::middleware([SuperAdmin::class])->get('/super/items', function () {
+        return app('App\Http\Controllers\ItemController')->index();
+    })->middleware(['auth', 'verified'])->name('items');
+
     //Activity Logs
     Route::get('activity_logs', [SuperAdminController::class, 'activityLog'])->name('admin.activityLogs');
     Route::get('/admin/activity-logs/export', [SuperAdminController::class, 'export'])

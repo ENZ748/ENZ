@@ -125,21 +125,6 @@
 
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-500" class="text-right">
                                     <div class="btn-group btn-group-sm" role="group">
-                                        <button class="btn btn-outline-primary edit-btn" 
-                                                data-toggle="modal" 
-                                                data-target="#editModal"
-                                                data-id="{{ $assignedItem->id }}"
-                                                data-employee-id="{{ $assignedItem->employeeID }}"
-                                                data-employee-name="{{ $assignedItem->employee->first_name }} {{ $assignedItem->employee->last_name }}"
-                                                data-category-id="{{ $assignedItem->item->categoryID }}"
-                                                data-brand-id="{{ $assignedItem->item->brandID }}"
-                                                data-unit-id="{{ $assignedItem->item->unitID }}"
-                                                data-serial-number="{{ $assignedItem->item->serial_number }}"
-                                                data-notes="{{ $assignedItem->notes }}"
-                                                data-assigned-date="{{ $assignedItem->assigned_date }}"
-                                                title="Edit">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
                                         <button class="btn btn-outline-danger" data-toggle="modal" 
                                                 data-target="#returnModal" 
                                                 data-id="{{ $assignedItem->id }}" 

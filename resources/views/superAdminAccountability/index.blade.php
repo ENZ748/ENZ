@@ -1,10 +1,7 @@
-@extends('layouts.superAdminApp')
 @section('content')
 
 <body>
 <!-- Add this right after the profile header section -->
-
-<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900 dark:to-indigo-900">
 
 <div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
     <div class="container mx-auto px-4 py-8 max-w-7xl">
@@ -27,7 +24,6 @@
                         </time>
                     </span>
                 </p>
-
             </div>
         </div>
  
@@ -123,9 +119,6 @@
                             
                             <div class="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center">
                                 <span class="text-xs text-gray-500">Asset ID: {{ $assigned_item->item->id }}</span>
-                                <button class="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center">
-                                    Details <i class="fas fa-chevron-right ml-1 text-xs"></i>
-                                </button>
                             </div>
                         </div>
                     </div>
@@ -280,7 +273,7 @@
                                     </div>
                                 </div>
                                 
-                                @if($history_item->notes)
+                                @if($assigned_item->notes)
                                 <div class="mt-4 pt-4 border-t border-gray-100">
                                     <div class="flex items-center space-x-3">
                                         <div class="bg-green-100 p-2 rounded-full">
@@ -290,17 +283,13 @@
                                         </div>
                                         <div>
                                             <p class="text-xs text-gray-500">Notes</p>
-                                            <p class="text-sm text-gray-700">{{ $history_item->notes }}</p>
+                                            <p class="text-sm text-gray-700">{{ $assigned_item->notes }}</p>
                                         </div>
                                     </div>
                                 </div>
                                 @endif
-                                
                                 <div class="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center">
                                     <span class="text-xs text-gray-500">Asset ID: {{ $history_item->item->id }}</span>
-                                    <button class="text-green-600 hover:text-green-800 text-sm font-medium flex items-center">
-                                        Details <i class="fas fa-chevron-right ml-1 text-xs"></i>
-                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -367,191 +356,7 @@
     </div>
 </div>
 
-<style>
-    /* Enhanced Dark Mode Styles */
-    .dark {
-        --tw-bg-opacity: 1;
-        --tw-text-opacity: 1;
-    }
-    
-    .dark .bg-white {
-        background-color: #1f2937 !important;
-    }
-    
-    /* Text Colors */
-    .dark .text-gray-800,
-    .dark .text-gray-900 {
-        color: rgba(249, 250, 251, var(--tw-text-opacity)) !important;
-    }
-    
-    .dark .text-gray-700 {
-        color: rgba(229, 231, 235, var(--tw-text-opacity)) !important;
-    }
-    
-    .dark .text-gray-600 {
-        color: rgba(209, 213, 219, var(--tw-text-opacity)) !important;
-    }
-    
-    .dark .text-gray-500 {
-        color: rgba(156, 163, 175, var(--tw-text-opacity)) !important;
-    }
-    
-    /* Backgrounds */
-    .dark .bg-gray-50 {
-        background-color: #374151 !important;
-    }
-    
-    /* Active Items (Blue) */
-    .dark .bg-blue-100 {
-        background-color: #1e40af !important;
-    }
-    
-    .dark .text-blue-600,
-    .dark .text-blue-800 {
-        color: #93c5fd !important;
-    }
-    
-    /* Returned Items (Green) */
-    .dark .bg-green-100 {
-        background-color: #065f46 !important;
-    }
-    
-    .dark .text-green-600,
-    .dark .text-green-800 {
-        color: #6ee7b7 !important;
-    }
-    
-    /* Borders */
-    .dark .border-gray-100,
-    .dark .border-gray-200,
-    .dark .border-gray-300,
-    .dark .border {
-        border-color: #4b5563 !important;
-    }
-    
-    /* Hover States */
-    .dark .hover\:bg-gray-50:hover {
-        background-color: #4b5563 !important;
-    }
-    
-    /* Cards */
-    .dark .bg-white {
-        background-color: #1f2937 !important;
-    }
-    
-    /* Buttons */
-    .dark .bg-white {
-        background-color: #374151 !important;
-    }
-    
-    /* Tables */
-    .dark .divide-gray-200 {
-        border-color: #4b5563 !important;
-    }
-    
-    /* Empty States */
-    .dark .text-gray-900 {
-        color: #f9fafb !important;
-    }
-    
-    /* Ensure all text is visible in dark mode */
-    .dark {
-        color: #e5e7eb !important;
-    }
-    
-    /* Specific component overrides */
-    .dark .bg-gradient-to-br {
-        background-image: linear-gradient(to bottom right, #1e3a8a, #1e1b4b) !important;
-    }
-    
-    /* Form elements */
-    .dark input,
-    .dark select,
-    .dark textarea {
-        background-color: #1f2937 !important;
-        border-color: #4b5563 !important;
-        color: #f3f4f6 !important;
-    }
-    
-    /* Links and buttons */
-    .dark a {
-        color: #93c5fd !important;
-    }
-    
-    .dark button {
-        color: #f3f4f6 !important;
-    }
-    
-    /* Shadows - make them more visible in dark mode */
-    .dark .shadow-lg {
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.25) !important;
-    }
-    
-    /* Status badges */
-    .dark .bg-blue-100 {
-        background-color: rgba(30, 64, 175, 0.2) !important;
-    }
-    
-    .dark .bg-green-100 {
-        background-color: rgba(6, 95, 70, 0.2) !important;
-    }
-    
-    /* Card headers */
-    .dark .bg-gradient-to-r.from-blue-600.to-indigo-700,
-    .dark .bg-gradient-to-r.from-green-600.to-teal-700 {
-        background-image: linear-gradient(to right, var(--tw-gradient-from), var(--tw-gradient-to)) !important;
-    }
-    
-    /* Ensure white text remains white in dark mode */
-    .dark .text-white {
-        color: white !important;
-    }
-    
-    /* Icons */
-    .dark svg:not([class*="text-"]) {
-        color: #e5e7eb !important;
-    }
-    
-    /* Override any specific text colors that might be too light */
-    .dark .text-blue-100 {
-        color: #bfdbfe !important;
-    }
-    
-    .dark .text-green-100 {
-        color: #a7f3d0 !important;
-    }
-</style>
-
 <script>
-    // Add this to your existing script section
-const themeToggle = document.getElementById('theme-toggle');
-const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
-const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
-
-// Check for saved theme preference or use system preference
-if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-    document.documentElement.classList.add('dark');
-    themeToggleLightIcon.classList.remove('hidden');
-} else {
-    document.documentElement.classList.remove('dark');
-    themeToggleDarkIcon.classList.remove('hidden');
-}
-
-// Toggle button click handler
-themeToggle.addEventListener('click', function() {
-    // Toggle icons
-    themeToggleDarkIcon.classList.toggle('hidden');
-    themeToggleLightIcon.classList.toggle('hidden');
-    
-    // Update localStorage and apply theme
-    if (document.documentElement.classList.contains('dark')) {
-        document.documentElement.classList.remove('dark');
-        localStorage.setItem('color-theme', 'light');
-    } else {
-        document.documentElement.classList.add('dark');
-        localStorage.setItem('color-theme', 'dark');
-    }
-});
 document.addEventListener('DOMContentLoaded', function() {
     // Current Assets View Toggle
     const gridViewBtn = document.getElementById('grid-view-btn');
@@ -633,6 +438,7 @@ document.addEventListener('DOMContentLoaded', function() {
         arrow: true
     });
 });
+
 // Update the time every minute
 function updatePhilippineTime() {
     const options = { 
@@ -665,4 +471,3 @@ updatePhilippineTime();
 setInterval(updatePhilippineTime, 60000);
 </script>
 @endsection
-
