@@ -47,7 +47,7 @@ class ItemHistory extends Model
 
     public function returnForm()
     {
-        return $this->hasMany(ItemHistory::class, 'returnID');
+        return $this->hasOne(ReturnForm::class, 'returnID');
     }
     
 }

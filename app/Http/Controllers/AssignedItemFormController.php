@@ -14,6 +14,7 @@ use App\Models\AssetSignedItem;
 
 class AssignedItemFormController extends Controller
 {
+    
     public function index()
     {
         $employees = Employees::whereHas('users', function ($query) {
@@ -96,7 +97,7 @@ class AssignedItemFormController extends Controller
                     ->first();
             }
         } 
-
+ 
         foreach ($assigned_items as $assigned_item) {
             $assigned_item->status = 1;
             $assigned_item->fileID = $signedItem->id;

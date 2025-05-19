@@ -12,20 +12,21 @@ class ReturnForm extends Model
     protected $table = 'return_form';
 
     protected $fillable = [
-        'employeeID',
-        'returnID',
-        'issuance_number'
+        'asset_formID',
+        'issuance_number',
+        'returnID'
     ];
 
 
-    public function employee()
+    public function asset_form()
     {
-        return $this->belongsTo(Employees::class, 'employeeID');
+        return $this->belongsTo(AssetForm::class, 'asset_formID');
     }
 
-    public function returnItem()
+    public function itemHistory()
     {
         return $this->belongsTo(ItemHistory::class, 'returnID');
     }
+    
 
 }

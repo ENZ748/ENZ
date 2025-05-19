@@ -135,22 +135,33 @@
                         <th>Category & Brand</th>
                         <th>Unit</th>
                         <th>Serial Number</th>
-                        <th>Code</th>
+                        <th>Assigned Date</th>
+                        <th>Return Date</th>
+                        <th>Notes</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($return_forms as $return_form)
-                    <tr>
-                        <td>
-                            {{ $return_form->itemHistory->item->category->category_name ?? 'N/A' }} -
-                            {{ $return_form->itemHistory->item->brand->brand_name ?? 'N/A' }}
-                        </td>
-                        <td>{{ $return_form->itemHistory->item->unit->unit_name ?? 'N/A' }}</td>
-                        <td>{{ $return_form->itemHistory->item->serial_number ?? 'N/A' }}</td>
-                        <td>{{ $return_form->asset_form->issuance_number }}</td>
-                    </tr>
+                    @foreach($ as $return_form)
+                        <tr>
+                            <td>
+                                {{ $return_form->returnItem->item->category->category_name }} - 
+                                {{ $return_form->returnItem->item->brand->brand_name }}
+                            </td>
+                            <td>{{ $return_form->returnItem->item->unit->unit_name }}</td>
+                            <td>{{ $return_form->returnItem->item->serial_number }}</td>
+                            <td>{{ \Carbon\Carbon::parse($return_form->returnItem->assigned_date)->format('M d, Y') }}</td>
+                            <td>
+                                    {{ \Carbon\Carbon::parse($return_form->returnItem->created_at)->format('M d, Y') }}
+                            </td>
+                            <td>
+                                @if($return_form->returnItem->notes)
+                                        {{ Str::limit($return_form->returnItem->notes, 50) }}
+                                @else
+                                    No Notes
+                                @endif
+                            </td>
+                        </tr>
                     @endforeach
-
                 </tbody>
             </table>
         @else
@@ -160,12 +171,12 @@
         <div class="signature-section">
             <div class="signature-box">
                 <div class="signature-space"></div>
-                <div class="signature-label">Signature over printed name of the Returns</div>
+                <div class="signature-label">Signiture over printed name of the Returnes</div>
             </div>
 
             <div class="signature-box">
                 <div class="signature-space"></div>
-                <div class="signature-label">Signature over printed name of the Reciever</div>
+                <div class="signature-label">Signiture over printed name of the Reciever</div>
             </div>
         </div>
 
