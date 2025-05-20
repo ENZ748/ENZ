@@ -19,6 +19,12 @@ use App\Http\Controllers\SuperAdminDashboardController;
 use App\Http\Controllers\InStockController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\AssetSignedItemController;
+use App\Http\Controllers\SuperAdminCategoryController;
+use App\Http\Controllers\SuperAdminBrandController;
+use App\Http\Controllers\SuperAdminUnitController;
+use App\Http\Controllers\SuperAdminItemController;
+use App\Http\Controllers\SuperAdminAccountabilityController;
+use App\Http\Controllers\SuperAdminInStockController;
 
 use App\Http\Middleware\Admin;
 use App\Http\Middleware\SuperAdmin;
@@ -35,16 +41,16 @@ Route::get('/items', function () {
 
 //Inventoryyyyyy
 
-//add
+    //add
 
-Route::get('Inventory/create', [InventoryController::class, 'create'])->name('equipment.create');
-Route::POST('equipment', [InventoryController::class, 'store'])->name('equipment.store');
-//Update
-Route::get('Inventory/edit/{id}', [InventoryController::class, 'edit'])->name('equipment.edit');
-Route::put('Inventory/update/{id}', [InventoryController::class, 'update'])->name('equipment.update');
+    Route::get('Inventory/create', [InventoryController::class, 'create'])->name('equipment.create');
+    Route::POST('equipment', [InventoryController::class, 'store'])->name('equipment.store');
+    //Update
+    Route::get('Inventory/edit/{id}', [InventoryController::class, 'edit'])->name('equipment.edit');
+    Route::put('Inventory/update/{id}', [InventoryController::class, 'update'])->name('equipment.update');
 
-//Delete    
-Route::delete('/equipment/{id}', [InventoryController::class, 'destroy'])->name('equipment.destroy');
+    //Delete    
+    Route::delete('/equipment/{id}', [InventoryController::class, 'destroy'])->name('equipment.destroy');
 
 
 //USERSSSS
@@ -97,6 +103,70 @@ Route::middleware('auth')->group(function () {
     Route::put('admin/update/{id}', [SuperAdminController::class, 'update'])->name('admin.update');
     Route::patch('/admin/{id}/toggleStatus', [SuperAdminController::class, 'toggleStatus'])->name('admin.toggleStatus');
 
+    Route::middleware([SuperAdmin::class])->get('superAdmin/accountability', function () {
+        return app('App\Http\Controllers\AssignController')->index();
+    })->middleware(['auth', 'verified'])->name('superAdmin.accountability');
+
+    Route::middleware([SuperAdmin::class])->get('superAdmin/user', function () {
+        return app('App\Http\Controllers\UserController')->index();
+    })->middleware(['auth', 'verified'])->name('superAdmin.user');
+
+    Route::middleware([SuperAdmin::class])->get('superAdmin/items', function () {
+        return app('App\Http\Controllers\SuperAdminItemController')->index();
+    })->middleware(['auth', 'verified'])->name('superAdmin.items');
+
+    //Dashboard
+    Route::middleware([SuperAdmin::class])->get('superAdmin/chart', function () {
+        return app('App\Http\Controllers\SuperAdminChartController')->showChart();
+    })->middleware(['auth', 'verified'])->name('superAdmin.chart');
+
+
+    Route::middleware(['auth', 'verified', SuperAdmin::class])
+    ->get('superAdmin/assigned_items', [SuperAdminAccountabilityController::class, 'index'])
+    ->name('superAdminAssigned_items.index');
+
+    // Historyyyyy
+    Route::middleware([SuperAdmin::class])->get('superAdmin/history', function () {
+        return app('App\Http\Controllers\HistoryController')->index();
+    })->middleware(['auth', 'verified'])->name('superAdmin.history');
+
+    Route::middleware([SuperAdmin::class])->get('superAdmin/item/history', function () {
+        return app('App\Http\Controllers\ItemHistoryController')->index();
+    })->middleware(['auth', 'verified'])->name('superAdmin.item.history');
+
+    Route::middleware([SuperAdmin::class])->get('superAdmin/item/admin/assets', function () {
+        return app('App\Http\Controllers\AdminAccountabilityController')->index();
+    })->middleware(['auth', 'verified'])->name('superAdmin.admin.accountability');
+
+    Route::middleware(['auth', 'verified', SuperAdmin::class])
+    ->get('superAdmin/InStock', [SuperAdminInStockController::class, 'index'])
+    ->name('superAdmin.instock');
+
+
+    Route::middleware([SuperAdmin::class])->get('superAdmin/form', function () {
+        return app('App\Http\Controllers\AssignedItemFormController')->index();
+    })->middleware(['auth', 'verified'])->name('superAdmin.assigned_items.forms');
+    
+
+    Route::get('/assigned-items/history', [ItemHistoryController::class, 'history'])
+    ->name('assigned-items.history');
+
+
+    //View Categories
+        Route::middleware([SuperAdmin::class])->get('SuperAdmin/categories', function () {
+            return app('App\Http\Controllers\SuperAdminCategoryController')->index();
+        })->middleware(['auth', 'verified'])->name('categories.SuperAdminIndex');
+    
+    //Brand
+        Route::middleware([SuperAdmin::class])->get('SuperAdmin/brands/{categoryID}', function ($categoryID) {
+            return app('App\Http\Controllers\SuperAdminBrandController')->index($categoryID);
+        })->middleware(['auth', 'verified'])->name('brands.SuperAdminIndex');
+    
+    //View Unitss
+        Route::middleware([SuperAdmin::class])->get('SuperAdmin/units/{brandID}/{categoryID}', function ($brandID, $categoryID) {
+            return app('App\Http\Controllers\SuperAdminUnitController')->index($brandID, $categoryID);
+        })->middleware(['auth', 'verified'])->name('units.SuperAdminIndex');
+        
     //Activity Logs
     Route::get('activity_logs', [SuperAdminController::class, 'activityLog'])->name('admin.activityLogs');
     Route::get('/admin/activity-logs/export', [SuperAdminController::class, 'export'])
@@ -135,13 +205,22 @@ Route::middleware('auth')->group(function () {
     Route::middleware([Admin::class])->get('/item/admin/assets', function () {
         return app('App\Http\Controllers\AdminAccountabilityController')->index();
     })->middleware(['auth', 'verified'])->name('admin.accountability');
+    //InStock
+    Route::middleware([Admin::class])->get('/InStock', function () {
+        return app('App\Http\Controllers\InStockController')->index();
+    })->middleware(['auth', 'verified'])->name('instock');
 
+    //Forms
+    Route::middleware([Admin::class])->get('/InStock', function () {
+        return app('App\Http\Controllers\AssignedItemFormController')->index();
+    })->middleware(['auth', 'verified'])->name('assigned_items.forms');
+    
     Route::get('/assigned-items/history', [ItemHistoryController::class, 'history'])
     ->name('assigned-items.history');
 });
 
 
-//Categoryyyyy
+// Admin Categoryyyyy
     //View Categories
     Route::middleware([Admin::class])->get('/categories', function () {
         return app('App\Http\Controllers\CategoryController')->index();
@@ -155,6 +234,17 @@ Route::middleware('auth')->group(function () {
 
     //Delete Category
     Route::delete('/categories/{id}', [CategoryController::class, 'destroy'])->name('categories.destroy');
+
+//Super Admin Categoryyy
+    Route::get('SuperAdmin/categories/create', [SuperAdminCategoryController::class, 'create'])->name('categories.SuperAdminCreate');
+    Route::post('SuperAdmin/categories/add', [SuperAdminCategoryController::class, 'store'])->name('categories.SuperAdminStore');
+    Route::post('SuperAdmin/categories/check', [SuperAdminCategoryController::class, 'checkCategory'])->name('categories.SuperAdminCheck');
+    Route::get('SuperAdmin/categories/{id}', [SuperAdminCategoryController::class, 'edit'])->name('categories.SuperAdminEdit');
+    Route::put('SuperAdmin/categories/update/{id}', [SuperAdminCategoryController::class, 'update'])->name('categories.SuperAdminUpdate');
+
+    //Delete Category
+    Route::delete('SuperAdmin/categories/{id}', [SuperAdminCategoryController::class, 'destroy'])->name('categories.SuperAdminDestroy');
+
 
 
 //Brandssssss
@@ -176,6 +266,19 @@ Route::middleware('auth')->group(function () {
     Route::delete('/brands/{id}/category/{categoryID}', [BrandController::class, 'destroy'])->name('brands.destroy');
 
 
+    //Super Admin Brand
+    //Update Brand
+    Route::get('SuperAdmin/brands/{id}/edit/{categoryID}', [SuperAdminBrandController::class, 'edit'])->name('brands.SuperAdminEdit');
+    Route::put('SuperAdmin/brands/{id}/{categoryID}', [SuperAdminBrandController::class, 'update'])->name('brands.SuperAdminUpdate');
+
+    //Delete Brand
+    Route::delete('SuperAdmin/brands/{id}/category/{categoryID}', [SuperAdminBrandController::class, 'destroy'])->name('brands.SuperAdminDestroy');
+
+    Route::get('SuperAdmin/brands/create/{categoryID}', [SuperAdminBrandController::class, 'create'])->name('brands.SuperAdminCreate');
+    Route::post('SuperAdmin/brands/add/{categoryID}', [SuperAdminBrandController::class, 'store'])->name('brands.SuperAdminStore');
+
+    Route::post('SuperAdmin/brands/check', [SuperAdminBrandController::class, 'checkBrand'])->name('brands.SuperAdminCheck');
+
 
 
 //Unitsssssssss
@@ -196,6 +299,18 @@ Route::middleware('auth')->group(function () {
     //Delete Unit
     Route::delete('/units/{id}/brand/{brandID}/category/{categoryID}', [UnitController::class, 'destroy'])->name('units.destroy');
 
+//Super Admin Units
+    Route::get('superAdmin/units/create/{brandID}/{categoryID}', [SuperAdminUnitController::class, 'create'])->name('units.SuperAdmincreate');
+    Route::post('superAdmin/units/add/{brandID}/{categoryID}', [SuperAdminUnitController::class, 'store'])->name('units.SuperAdminstore');
+
+    //Update Unitss
+    Route::get('superAdmin/units/{id}/brand/{brandID}/category/{categoryID}', [SuperAdminUnitController::class, 'edit'])->name('units.SuperAdminedit');
+    Route::put('superAdmin/units/{id}/update/brand/{brandID}/category/{categoryID}', [SuperAdminUnitController::class, 'update'])->name('units.SuperAdminupdate');
+
+    Route::post('superAdmin/units/check', [SuperAdminUnitController::class, 'checkUnit'])->name('units.SuperAdmincheck');
+
+    //Delete Unit
+    Route::delete('superAdmin/units/{id}/brand/{brandID}/category/{categoryID}', [SuperAdminUnitController::class, 'destroy'])->name('units.SuperAdmindestroy');
 
 
 //Itemsssssssssss
@@ -220,13 +335,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/get-units/{brandId}', [ItemController::class, 'getUnits']);
     Route::get('/get-serials/{unitId}', [ItemController::class, 'getSerials']);
 
+//Super Admin search Item
+    Route::get('/superAdmin/items/category', [SuperAdminItemController::class, 'search'])->name('items.superAdminsearch');
 
 
 //Dashhhhhhhboarrdddddddddddddd
 
 
 
-//Assiagned Itemssss(Accountability) 
+//Assigned Itemssss(Accountability) 
     Route::resource('assigned_items', AssignedItemController::class);
     //View Accountability
 
@@ -245,16 +362,32 @@ Route::middleware('auth')->group(function () {
     Route::get('/get-units/create/{brandId}', [AssignedItemController::class, 'getUnits']);
     Route::get('/get-serials/create/{unitId}', [AssignedItemController::class, 'getSerials']);
 
+//Super Admin Assiagned Itemssss(Accountability) 
+    Route::resource('assigned_items', SuperAdminAccountabilityController::class);
+    //View Accountability
+
+    Route::get('superAdmin/assigned_items/create', [SuperAdminAccountabilityController::class, 'create'])->name('assigned_items.superAdmincreate');
+    Route::post('superAdmin/assigned_items', [SuperAdminAccountabilityController::class, 'store'])->name('assigned_items.superAdminstore');
+    Route::get('superAdmin/assigned_items/{id}/edit', [SuperAdminAccountabilityController::class, 'edit'])->name('assigned_items.superAdminedit');
+    Route::put('superAdmin/assigned_items/{id}', [SuperAdminAccountabilityController::class, 'update'])->name('assigned_items.superAdminupdate');
+
+
+    //Item Status Button
+    Route::get('superAdmin/assigned-items/{id}/return', [SuperAdminAccountabilityController::class, 'itemStatus'])->name('assigned_items.superAdminitemStatus');
+    Route::post('superAdmin/assigned-items/{id}/returned', [SuperAdminAccountabilityController::class, 'markAsReturned'])->name('assigned_items.superAdmingood');
+    Route::post('superAdmin/assigned-items/{id}/damaged', [SuperAdminAccountabilityController::class, 'markAsDamaged'])->name('assigned_items.superAdmindamaged');
+
+    Route::get('superAdmin/get-brands/create/{categoryId}', [SuperAdminAccountabilityController::class, 'getBrands']);
+    Route::get('superAdmin/get-units/create/{brandId}', [SuperAdminAccountabilityController::class, 'getUnits']);
+    Route::get('superAdmin/get-serials/create/{unitId}', [SuperAdminAccountabilityController::class, 'getSerials']);
+
 //Assigned Item Forms
-    Route::get('form', [AssignedItemFormController::class, 'index'])->name('assigned_items.forms');
     Route::get('accountability_form/{id}', [AssignedItemFormController::class, 'accountability_form'])->name('form.accountability');
     Route::get('asset_return_form/{id}', [AssignedItemFormController::class, 'asset_return_form'])->name('form.asset_return');
     Route::get('confirm_return/{id}', [AssignedItemFormController::class, 'confirm_History'])->name('form.confirm_return');
     Route::get('confirm_accountability/{id}', [AssignedItemFormController::class, 'confirm_accountability'])->name('form.confirm_accountability');
     Route::get('/form/search', [AssignedItemFormController::class, 'search'])->name('form.search');
 
-//InStock
-    Route::get('InStock', [InStockController::class, 'index'])->name('instock');
 
 
 //PDF
