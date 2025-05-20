@@ -103,14 +103,12 @@ Route::middleware('auth')->group(function () {
     Route::put('admin/update/{id}', [SuperAdminController::class, 'update'])->name('admin.update');
     Route::patch('/admin/{id}/toggleStatus', [SuperAdminController::class, 'toggleStatus'])->name('admin.toggleStatus');
 
-    Route::middleware([SuperAdmin::class])->get('superAdmin/accountability', function () {
-        return app('App\Http\Controllers\AssignController')->index();
-    })->middleware(['auth', 'verified'])->name('superAdmin.accountability');
 
     Route::middleware([SuperAdmin::class])->get('superAdmin/user', function () {
         return app('App\Http\Controllers\UserController')->index();
     })->middleware(['auth', 'verified'])->name('superAdmin.user');
 
+    //Items
     Route::middleware([SuperAdmin::class])->get('superAdmin/items', function () {
         return app('App\Http\Controllers\SuperAdminItemController')->index();
     })->middleware(['auth', 'verified'])->name('superAdmin.items');
@@ -142,7 +140,7 @@ Route::middleware('auth')->group(function () {
     ->get('superAdmin/InStock', [SuperAdminInStockController::class, 'index'])
     ->name('superAdmin.instock');
 
-
+    //Accountability Forms
     Route::middleware([SuperAdmin::class])->get('superAdmin/form', function () {
         return app('App\Http\Controllers\AssignedItemFormController')->index();
     })->middleware(['auth', 'verified'])->name('superAdmin.assigned_items.forms');
@@ -205,13 +203,14 @@ Route::middleware('auth')->group(function () {
     Route::middleware([Admin::class])->get('/item/admin/assets', function () {
         return app('App\Http\Controllers\AdminAccountabilityController')->index();
     })->middleware(['auth', 'verified'])->name('admin.accountability');
+     
     //InStock
-    Route::middleware([Admin::class])->get('/InStock', function () {
-        return app('App\Http\Controllers\InStockController')->index();
-    })->middleware(['auth', 'verified'])->name('instock');
+    Route::middleware(['auth', 'verified', Admin::class])
+    ->get('/InStock', [InStockController::class, 'index'])
+    ->name('instock');
 
     //Forms
-    Route::middleware([Admin::class])->get('/InStock', function () {
+    Route::middleware([Admin::class])->get('/forms', function () {
         return app('App\Http\Controllers\AssignedItemFormController')->index();
     })->middleware(['auth', 'verified'])->name('assigned_items.forms');
     
@@ -363,7 +362,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/get-serials/create/{unitId}', [AssignedItemController::class, 'getSerials']);
 
 //Super Admin Assiagned Itemssss(Accountability) 
-    Route::resource('assigned_items', SuperAdminAccountabilityController::class);
+    Route::resource('superAdmin/assigned_items/get', SuperAdminAccountabilityController::class);
     //View Accountability
 
     Route::get('superAdmin/assigned_items/create', [SuperAdminAccountabilityController::class, 'create'])->name('assigned_items.superAdmincreate');
