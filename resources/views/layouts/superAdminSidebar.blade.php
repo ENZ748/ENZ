@@ -233,7 +233,7 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{route('superAdmin.assigned_items.index')}}" onclick="handleNavClick(this)">
+                <a class="nav-link" href="{{route('superAdminAssigned_items.index')}}" onclick="handleNavClick(this)">
                     <i class="fas fa-file-invoice"></i> 
                     <span>Accountability</span>
                 </a>
