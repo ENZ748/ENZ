@@ -8,101 +8,139 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --sidebar-width: 220px;
-            --sidebar-bg: rgb(0, 116, 232);
-            --sidebar-hover: rgb(0, 90, 180);
+            --primary-color: #0074e8;
+            --primary-dark: #005ab4;
+            --primary-light: #e6f2ff;
+            --sidebar-width: 250px;
             --transition-speed: 0.3s;
         }
-
-        /* Sidebar Styling */
+        
+        body {
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background-color: #f8f9fa;
+            overflow-x: hidden;
+            transition: margin-left var(--transition-speed);
+        }
+        
+        /* Enhanced Sidebar Styling */
         .sidebar {
             position: fixed;
             top: 0;
-            left: 0;
+            left: -250px;
             height: 100vh;
             width: var(--sidebar-width);
-            background-color: var(--sidebar-bg);
-            padding-top: 1.5rem;
+            background: linear-gradient(180deg, var(--primary-color), var(--primary-dark));
+            padding-top: 20px;
             text-align: center;
-            transition: all var(--transition-speed) ease;
+            transition: all var(--transition-speed) ease-in-out;
             z-index: 1000;
-            overflow-y: auto;
             box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
         }
-
+        
+        .sidebar.open {
+            left: 0;
+        }
+        
         .sidebar img {
             width: 120px;
             height: 120px;
             background-color: white;
             padding: 10px;
             border-radius: 50%;
-            display: block;
-            margin: 0 auto 1.5rem;
-            object-fit: contain;
+            margin: 0 auto 20px;
+            border: 3px solid white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
         }
-
+        
+        .sidebar img:hover {
+            transform: scale(1.05);
+        }
+        
         .sidebar .nav {
-            width: 100%;
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 15px;
+            margin-top: 20px;
         }
-
+        
         .sidebar .nav-item {
-            width: 100%;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            overflow: hidden;
+            height: 44px;
         }
-
+        
         .sidebar .nav-link {
             color: white;
-            padding: 0.75rem 1.5rem;
+            padding: 12px 15px;
             text-decoration: none;
             display: flex;
             align-items: center;
-            transition: all 0.2s ease;
-            border-left: 4px solid transparent;
-            margin: 0.25rem 0;
+            transition: background-color var(--transition-speed) ease;
+            border-radius: 8px;
+            font-weight: 500;
+            white-space: nowrap;
+            height: 100%;
+            box-sizing: border-box;
         }
-
+        
         .sidebar .nav-link i {
             width: 24px;
             text-align: center;
-            margin-right: 12px;
+            margin-right: 15px;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+            transition: none; /* Remove transition from icons */
+        }
+        
+        .sidebar .nav-link span {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex-grow: 1;
+            transition: none; /* Remove transition from text */
+        }
+        
+        .sidebar .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+        
+        .sidebar .nav-link.active {
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+            font-weight: 600;
+            transform: none; /* Remove any transform */
+        }
+        
+        .sidebar .nav-link.active i {
+            color: var(--primary-dark);
+            /* No position changes */
+        }
+        
+        /* Ensure all icons have same styling */
+        .sidebar .nav-link i.fa-file-invoice,
+        .sidebar .nav-link i.fa-history,
+        .sidebar .nav-link i.fa-tachometer-alt,
+        .sidebar .nav-link i.fa-box,
+        .sidebar .nav-link i.fa-users,
+        .sidebar .nav-link i.fa-file-contract,
+        .sidebar .nav-link i.fa-warehouse {
+            width: 24px;
+            margin-right: 15px;
             font-size: 1.1rem;
         }
-
-        .sidebar .nav-link:hover,
-        .sidebar .nav-link:focus {
-            background-color: var(--sidebar-hover);
-            border-left-color: white;
-        }
-
-        /* Content area */
+        
         .content {
-            margin-left: var(--sidebar-width);
+            margin-left: 0;
             padding: 20px;
-            transition: margin var(--transition-speed) ease;
+            transition: all var(--transition-speed);
             min-height: 100vh;
         }
-
-        /* Toggle Button */
-        .toggle-btn {
-            position: fixed;
-            top: 15px;
-            left: 15px;
-            background-color: var(--sidebar-bg);
-            color: white;
-            border: none;
-            border-radius: 4px;
-            padding: 10px 12px;
-            cursor: pointer;
-            z-index: 1100;
-            transition: all var(--transition-speed) ease;
-            display: none;
-        }
-
-        .toggle-btn:hover {
-            background-color: var(--sidebar-hover);
-            transform: scale(1.05);
-        }
-
-        /* Overlay */
+        
+        /* Overlay with animation */
         .overlay {
             position: fixed;
             top: 0;
@@ -112,43 +150,56 @@
             background: rgba(0, 0, 0, 0.5);
             opacity: 0;
             visibility: hidden;
-            transition: opacity var(--transition-speed) ease, visibility var(--transition-speed) ease;
+            transition: opacity var(--transition-speed), visibility var(--transition-speed);
             z-index: 999;
-            cursor: pointer;
         }
-
+        
         .overlay.show {
             opacity: 1;
             visibility: visible;
         }
-
-        /* Responsive Behavior */
-        @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-            }
-
-            .sidebar.open {
-                transform: translateX(0);
-            }
-
-            .content {
-                margin-left: 0;
-            }
-
-            .toggle-btn {
-                display: block;
-            }
-
-            .sidebar.open ~ .toggle-btn {
-                left: calc(var(--sidebar-width) + 15px);
-            }
+        
+        /* Enhanced Toggle Button */
+        .toggle-btn {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1100;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
         }
-
-        /* Smooth transitions for larger screens */
+        
+        .toggle-btn:hover {
+            background-color: var(--primary-dark);
+            transform: scale(1.1);
+        }
+        
+        /* Desktop styles */
         @media (min-width: 769px) {
             .sidebar {
-                transform: translateX(0);
+                left: 0;
+            }
+            
+            .content {
+                margin-left: var(--sidebar-width);
+            }
+            
+            .toggle-btn {
+                display: none;
+            }
+            
+            .overlay {
+                display: none !important;
             }
         }
     </style>
@@ -163,22 +214,63 @@
     <nav class="sidebar" id="sidebar">
         <img src="{{ asset('EnzLogo.png') }}" alt="Enz Logo">
         <ul class="nav flex-column">
-            <li class="nav-item">
-                <a class="nav-link" href="{{route('superAdmin.dashboard')}}">
-                    <i class="fas fa-tachometer-alt"></i> Dashboard
+        <li class="nav-item">
+                <a class="nav-link" href="{{route('superAdmin.chart')}}" onclick="handleNavClick(this)">
+                    <i class="fas fa-tachometer-alt"></i> 
+                    <span>Dashboard</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{route('admin')}}">
-                    <i class="fas fa-users"></i> Admin Accounts
+                <a class="nav-link" href="{{route('superAdmin.dashboard')}}" onclick="handleNavClick(this)">
+                    <i class="fas fa-users"></i> 
+                    <span>Admin Accounts</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{route('admin.activityLogs')}}">
-                    <i class="fas fa-file-invoice"></i> Activity Logs
+                <a class="nav-link" href="{{route('superAdmin.items')}}" onclick="handleNavClick(this)">
+                    <i class="fas fa-box"></i> 
+                    <span>Inventory</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{route('superAdmin.assigned_items.index')}}" onclick="handleNavClick(this)">
+                    <i class="fas fa-file-invoice"></i> 
+                    <span>Accountability</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{route('superAdmin.instock')}}" onclick="handleNavClick(this)">
+                    <i class="fas fa-warehouse"></i> 
+                    <span>In Stock</span>
+                </a>
+            </li> 
+            <li class="nav-item">
+                <a class="nav-link" href="{{route('superAdmin.assigned_items.forms')}}" onclick="handleNavClick(this)">
+                    <i class="fas fa-file-contract"></i> 
+                    <span>Forms</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{route('superAdmin.item.history')}}" onclick="handleNavClick(this)">
+                    <i class="fas fa-history"></i> 
+                    <span>History</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="{{route('superAdmin.admin.accountability')}}" onclick="handleNavClick(this)">
+                    <i class="fas fa-clipboard-list"></i> 
+                    <span>My Accountability</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{route('admin.activityLogs')}}" onclick="handleNavClick(this)">
+                    <i class="fas fa-clipboard-list"></i> 
+                    <span>Activity Logs</span>                
                 </a>
             </li>   
         </ul>
+
     </nav>
 
     <!-- Overlay (for mobile) -->
@@ -192,15 +284,50 @@
             sidebar.classList.toggle("open");
             overlay.classList.toggle("show");
             
-            // Prevent scrolling when sidebar is open
-            document.body.style.overflow = sidebar.classList.contains("open") ? 'hidden' : '';
+            if (sidebar.classList.contains("open")) {
+                document.body.style.overflow = "hidden";
+            } else {
+                document.body.style.overflow = "";
+            }
         }
-
-        // Close sidebar when clicking on a nav link (for mobile)
-        document.querySelectorAll('.sidebar .nav-link').forEach(link => {
-            link.addEventListener('click', function() {
-                if (window.innerWidth <= 768) {
-                    toggleSidebar();
+        
+        function handleNavClick(clickedLink) {
+            // Remove active class from all links
+            document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Add active class to clicked link without changing position
+            clickedLink.classList.add('active');
+            
+            // Close sidebar on mobile
+            if (window.innerWidth <= 768) {
+                toggleSidebar();
+            }
+        }
+        
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById("sidebar");
+            const overlay = document.getElementById("overlay");
+            const toggleBtn = document.querySelector('.toggle-btn');
+            
+            if (window.innerWidth <= 768 && 
+                !sidebar.contains(event.target) && 
+                event.target !== toggleBtn && 
+                sidebar.classList.contains('open')) {
+                toggleSidebar();
+            }
+        });
+        
+        // Highlight active menu item based on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentUrl = window.location.href;
+            const navLinks = document.querySelectorAll('.sidebar .nav-link');
+            
+            navLinks.forEach(link => {
+                if (currentUrl.includes(link.getAttribute('href'))) {
+                    link.classList.add('active');
                 }
             });
         });
