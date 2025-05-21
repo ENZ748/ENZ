@@ -210,7 +210,7 @@ Route::middleware('auth')->group(function () {
     ->name('instock');
 
     //Forms
-    Route::middleware([Admin::class])->get('/forms', function () {
+    Route::middleware([Admin::class])->get('/form', function () {
         return app('App\Http\Controllers\AssignedItemFormController')->index();
     })->middleware(['auth', 'verified'])->name('assigned_items.forms');
     
@@ -388,7 +388,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/form/search', [AssignedItemFormController::class, 'search'])->name('form.search');
 
 
-
+    
 //PDF
     use App\Http\Controllers\PDFController;
     
