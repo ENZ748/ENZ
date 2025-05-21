@@ -170,17 +170,18 @@ class PDFController extends Controller
     
             if ($existingReturnForm) {
                 // Only update if the matched form's issuance number is different
-                if ($existingReturnForm->issuance_number != $issuanceNumber) {
+                if ($existingReturnForm->issuance_number != $matchedForm->issuance_number) {
                     $existingReturnForm->update([
                         'asset_formID' => $matchedForm->id,
                         'issuance_number' => $issuanceNumber
                     ]);
                 }
+ 
             } else {
                 // Create new return form with current issuance number
                 ReturnForm::create([
                     'asset_formID' => $matchedForm->id,
-                    'issuance_number' => $issuanceNumber,
+                    'issuance_number' => $matchedForm->issuance_number,
                     'returnID' => $item->id
                 ]);
             }
