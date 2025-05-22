@@ -108,14 +108,34 @@ class PDFController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
     
-        if ($items->isEmpty()) {
-            $pdf = Pdf::loadView('pdf_asset_history', [
-                'employee' => $employee,
-                'item_forms' => collect(),
-                'return_forms' => collect(),
-            ]);
-            return $pdf->download('asset_history.pdf');
-        }
+            if ($items->isEmpty()) {
+                $pdf = Pdf::loadView('pdf_asset_history', [
+                    'employee' => $employee,
+                    'item_forms' => collect(),
+                    'return_forms' => collect(),
+                ]);
+                return $pdf->download('asset_history.pdf');
+            }
+        
+            // Check if all items already have ReturnForms
+            $allItemsHaveReturnForms = true;
+            foreach ($items as $item) {
+                if (!$item->returnForm) {
+                    $allItemsHaveReturnForms = false;
+                    break;
+                }
+            }
+        
+            // If all items already have ReturnForms, return PDF with existing data
+            if ($allItemsHaveReturnForms) {
+                $return_forms = ReturnForm::whereIn('returnID', $items->pluck('id'))->get();
+                $pdf = Pdf::loadView('pdf_asset_history', [
+                    'employee' => $employee,
+                    'item_forms' => collect(),
+                    'return_forms' => $return_forms,
+                ]);
+                return $pdf->download('asset_history.pdf');
+            }
     
         $assigned_items = AssignedItem::whereIn('itemID', $items->pluck('itemID'))->get();
         $item_forms = AssetForm::with([
@@ -203,7 +223,6 @@ class PDFController extends Controller
     
         return $pdf->download('asset_history.pdf');
     }
-    
     
     
     
