@@ -95,23 +95,19 @@ class PDFController extends Controller
 
     public function AssetHistoryGeneratePDF()
     {
-        // Get current user ID
         $user_id = Auth::user()->id;
-    
-        // Get employee info
         $employee = Employees::where('user_id', $user_id)->first();
+    
         if (!$employee) {
             abort(404, 'Employee not found');
         }
     
-        // Get unreturned items
         $items = ItemHistory::with(['item.category', 'item.brand', 'item.unit'])
             ->where('employeeID', $employee->id)
             ->where('status', 0)
             ->orderBy('created_at', 'desc')
             ->get();
     
-        // If no items found, return empty PDF
         if ($items->isEmpty()) {
             $pdf = Pdf::loadView('pdf_asset_history', [
                 'employee' => $employee,
@@ -121,22 +117,6 @@ class PDFController extends Controller
             return $pdf->download('asset_history.pdf');
         }
     
-        // Check if there are any new unreturned items since last time
-        $hasNewItems = $items->contains(function ($item) {
-            return ReturnForm::where('returnID', $item->id)->doesntExist();
-        });
-    
-        // Get the latest issuance number from existing return forms (if any)
-        $latestIssuanceNumber = ReturnForm::whereIn('returnID', $items->pluck('id'))
-            ->latest()
-            ->value('issuance_number');
-    
-        // Generate new issuance number only if there are new items, otherwise use existing one
-        $issuanceNumber = $hasNewItems 
-            ? 'ENZACT' . \Carbon\Carbon::now()->format('Y') . substr(md5($employee->employee_number . now()->timestamp), 0, 6)
-            : ($latestIssuanceNumber ?? 'ENZACT' . \Carbon\Carbon::now()->format('Y') . substr(md5($employee->employee_number . now()->timestamp), 0, 6));
-    
-        // Get assigned items and related forms
         $assigned_items = AssignedItem::whereIn('itemID', $items->pluck('itemID'))->get();
         $item_forms = AssetForm::with([
             'assignedItem.item.category',
@@ -144,53 +124,77 @@ class PDFController extends Controller
             'assignedItem.item.unit'
         ])->whereIn('assignedID', $assigned_items->pluck('id'))->get();
     
-        // Process items
-        foreach ($items as $item) {
-            $matchedForm = null;
+        $issuanceNumbers = [];
+        $matchedForms = [];
+        $hasNewItem = false;
     
-            // Find matching form
+        foreach ($items as $item) {
             foreach ($item_forms as $form) {
                 if (
                     optional($form->assignedItem->item->category)->category_name === optional($item->item->category)->category_name &&
                     optional($form->assignedItem->item->brand)->brand_name === optional($item->item->brand)->brand_name &&
                     optional($form->assignedItem->item->unit)->unit_name === optional($item->item->unit)->unit_name &&
-                    optional($form->assignedItem->item->serial_number)->serial_number === optional($item->item->serial_number)->serial_number
-
+                    optional($form->assignedItem->item)->serial_number === optional($item->item)->serial_number
                 ) {
-                    $matchedForm = $form;
+                    $issuanceNumbers[] = $form->issuance_number;
+                    $matchedForms[$item->id] = $form;
+    
+                    $existingReturnForm = ReturnForm::where('returnID', $item->id)->first();
+                    if (!$existingReturnForm) {
+                        $hasNewItem = true;
+                    }
+    
                     break;
                 }
             }
+        }
     
-            if (!$matchedForm) {
+        if (!$hasNewItem && empty($matchedForms)) {
+            // No new items or matched forms, skip PDF generation
+            return back()->with('message', 'No new asset history to generate.');
+        }
+    
+        // Determine the issuance number to use
+        $uniqueIssuances = array_unique($issuanceNumbers);
+        if (count($uniqueIssuances) === 1) {
+            $issuanceNumber = $uniqueIssuances[0];
+        } else {
+            $baseIssuanceNumber = 'ENZACT' . now()->format('Y') . substr(md5($employee->employee_number . now()->timestamp), 0, 6);
+            $issuanceNumber = $baseIssuanceNumber;
+            $suffix = 1;
+            while (ReturnForm::where('issuance_number', $issuanceNumber)->exists()) {
+                $issuanceNumber = $baseIssuanceNumber . '-' . $suffix++;
+            }
+        }
+    
+        // Create or update return forms
+        foreach ($items as $item) {
+            if (!isset($matchedForms[$item->id])) {
                 continue;
             }
     
+            $form = $matchedForms[$item->id];
             $existingReturnForm = ReturnForm::where('returnID', $item->id)->first();
     
             if ($existingReturnForm) {
-                // Only update if the matched form's issuance number is different
-                if ($existingReturnForm->issuance_number != $matchedForm->issuance_number) {
+                // Update only if issuance number is different
+                if ($existingReturnForm->issuance_number !== $issuanceNumber) {
                     $existingReturnForm->update([
-                        'asset_formID' => $matchedForm->id,
-                        'issuance_number' => $issuanceNumber
+                        'asset_formID' => $form->id,
+                        'issuance_number' => $issuanceNumber,
                     ]);
                 }
- 
             } else {
-                // Create new return form with current issuance number
                 ReturnForm::create([
-                    'asset_formID' => $matchedForm->id,
-                    'issuance_number' => $matchedForm->issuance_number,
-                    'returnID' => $item->id
+                    'asset_formID' => $form->id,
+                    'issuance_number' => $issuanceNumber,
+                    'returnID' => $item->id,
                 ]);
             }
         }
     
-        // Get all return forms for the PDF
         $return_forms = ReturnForm::whereIn('returnID', $items->pluck('id'))->get();
     
-        // Generate PDF
         $pdf = Pdf::loadView('pdf_asset_history', [
             'employee' => $employee,
             'item_forms' => $item_forms,
@@ -199,6 +203,9 @@ class PDFController extends Controller
     
         return $pdf->download('asset_history.pdf');
     }
+    
+    
+    
     
     
 }
