@@ -36,110 +36,293 @@
     </div>
 
     @if($employees->isEmpty())
-        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
-            <div class="flex">
-                <div class="flex-shrink-0">
-                    <svg class="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+        <!-- Empty State Card -->
+        <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+            <div class="p-8 text-center">
+                <div class="mx-auto h-24 w-24 text-yellow-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                     </svg>
                 </div>
-                <div class="ml-3">
-                    <p class="text-sm text-yellow-700">
-                        @if(request('search'))
-                            No employees found matching your search criteria.
-                        @else
-                            No employees found in the system.
-                        @endif
-                    </p>
-                </div>
+                <h3 class="mt-4 text-lg font-medium text-gray-900">
+                    @if(request('search'))
+                        No matching employees found
+                    @else
+                        No employees in the system
+                    @endif
+                </h3>
+                <p class="mt-2 text-sm text-gray-500">
+                    @if(request('search'))
+                        Try adjusting your search or filter to find what you're looking for.
+                    @else
+                        Employees will appear here once they have assets assigned to them.
+                    @endif
+                </p>
+                @if(request('search'))
+                    <div class="mt-6">
+                        <a href="{{ route('assigned_items.forms') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            Clear search
+                        </a>
+                    </div>
+                @endif
             </div>
         </div>
     @else
-        <div id="table-view" class="bg-white rounded-xl shadow-md overflow-hidden mb-8">
+        <!-- Employee Table Card -->
+        <div class="bg-white rounded-xl shadow-sm overflow-hidden mb-8">
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employee</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Forms</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Signed Items</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Returned Signed Items</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employee Details</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Latest Signed Form</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Latest Returned Form</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">All Forms</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         @foreach ($employees as $employee)
                         <tr class="hover:bg-gray-50 transition duration-150">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                <div class="text-sm font-medium text-gray-900">{{ $employee->first_name }} {{ $employee->last_name }}</div>
-                                <div class="text-sm text-gray-500">{{ $employee->employee_number }}</div>
+                            <!-- Employee Column -->
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
+                                        <span class="text-indigo-600 font-medium">{{ substr($employee->first_name, 0, 1) }}{{ substr($employee->last_name, 0, 1) }}</span>
+                                    </div>
+                                    <div class="ml-4">
+                                        <div class="text-sm font-medium text-gray-900">{{ $employee->first_name }} {{ $employee->last_name }}</div>
+                                        <div class="text-sm text-gray-500">#{{ $employee->employee_number }}</div>
+                                    </div>
+                                </div>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-500">
-                                <div class="text-sm text-gray-900">{{ $employee->department }}</div>
-                                <div class="text-sm text-gray-500">{{ $employee->position ?? 'N/A' }}</div>
+                            
+                            <!-- Department Column -->
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900 font-medium">{{ $employee->department }}</div>
+                                <div class="text-sm text-gray-500">{{ $employee->position ?? 'Not specified' }}</div>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-500">
+                            
+                            <!-- Actions Column -->
+                            <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex space-x-2">
+                                    <!-- Accountability Button -->
                                     <button onclick="openModal('accountability-modal-{{ $employee->id }}')" 
-                                    class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                        </svg>
+                                    class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors group">
+                                        <span class="group-hover:animate-bounce mr-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                            </svg>
+                                        </span>
                                         Accountability
                                     </button>
                                     
+                                    <!-- Return Asset Button -->
                                     <button onclick="openModal('asset-return-modal-{{ $employee->id }}')" 
-                                    class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                                        </svg>
+                                    class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors group">
+                                        <span class="group-hover:animate-pulse mr-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                                            </svg>
+                                        </span>
                                         Return Asset
                                     </button>
                                 </div>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-500">
+                            
+                            <!-- Latest Signed Form Column -->
+                            <td class="px-6 py-4 whitespace-nowrap">
                                 @if($employee->files->count() > 0)
-                                    @foreach($employee->files as $file)
-                                        <div class="mb-2">
-                                            <a href="{{ route('files.download', ['employee' => $employee->id, 'file' => $file->id]) }}" 
-                                            class="inline-flex items-center px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                                </svg>
-                                                Signed Accountability
-                                            </a>
-                                        </div>
-                                    @endforeach
+                                    @php
+                                        $latestFile = $employee->files->sortByDesc('created_at')->first();
+                                    @endphp
+                                    <div class="flex items-center">
+                                        <a href="{{ route('files.download', ['employee' => $employee->id, 'file' => $latestFile->id]) }}" 
+                                           class="inline-flex items-center px-3 py-1 border border-gray-200 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 hover:shadow-sm transition-all group">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500 group-hover:text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
+                                            </svg>
+                                            {{ $latestFile->created_at->format('M d, Y') }}
+                                        </a>
+                                    </div>
                                 @else
-                                    <span class="text-gray-400 text-sm">No files</span>
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-500">
+                                        No files
+                                    </span>
                                 @endif
                             </td>
 
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-500">
+                            <!-- Latest Returned Form Column -->
+                            <td class="px-6 py-4 whitespace-nowrap">
                                 @if($employee->returnfiles->count() > 0)
-                                    @foreach($employee->returnfiles as $returnfile)
-                                        <div class="mb-2">
-                                            <a href="{{ route('return_files.download', ['employee' => $employee->id, 'returnFile' => $returnfile->id]) }}" 
-                                            class="inline-flex items-center px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                                </svg>
-                                                Returned Signed Accountability
-                                            </a>
-                                        </div>
-                                    @endforeach
+                                    @php
+                                        $latestReturnFile = $employee->returnfiles->sortByDesc('created_at')->first();
+                                    @endphp
+                                    <div class="flex items-center">
+                                        <a href="{{ route('return_files.download', ['employee' => $employee->id, 'returnFile' => $latestReturnFile->id]) }}" 
+                                           class="inline-flex items-center px-3 py-1 border border-gray-200 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 hover:shadow-sm transition-all group">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-green-500 group-hover:text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
+                                            </svg>
+                                            {{ $latestReturnFile->created_at->format('M d, Y') }}
+                                        </a>
+                                    </div>
                                 @else
-                                    <span class="text-gray-400 text-sm">No files</span>
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-500">
+                                        No files
+                                    </span>
                                 @endif
+                            </td>
+
+                            <!-- All Forms Column -->
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex space-x-2">
+                                    @if($employee->files->count() > 0 || $employee->returnfiles->count() > 0)
+                                        <button onclick="openModal('all-forms-modal-{{ $employee->id }}')" 
+                                                class="inline-flex items-center px-3 py-1 border border-gray-200 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 hover:shadow-sm transition-all">
+                                            View All
+                                        </button>
+                                    @else
+                                        <span class="text-gray-400 text-sm">No forms</span>
+                                    @endif
+                                </div>
                             </td>
                         </tr>
                         @endforeach
                     </tbody>
                 </table>
             </div>
+            
+            <!-- Pagination -->
+            @if($employees->hasPages())
+            <div class="bg-gray-50 px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+                <div class="text-sm text-gray-500">
+                    Showing {{ $employees->firstItem() }} to {{ $employees->lastItem() }} of {{ $employees->total() }} results
+                </div>
+                <div class="flex space-x-2">
+                    {{ $employees->links() }}
+                </div>
+            </div>
+            @endif
         </div>
 
         @foreach($employees as $employee)
+        <!-- All Forms Modal -->
+        <div id="all-forms-modal-{{ $employee->id }}" class="fixed inset-0 z-50 hidden overflow-y-auto">
+            <div class="flex items-center justify-center min-h-screen p-4 text-center">
+                <!-- Background overlay -->
+                <div class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity" aria-hidden="true"></div>
+                
+                <!-- Modal container -->
+                <div class="relative inline-block w-full max-w-2xl text-left align-middle transform bg-white rounded-xl shadow-2xl overflow-hidden transition-all">
+                    <!-- Header -->
+                    <div class="px-6 py-4 bg-gradient-to-r from-indigo-600 to-indigo-700 flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="p-2 rounded-lg bg-indigo-700/20">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h2 class="text-xl font-bold text-white">All Forms for {{ $employee->first_name }} {{ $employee->last_name }}</h2>
+                                <p class="text-indigo-100 text-sm">Employee #{{ $employee->employee_number }}</p>
+                            </div>
+                        </div>
+                        <button onclick="closeModal('all-forms-modal-{{ $employee->id }}')" class="text-white hover:text-indigo-200 transition-colors">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="p-6 max-h-[65vh] overflow-y-auto">
+                        <!-- Signed Forms Section -->
+                        <div class="mb-8">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                Signed Accountability Forms
+                                <span class="ml-auto text-sm font-medium text-gray-500">{{ $employee->files->count() }} files</span>
+                            </h3>
+                            
+                            @if($employee->files->count() > 0)
+                                <div class="space-y-3">
+                                    @foreach($employee->files->sortByDesc('created_at') as $file)
+                                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors">
+                                        <div class="flex items-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                            </svg>
+                                            <span class="text-sm font-medium text-gray-700">{{ $file->created_at->format('M d, Y h:i A') }}</span>
+                                        </div>
+                                        <a href="{{ route('files.download', ['employee' => $employee->id, 'file' => $file->id]) }}" 
+                                           class="text-blue-600 hover:text-blue-800 transition-colors flex items-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                            </svg>
+                                            Download
+                                        </a>
+                                    </div>
+                                    @endforeach
+                                </div>
+                            @else
+                                <div class="text-center py-4 text-gray-500">
+                                    No signed forms available
+                                </div>
+                            @endif
+                        </div>
+
+                        <!-- Returned Forms Section -->
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                                </svg>
+                                Returned Asset Forms
+                                <span class="ml-auto text-sm font-medium text-gray-500">{{ $employee->returnfiles->count() }} files</span>
+                            </h3>
+                            
+                            @if($employee->returnfiles->count() > 0)
+                                <div class="space-y-3">
+                                    @foreach($employee->returnfiles->sortByDesc('created_at') as $returnfile)
+                                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors">
+                                        <div class="flex items-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                                            </svg>
+                                            <span class="text-sm font-medium text-gray-700">{{ $returnfile->created_at->format('M d, Y h:i A') }}</span>
+                                        </div>
+                                        <a href="{{ route('return_files.download', ['employee' => $employee->id, 'returnFile' => $returnfile->id]) }}" 
+                                           class="text-green-600 hover:text-green-800 transition-colors flex items-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                            </svg>
+                                            Download
+                                        </a>
+                                    </div>
+                                    @endforeach
+                                </div>
+                            @else
+                                <div class="text-center py-4 text-gray-500">
+                                    No returned forms available
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="bg-gray-50 px-6 py-4 border-t border-gray-200 flex justify-end">
+                        <button onclick="closeModal('all-forms-modal-{{ $employee->id }}')" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Accountability Modal -->
         <div id="accountability-modal-{{ $employee->id }}" class="fixed inset-0 z-50 hidden overflow-y-auto">
             <div class="flex items-center justify-center min-h-screen p-4 text-center">
@@ -413,6 +596,9 @@
             if (event.target === document.getElementById('asset-return-modal-{{ $employee->id }}')) {
                 closeModal('asset-return-modal-{{ $employee->id }}');
             }
+            if (event.target === document.getElementById('all-forms-modal-{{ $employee->id }}')) {
+                closeModal('all-forms-modal-{{ $employee->id }}');
+            }
         @endforeach
     });
 
@@ -426,6 +612,9 @@
                 if (!document.getElementById('asset-return-modal-{{ $employee->id }}').classList.contains('hidden')) {
                     closeModal('asset-return-modal-{{ $employee->id }}');
                 }
+                if (!document.getElementById('all-forms-modal-{{ $employee->id }}').classList.contains('hidden')) {
+                    closeModal('all-forms-modal-{{ $employee->id }}');
+                }
             @endforeach
         }
     });
@@ -435,32 +624,26 @@
         @foreach($employees as $employee)
             // Accountability form
             const assetFileInput{{ $employee->id }} = document.getElementById('assetFile-{{ $employee->id }}');
-            const assetFileNameDisplay{{ $employee->id }} = document.getElementById('assetFileNameDisplay-{{ $employee->id }}');
             
             if (assetFileInput{{ $employee->id }}) {
                 assetFileInput{{ $employee->id }}.addEventListener('change', function() {
-                    if (this.files.length > 0) {
-                        assetFileNameDisplay{{ $employee->id }}.textContent = this.files[0].name;
-                        assetFileNameDisplay{{ $employee->id }}.classList.add('has-file');
-                    } else {
-                        assetFileNameDisplay{{ $employee->id }}.textContent = 'No file selected';
-                        assetFileNameDisplay{{ $employee->id }}.classList.remove('has-file');
+                    const fileName = this.files.length > 0 ? this.files[0].name : 'No file selected';
+                    const label = this.nextElementSibling?.querySelector('.file-label-text');
+                    if (label) {
+                        label.textContent = fileName;
                     }
                 });
             }
 
             // Return form
             const returnFileInput{{ $employee->id }} = document.getElementById('returnFile-{{ $employee->id }}');
-            const returnFileNameDisplay{{ $employee->id }} = document.getElementById('returnFileNameDisplay-{{ $employee->id }}');
             
             if (returnFileInput{{ $employee->id }}) {
                 returnFileInput{{ $employee->id }}.addEventListener('change', function() {
-                    if (this.files.length > 0) {
-                        returnFileNameDisplay{{ $employee->id }}.textContent = this.files[0].name;
-                        returnFileNameDisplay{{ $employee->id }}.classList.add('has-file');
-                    } else {
-                        returnFileNameDisplay{{ $employee->id }}.textContent = 'No file selected';
-                        returnFileNameDisplay{{ $employee->id }}.classList.remove('has-file');
+                    const fileName = this.files.length > 0 ? this.files[0].name : 'No file selected';
+                    const label = this.nextElementSibling?.querySelector('.file-label-text');
+                    if (label) {
+                        label.textContent = fileName;
                     }
                 });
             }
@@ -559,4 +742,96 @@
         box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
     }
 </style>
+
+<script>
+    // Modal functions
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+
+    // Close modal when clicking outside
+    window.addEventListener('click', function(event) {
+        @foreach($employees as $employee)
+            if (event.target === document.getElementById('accountability-modal-{{ $employee->id }}')) {
+                closeModal('accountability-modal-{{ $employee->id }}');
+            }
+            if (event.target === document.getElementById('asset-return-modal-{{ $employee->id }}')) {
+                closeModal('asset-return-modal-{{ $employee->id }}');
+            }
+        @endforeach
+    });
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            @foreach($employees as $employee)
+                if (!document.getElementById('accountability-modal-{{ $employee->id }}').classList.contains('hidden')) {
+                    closeModal('accountability-modal-{{ $employee->id }}');
+                }
+                if (!document.getElementById('asset-return-modal-{{ $employee->id }}').classList.contains('hidden')) {
+                    closeModal('asset-return-modal-{{ $employee->id }}');
+                }
+            @endforeach
+        }
+    });
+
+    // File input handling
+    document.addEventListener('DOMContentLoaded', function() {
+        @foreach($employees as $employee)
+            // Accountability form
+            const assetFileInput{{ $employee->id }} = document.getElementById('assetFile-{{ $employee->id }}');
+            const assetFileNameDisplay{{ $employee->id }} = document.getElementById('assetFileNameDisplay-{{ $employee->id }}');
+            
+            if (assetFileInput{{ $employee->id }}) {
+                assetFileInput{{ $employee->id }}.addEventListener('change', function() {
+                    if (this.files.length > 0) {
+                        assetFileNameDisplay{{ $employee->id }}.textContent = this.files[0].name;
+                        assetFileNameDisplay{{ $employee->id }}.classList.add('has-file');
+                    } else {
+                        assetFileNameDisplay{{ $employee->id }}.textContent = 'No file selected';
+                        assetFileNameDisplay{{ $employee->id }}.classList.remove('has-file');
+                    }
+                });
+            }
+
+            // Return form
+            const returnFileInput{{ $employee->id }} = document.getElementById('returnFile-{{ $employee->id }}');
+            const returnFileNameDisplay{{ $employee->id }} = document.getElementById('returnFileNameDisplay-{{ $employee->id }}');
+            
+            if (returnFileInput{{ $employee->id }}) {
+                returnFileInput{{ $employee->id }}.addEventListener('change', function() {
+                    if (this.files.length > 0) {
+                        returnFileNameDisplay{{ $employee->id }}.textContent = this.files[0].name;
+                        returnFileNameDisplay{{ $employee->id }}.classList.add('has-file');
+                    } else {
+                        returnFileNameDisplay{{ $employee->id }}.textContent = 'No file selected';
+                        returnFileNameDisplay{{ $employee->id }}.classList.remove('has-file');
+                    }
+                });
+            }
+
+            // Form validation
+            document.getElementById('assetsSignedForm-{{ $employee->id }}')?.addEventListener('submit', function(e) {
+                if (!assetFileInput{{ $employee->id }}.files.length) {
+                    e.preventDefault();
+                    alert('Please select a file to upload for Accountability');
+                }
+            });
+
+            document.getElementById('returnFilesForm-{{ $employee->id }}')?.addEventListener('submit', function(e) {
+                if (!returnFileInput{{ $employee->id }}.files.length) {
+                    e.preventDefault();
+                    alert('Please select a file to upload for Return Asset');
+                }
+            });
+        @endforeach
+    });
+</script>
+
 @endsection

@@ -210,10 +210,7 @@ Route::middleware('auth')->group(function () {
     ->name('instock');
 
     //Forms
-    Route::middleware([Admin::class])->get('/form', function () {
-        return app('App\Http\Controllers\AssignedItemFormController')->index();
-    })->middleware(['auth', 'verified'])->name('assigned_items.forms');
-    
+    Route::middleware(['auth', 'verified', Admin::class])->get('/form', [AssignedItemFormController::class, 'index'])->name('assigned_items.forms');
     Route::get('/assigned-items/history', [ItemHistoryController::class, 'history'])
     ->name('assigned-items.history');
 });

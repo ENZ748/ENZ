@@ -15,44 +15,51 @@ use App\Models\AssetSignedItem;
 class AssignedItemFormController extends Controller
 {
     
-    public function index()
+    public function index(Request $request)
     {
+        $search = $request->input('search');
+        
         $employees = Employees::whereHas('users', function ($query) {
                 $query->whereIn('usertype', ['user', 'admin'])
                     ->where('id', '!=', auth()->id());
             })
+            ->when($search, function ($query, $search) {
+                $this->applySearchFilters($query, $search);
+            })
             ->orderBy('hire_date', 'desc')
-            ->paginate(10);
+            ->paginate(10)
+            ->appends(['search' => $search]);
         
-        $files = UploadedFile::with('employee')->get(); // Eager load employee relationship
-        $returnfiles = ReturnFile::with('employee')->get(); // Eager load employee relationship
+        // These are used for displaying all files in the view
+        $files = UploadedFile::with('employee')->get();
+        $returnfiles = ReturnFile::with('employee')->get();
 
-        return view('assigned_item_forms.index', compact('employees', 'files','returnfiles'));
+        return view('assigned_item_forms.index', compact('employees', 'files', 'returnfiles', 'search'));
     }
 
-    public function search(Request $request)
+    /**
+     * Apply search filters to the query
+     */
+    protected function applySearchFilters($query, $search)
     {
-        $search = $request->input('search');
-
-        $employees = Employees::whereHas('users', function ($query) {
-            $query->whereIn('usertype', ['user', 'admin'])
-                ->where('id', '!=', auth()->id());
-        })
-        ->when($search, function ($query) use ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('first_name', 'like', "%{$search}%")
-                  ->orWhere('last_name', 'like', "%{$search}%")
-                  ->orWhere('employee_number', 'like', "%{$search}%")
-                  ->orWhere('department', 'like', "%{$search}%")
-                  ->orWhereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$search}%"]);
-            });
-        })
+        $query->where(function ($q) use ($search) {
+            $q->where('first_name', 'like', "%{$search}%")
+              ->orWhere('last_name', 'like', "%{$search}%")
+              ->orWhere('employee_number', 'like', "%{$search}%")
+              ->orWhere('department', 'like', "%{$search}%")
+              ->orWhereHas('users', function ($userQuery) use ($search) {
+                  $userQuery->where('email', 'like', "%{$search}%");
+              });
             
-        ->orderBy('hire_date', 'desc')
-        ->paginate(10)
-        ->appends(['search' => $search]);
-
-        return view('assigned_item_forms.index', compact('employees', 'search'));
+            // Search by full name (first + last)
+            $fullName = explode(' ', $search);
+            if (count($fullName) === 2) {
+                $q->orWhere(function ($q) use ($fullName) {
+                    $q->where('first_name', 'like', "%{$fullName[0]}%")
+                      ->where('last_name', 'like', "%{$fullName[1]}%");
+                });
+            }
+        });
     }
 
     public function accountability_form($id)
