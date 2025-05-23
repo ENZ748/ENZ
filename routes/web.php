@@ -25,6 +25,9 @@ use App\Http\Controllers\SuperAdminUnitController;
 use App\Http\Controllers\SuperAdminItemController;
 use App\Http\Controllers\SuperAdminAccountabilityController;
 use App\Http\Controllers\SuperAdminInStockController;
+use App\Http\Controllers\SuperAdminAssignedFormController;
+use App\Http\Controllers\SuperAdminAssignedItemFormController;
+use App\Http\Controllers\SuperAdminItemHistoryController;
 
 use App\Http\Middleware\Admin;
 use App\Http\Middleware\SuperAdmin;
@@ -141,10 +144,9 @@ Route::middleware('auth')->group(function () {
     ->name('superAdmin.instock');
 
     //Accountability Forms
-    Route::middleware([SuperAdmin::class])->get('superAdmin/form', function () {
-        return app('App\Http\Controllers\AssignedItemFormController')->index();
-    })->middleware(['auth', 'verified'])->name('superAdmin.assigned_items.forms');
-    
+
+    Route::middleware(['auth', 'verified', SuperAdmin::class])->get('superAdmin/form', [SuperAdminAssignedFormController::class, 'index'])->name('superAdmin.assigned_items.forms');
+
 
     Route::get('/assigned-items/history', [ItemHistoryController::class, 'history'])
     ->name('assigned-items.history');
@@ -211,6 +213,7 @@ Route::middleware('auth')->group(function () {
 
     //Forms
     Route::middleware(['auth', 'verified', Admin::class])->get('/form', [AssignedItemFormController::class, 'index'])->name('assigned_items.forms');
+
     Route::get('/assigned-items/history', [ItemHistoryController::class, 'history'])
     ->name('assigned-items.history');
 });
@@ -377,6 +380,15 @@ Route::middleware('auth')->group(function () {
     Route::get('superAdmin/get-units/create/{brandId}', [SuperAdminAccountabilityController::class, 'getUnits']);
     Route::get('superAdmin/get-serials/create/{unitId}', [SuperAdminAccountabilityController::class, 'getSerials']);
 
+
+//Super Admin Assigned Item Forms
+    Route::get('superAdmin/accountability_form/{id}', [SuperAdminAssignedItemFormController::class, 'accountability_form'])->name('superAdminform.accountability');
+    Route::get('superAdmin/asset_return_form/{id}', [SuperAdminAssignedItemFormController::class, 'asset_return_form'])->name('superAdminform.asset_return');
+    Route::get('superAdmin/confirm_return/{id}', [SuperAdminAssignedItemFormController::class, 'confirm_History'])->name('superAdminform.confirm_return');
+    Route::get('superAdmin/confirm_accountability/{id}', [SuperAdminAssignedItemFormController::class, 'confirm_accountability'])->name('superAdminform.confirm_accountability');
+    Route::get('superAdmin/form/search', [SuperAdminAssignedItemFormController::class, 'search'])->name('superAdminform.search');
+
+
 //Assigned Item Forms
     Route::get('accountability_form/{id}', [AssignedItemFormController::class, 'accountability_form'])->name('form.accountability');
     Route::get('asset_return_form/{id}', [AssignedItemFormController::class, 'asset_return_form'])->name('form.asset_return');
@@ -433,6 +445,12 @@ Route::middleware('auth')->group(function () {
     [ReturnSignedItemController::class, 'download'])
     ->name('return_files.download');
 
+
+//Super Admin Accountability Signed
+    Route::post('superAdmin/assets_signed_files/employee/{id}', [SuperAdminAssetSignedItemController::class, 'store'])
+    ->name('superAdminassets_signed_files.store');
+
+
 //Accountability Signed
     Route::post('/assets_signed_files/employee/{id}', [AssetSignedItemController::class, 'store'])
     ->name('assets_signed_files.store');
@@ -441,10 +459,15 @@ Route::middleware('auth')->group(function () {
     [AssetSignedItemController::class, 'download'])
     ->name('asset_files.download');
 
-//Item History upload file
-    Route::post('/return_files/employee/{id}', [ItemHistoryController::class, 'store'])
-    ->name('return_files.store');
+//Super Admin Item History upload file
+    Route::post('superAdminform/return_files/employee/{id}', [SuperAdminItemHistoryController::class, 'store'])
+    ->name('superAdminformreturn_files.store');
     
+
+//Item History upload file
+    Route::post('return_files/employee/{id}', [ItemHistoryController::class, 'store'])
+    ->name('return_files.store');
+
 //Item History Download file
     Route::get('/return_files/{returnedSignedItem}/download', 
     [ItemHistoryController::class, 'download'])
