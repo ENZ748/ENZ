@@ -28,6 +28,7 @@ use App\Http\Controllers\SuperAdminInStockController;
 
 use App\Http\Middleware\Admin;
 use App\Http\Middleware\SuperAdmin;
+use App\Http\Middleware\PreventBackHistory;
 
 use Illuminate\Support\Facades\Route;
 
