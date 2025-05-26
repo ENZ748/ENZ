@@ -432,11 +432,59 @@
                                 Cancel
                             </button>
                             @if($employee->assigned_items->where('status', 0)->count() > 0)
-                                <a href="{{ route('form.confirm_accountability', $employee->id) }}" class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                                <button onclick="closeModal('accountability-modal-{{ $employee->id }}'); openModal('confirm-signature-modal-{{ $employee->id }}')" 
+                                        class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                                     Confirm Signature
-                                </a>
+                                </button>
                             @endif
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Confirm Signature Modal -->
+        <div id="confirm-signature-modal-{{ $employee->id }}" class="fixed inset-0 z-50 hidden overflow-y-auto">
+            <div class="flex items-center justify-center min-h-screen p-4 text-center">
+                <!-- Background overlay -->
+                <div class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity" aria-hidden="true"></div>
+                
+                <!-- Modal container -->
+                <div class="relative inline-block w-full max-w-md text-left align-middle transform bg-white rounded-xl shadow-2xl overflow-hidden transition-all">
+                    <!-- Header -->
+                    <div class="px-6 py-4 bg-gradient-to-r from-blue-600 to-blue-700 flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="p-2 rounded-lg bg-blue-700/20">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h2 class="text-xl font-bold text-white">Confirm Signature</h2>
+                                <p class="text-blue-100 text-sm">{{ $employee->first_name }} {{ $employee->last_name }}</p>
+                            </div>
+                        </div>
+                        <button onclick="closeModal('confirm-signature-modal-{{ $employee->id }}')" class="text-white hover:text-blue-200 transition-colors">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="p-6">
+                        <p class="text-gray-700 mb-4">Are you sure you want to confirm the signature for all assigned assets?</p>
+                        <p class="text-sm text-gray-500">This action will mark all pending assets as officially signed by the employee.</p>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="bg-gray-50 px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">
+                        <button onclick="closeModal('confirm-signature-modal-{{ $employee->id }}')" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none">
+                            Cancel
+                        </button>
+                        <a href="{{ route('form.confirm_accountability', $employee->id) }}" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            Confirm Signature
+                        </a>
                     </div>
                 </div>
             </div>
@@ -562,11 +610,59 @@
                                 Cancel
                             </button>
                             @if($employee->item_history->where('status', 0)->count() > 0)
-                                <a href="{{ route('form.confirm_return', $employee->id) }}" class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                                <button onclick="closeModal('asset-return-modal-{{ $employee->id }}'); openModal('process-return-modal-{{ $employee->id }}')" 
+                                        class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                                     Process Return
-                                </a>
+                                </button>
                             @endif
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Process Return Modal -->
+        <div id="process-return-modal-{{ $employee->id }}" class="fixed inset-0 z-50 hidden overflow-y-auto">
+            <div class="flex items-center justify-center min-h-screen p-4 text-center">
+                <!-- Background overlay -->
+                <div class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity" aria-hidden="true"></div>
+                
+                <!-- Modal container -->
+                <div class="relative inline-block w-full max-w-md text-left align-middle transform bg-white rounded-xl shadow-2xl overflow-hidden transition-all">
+                    <!-- Header -->
+                    <div class="px-6 py-4 bg-gradient-to-r from-green-600 to-green-700 flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="p-2 rounded-lg bg-green-700/20">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h2 class="text-xl font-bold text-white">Process Return</h2>
+                                <p class="text-green-100 text-sm">{{ $employee->first_name }} {{ $employee->last_name }}</p>
+                            </div>
+                        </div>
+                        <button onclick="closeModal('process-return-modal-{{ $employee->id }}')" class="text-white hover:text-green-200 transition-colors">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="p-6">
+                        <p class="text-gray-700 mb-4">Are you sure you want to process the return of all assets?</p>
+                        <p class="text-sm text-gray-500">This action will mark all pending returns as completed and update inventory.</p>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="bg-gray-50 px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">
+                        <button onclick="closeModal('process-return-modal-{{ $employee->id }}')" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none">
+                            Cancel
+                        </button>
+                        <a href="{{ route('form.confirm_return', $employee->id) }}" class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                            Process Return
+                        </a>
                     </div>
                 </div>
             </div>
