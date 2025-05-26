@@ -28,6 +28,7 @@ use App\Http\Controllers\SuperAdminInStockController;
 use App\Http\Controllers\SuperAdminAssignedFormController;
 use App\Http\Controllers\SuperAdminAssignedItemFormController;
 use App\Http\Controllers\SuperAdminItemHistoryController;
+use App\Http\Controllers\SuperAdminAdminAccountabilityController;
 
 use App\Http\Middleware\Admin;
 use App\Http\Middleware\SuperAdmin;
@@ -132,13 +133,13 @@ Route::middleware('auth')->group(function () {
     })->middleware(['auth', 'verified'])->name('superAdmin.history');
 
     Route::middleware([SuperAdmin::class])->get('superAdmin/item/history', function () {
-        return app('App\Http\Controllers\ItemHistoryController')->index();
+        return app('App\Http\Controllers\SuperAdminItemHistoryController')->index();
     })->middleware(['auth', 'verified'])->name('superAdmin.item.history');
 
-    Route::middleware([SuperAdmin::class])->get('superAdmin/item/admin/assets', function () {
-        return app('App\Http\Controllers\AdminAccountabilityController')->index();
-    })->middleware(['auth', 'verified'])->name('superAdmin.admin.accountability');
-
+    Route::middleware([SuperAdmin::class, 'auth', 'verified'])
+        ->get('superAdmin/item/admin/assets', [SuperAdminAdminAccountabilityController::class, 'index'])
+        ->name('superAdmin.admin.accountability');
+    
     Route::middleware(['auth', 'verified', SuperAdmin::class])
     ->get('superAdmin/InStock', [SuperAdminInStockController::class, 'index'])
     ->name('superAdmin.instock');
@@ -214,8 +215,14 @@ Route::middleware('auth')->group(function () {
     //Forms
     Route::middleware(['auth', 'verified', Admin::class])->get('/form', [AssignedItemFormController::class, 'index'])->name('assigned_items.forms');
 
+
+    //Search History
     Route::get('/assigned-items/history', [ItemHistoryController::class, 'history'])
     ->name('assigned-items.history');
+
+    //Super Admin Search History
+    Route::get('superAdmin/assigned-items/history', [SuperAdminItemHistoryController::class, 'history'])
+    ->name('superAdminassigned-items.history');
 });
 
 
