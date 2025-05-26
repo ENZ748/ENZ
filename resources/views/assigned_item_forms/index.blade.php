@@ -249,9 +249,9 @@
                                 Cancel
                             </button>
                             @if($employee->assigned_items->where('status', 0)->count() > 0)
-                                <a href="{{ route('form.confirm_accountability', $employee->id) }}" class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                                <button onclick="openModal('confirm-signature-modal-{{ $employee->id }}')" class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                                     Confirm Signature
-                                </a>
+                                </button>
                             @endif
                         </div>
                     </div>
@@ -379,11 +379,119 @@
                                 Cancel
                             </button>
                             @if($employee->item_history->where('status', 0)->count() > 0)
-                                <a href="{{ route('form.confirm_return', $employee->id) }}" class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                                <button onclick="openModal('confirm-return-modal-{{ $employee->id }}')" class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                                     Process Return
-                                </a>
+                                </button>
                             @endif
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Confirm Signature Modal -->
+        <div id="confirm-signature-modal-{{ $employee->id }}" class="fixed inset-0 z-50 hidden overflow-y-auto">
+            <div class="flex items-center justify-center min-h-screen p-4 text-center">
+                <!-- Background overlay -->
+                <div class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity" aria-hidden="true"></div>
+                
+                <!-- Modal container -->
+                <div class="relative inline-block w-full max-w-md text-left align-middle transform bg-white rounded-xl shadow-2xl overflow-hidden transition-all">
+                    <!-- Header -->
+                    <div class="px-6 py-4 bg-gradient-to-r from-blue-600 to-blue-700 flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="p-2 rounded-lg bg-blue-700/20">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h2 class="text-xl font-bold text-white">Confirm Signature</h2>
+                            </div>
+                        </div>
+                        <button onclick="closeModal('confirm-signature-modal-{{ $employee->id }}')" class="text-white hover:text-blue-200 transition-colors">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="p-6">
+                        <div class="text-center">
+                            <svg class="mx-auto h-12 w-12 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <h3 class="mt-2 text-lg font-medium text-gray-900">Confirm Employee Signature</h3>
+                            <div class="mt-2 text-sm text-gray-500">
+                                <p>Are you sure you want to confirm the signature for {{ $employee->first_name }} {{ $employee->last_name }}?</p>
+                                <p class="mt-2 font-medium">This action will mark all assigned items as acknowledged by the employee.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="bg-gray-50 px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">
+                        <button onclick="closeModal('confirm-signature-modal-{{ $employee->id }}')" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none">
+                            Cancel
+                        </button>
+                        <a href="{{ route('form.confirm_accountability', $employee->id) }}" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            Confirm Signature
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Confirm Return Modal -->
+        <div id="confirm-return-modal-{{ $employee->id }}" class="fixed inset-0 z-50 hidden overflow-y-auto">
+            <div class="flex items-center justify-center min-h-screen p-4 text-center">
+                <!-- Background overlay -->
+                <div class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity" aria-hidden="true"></div>
+                
+                <!-- Modal container -->
+                <div class="relative inline-block w-full max-w-md text-left align-middle transform bg-white rounded-xl shadow-2xl overflow-hidden transition-all">
+                    <!-- Header -->
+                    <div class="px-6 py-4 bg-gradient-to-r from-green-600 to-green-700 flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="p-2 rounded-lg bg-green-700/20">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h2 class="text-xl font-bold text-white">Process Return</h2>
+                            </div>
+                        </div>
+                        <button onclick="closeModal('confirm-return-modal-{{ $employee->id }}')" class="text-white hover:text-green-200 transition-colors">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="p-6">
+                        <div class="text-center">
+                            <svg class="mx-auto h-12 w-12 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <h3 class="mt-2 text-lg font-medium text-gray-900">Process Asset Return</h3>
+                            <div class="mt-2 text-sm text-gray-500">
+                                <p>Are you sure you want to process the return for {{ $employee->first_name }} {{ $employee->last_name }}?</p>
+                                <p class="mt-2 font-medium">This action will mark all returned items as completed and update inventory.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="bg-gray-50 px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">
+                        <button onclick="closeModal('confirm-return-modal-{{ $employee->id }}')" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none">
+                            Cancel
+                        </button>
+                        <a href="{{ route('form.confirm_return', $employee->id) }}" class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                            Process Return
+                        </a>
                     </div>
                 </div>
             </div>
@@ -413,6 +521,12 @@
             if (event.target === document.getElementById('asset-return-modal-{{ $employee->id }}')) {
                 closeModal('asset-return-modal-{{ $employee->id }}');
             }
+            if (event.target === document.getElementById('confirm-signature-modal-{{ $employee->id }}')) {
+                closeModal('confirm-signature-modal-{{ $employee->id }}');
+            }
+            if (event.target === document.getElementById('confirm-return-modal-{{ $employee->id }}')) {
+                closeModal('confirm-return-modal-{{ $employee->id }}');
+            }
         @endforeach
     });
 
@@ -425,6 +539,12 @@
                 }
                 if (!document.getElementById('asset-return-modal-{{ $employee->id }}').classList.contains('hidden')) {
                     closeModal('asset-return-modal-{{ $employee->id }}');
+                }
+                if (!document.getElementById('confirm-signature-modal-{{ $employee->id }}').classList.contains('hidden')) {
+                    closeModal('confirm-signature-modal-{{ $employee->id }}');
+                }
+                if (!document.getElementById('confirm-return-modal-{{ $employee->id }}').classList.contains('hidden')) {
+                    closeModal('confirm-return-modal-{{ $employee->id }}');
                 }
             @endforeach
         }
