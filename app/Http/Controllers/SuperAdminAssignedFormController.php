@@ -12,7 +12,7 @@ use App\Models\ReturnSignedItem;
 use App\Models\ReturnFile;
 use App\Models\AssetSignedItem;
 
-class AssignedItemFormController extends Controller
+class SuperAdminAssignedFormController extends Controller
 {
     
     public function index(Request $request)
@@ -34,7 +34,7 @@ class AssignedItemFormController extends Controller
         $files = UploadedFile::with('employee')->get();
         $returnfiles = ReturnFile::with('employee')->get();
 
-        return view('assigned_item_forms.index', compact('employees', 'files', 'returnfiles', 'search'));
+        return view('assigned_item_forms.superAdminindex', compact('employees', 'files', 'returnfiles', 'search'));
     }
 
     /**
@@ -111,7 +111,7 @@ class AssignedItemFormController extends Controller
             $assigned_item->save();
         }
 
-        return redirect('form');
+        return redirect('superAdmin/form');
     }
 
     public function confirm_History($id)

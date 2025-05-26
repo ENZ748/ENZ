@@ -30,7 +30,7 @@ class SuperAdminDashboardController extends Controller
         
         // Fill in the counts for the months that have data
         foreach ($usermonthlyCounts as $month => $count) {
-            $values[$month - 1] = $count; // Adjust index since array is 0-based
+            $values[(int)$month - 1] = $count;
         }
         
         // Trim to required months if needed (this currently slices to the first 5 months)

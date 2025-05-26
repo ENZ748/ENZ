@@ -19,7 +19,7 @@
                                 <td style="background-color: rgba(23, 55, 83, 0.1);" class="py-3 px-4">
                                     <div class="font-medium text-gray-800">{{ $history_item->item->category->category_name }}</div>
                                     <div class="text-sm text-gray-600">{{ $history_item->item->brand->brand_name }}</div>
-                                </td>`
+                                </td>
                                 <td style="background-color: rgba(109, 174, 219, 0.1);" class="py-3 px-4">{{ $history_item->item->unit->unit_name }}</td>
                                 <td style="background-color: rgba(109, 174, 219, 0.1);" class="py-3 px-4">{{ $history_item->item->serial_number }}</td>
                                 <td style="background-color: rgba(109, 174, 219, 0.1);" class="py-3 px-4">{{ \Carbon\Carbon::parse($history_item->assigned_date)->format('M d, Y') }}</td>

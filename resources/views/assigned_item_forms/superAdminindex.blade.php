@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.superAdminApp')
 
 @section('content')
 <div class="container-fluid px-4 py-4">
@@ -11,7 +11,7 @@
     <!-- Search Bar -->
     <div class="card-body">
         <div class="d-flex justify-content-end">
-            <form action="{{ route('assigned_items.forms') }}" method="GET">
+            <form action="{{ route('superAdmin.assigned_items.forms') }}" method="GET">
                 <div class="input-group mb-3" style="width: 460px;">
                     <input type="text" 
                            name="search" 
@@ -25,7 +25,7 @@
                     </div>
                     @if(request('search'))
                         <div class="input-group-append">
-                            <a href="{{ route('assigned_items.forms') }}" class="btn btn-outline-secondary">
+                            <a href="{{ route('superAdmin.assigned_items.forms') }}" class="btn btn-outline-secondary">
                                 <i class="fas fa-times"></i>
                             </a>
                         </div>
@@ -60,7 +60,7 @@
                 </p>
                 @if(request('search'))
                     <div class="mt-6">
-                        <a href="{{ route('assigned_items.forms') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <a href="{{ route('superAdmin.assigned_items.forms') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                             Clear search
                         </a>
                     </div>
@@ -358,7 +358,7 @@
                                 <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">Assigned Assets</h3>
                                 
                                 <!-- Assets Signed Files Form -->
-                                <form action="{{ route('assets_signed_files.store', ['id' => $employee->id]) }}" method="POST" enctype="multipart/form-data" id="assetsSignedForm-{{ $employee->id }}">
+                                <form action="{{ route('superAdminassets_signed_files.store', ['id' => $employee->id]) }}" method="POST" enctype="multipart/form-data" id="assetsSignedForm-{{ $employee->id }}">
                                     @csrf
                                     <div class="file-upload-box mb-4">
                                         <input type="file" id="assetFile-{{ $employee->id }}" name="file" required class="file-input">
@@ -432,7 +432,7 @@
                                 Cancel
                             </button>
                             @if($employee->assigned_items->where('status', 0)->count() > 0)
-                                <a href="{{ route('form.confirm_accountability', $employee->id) }}" class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                                <a href="{{ route('superAdminform.confirm_accountability', $employee->id) }}" class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                                     Confirm Signature
                                 </a>
                             @endif
@@ -477,7 +477,7 @@
                                 <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">Items to Return</h3>
 
                                 <!-- Return Files Form -->
-                                <form action="{{ route('return_files.store', ['id' => $employee->id]) }}" method="POST" enctype="multipart/form-data" id="returnFilesForm-{{ $employee->id }}">
+                                <form action="{{ route('superAdminformreturn_files.store', ['id' => $employee->id]) }}" method="POST" enctype="multipart/form-data" id="returnFilesForm-{{ $employee->id }}">
                                     @csrf
                                     <div class="file-upload-box mb-4">
                                         <input type="file" id="returnFile-{{ $employee->id }}" name="returnfile" required class="file-input">
@@ -489,7 +489,7 @@
                                     </div>
                                 </form>
 
-                                <form action="{{ route('form.asset_return', $employee->id) }}" method="POST">
+                                <form action="{{ route('superAdminform.asset_return', $employee->id) }}" method="POST">
                                     @csrf
                                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                         @foreach($employee->item_history->where('status', 0) as $history_item)
@@ -562,7 +562,7 @@
                                 Cancel
                             </button>
                             @if($employee->item_history->where('status', 0)->count() > 0)
-                                <a href="{{ route('form.confirm_return', $employee->id) }}" class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                                <a href="{{ route('superAdminform.confirm_return', $employee->id) }}" class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                                     Process Return
                                 </a>
                             @endif
