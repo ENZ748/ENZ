@@ -50,7 +50,7 @@ class SuperAdminItemHistoryController extends Controller
             ->orderBy('assigned_date', 'desc')
             ->paginate(15);
 
-        return view('itemHistory.superAdminindexindex', compact('assignedItems'));
+        return view('itemHistory.superAdminindex', compact('assignedItems'));
     }
 
     public function store(Request $request, $id)

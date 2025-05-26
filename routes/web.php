@@ -215,8 +215,14 @@ Route::middleware('auth')->group(function () {
     //Forms
     Route::middleware(['auth', 'verified', Admin::class])->get('/form', [AssignedItemFormController::class, 'index'])->name('assigned_items.forms');
 
+
+    //Search History
     Route::get('/assigned-items/history', [ItemHistoryController::class, 'history'])
     ->name('assigned-items.history');
+
+    //Super Admin Search History
+    Route::get('superAdmin/assigned-items/history', [SuperAdminItemHistoryController::class, 'history'])
+    ->name('superAdminassigned-items.history');
 });
 
 

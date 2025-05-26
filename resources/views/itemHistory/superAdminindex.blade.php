@@ -11,7 +11,7 @@
     <!-- Search Bar -->
     <div class="card-body">
         <div class="d-flex justify-content-end">
-            <form action="{{ route('assigned-items.history') }}" method="GET">
+            <form action="{{ route('superAdminassigned-items.history') }}" method="GET">
                 <div class="input-group mb-3" style="width: 450px;">
                     <input type="text" 
                            name="search" 
@@ -25,7 +25,7 @@
                     </div>
                     @if(request('search'))
                         <div class="input-group-append">
-                            <a href="{{ route('assigned-items.history') }}" class="btn btn-outline-secondary">
+                            <a href="{{ route('superAdminassigned-items.history') }}" class="btn btn-outline-secondary">
                                 <i class="fas fa-times"></i>
                             </a>
                         </div>

@@ -20,7 +20,7 @@ class AssignedItemFormController extends Controller
         $search = $request->input('search');
         
         $employees = Employees::whereHas('users', function ($query) {
-                $query->whereIn('usertype', ['user', 'admin'])
+                $query->whereIn('usertype', ['user', 'admin','superAdmin'])
                     ->where('id', '!=', auth()->id());
             })
             ->when($search, function ($query, $search) {
