@@ -138,13 +138,7 @@
                                         </button>
                                     @endif
 
-                                    <form action="{{ route('items.destroy', $item->id) }}" method="POST" class="delete-item-form">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="button" class="text-red-600 hover:text-red-900 transition duration-200 delete-item-btn">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </button>
-                                    </form>
+
                                 </div>
                             </td>
                         </tr>
@@ -248,13 +242,7 @@
                             </button>
                         @endif
 
-                        <form class="delete-item-form" action="{{ route('items.destroy', $item->id) }}" method="POST">
-                            @csrf
-                            @method('DELETE')
-                            <button type="button" class="text-red-600 hover:text-red-800 transition duration-200 delete-item-btn">
-                                <i class="fas fa-trash-alt mr-1"></i> Delete
-                            </button>
-                        </form>
+
                     </div>
                 </div>
             </div>
