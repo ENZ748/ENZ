@@ -19,137 +19,137 @@ class ChartController extends Controller
         $returned_items = AssignedItem::where('item_status', 'returned')->count();
         return view('chart', compact('count_items', 'returned_items'));
     }
-    
+  
     public function showChart()
-{
-    $currentYear = Carbon::now()->year;
-    $lastUpdated = Carbon::now()->format('M d, Y');
-    
-    // Get all distinct years that have data in any relevant table
-    $itemYears = Item::selectRaw('YEAR(date_acquired) as year')
-        ->distinct()
-        ->pluck('year');
+    {
+        $currentYear = Carbon::now()->year;
+        $lastUpdated = Carbon::now()->format('M d, Y');
         
-    $employeeYears = Employees::selectRaw('YEAR(created_at) as year')
-        ->distinct()
-        ->pluck('year');
+        // Get all distinct years that have data in any relevant table
+        $itemYears = Item::selectRaw('YEAR(date_acquired) as year')
+            ->distinct()
+            ->pluck('year');
+            
+        $employeeYears = Employees::selectRaw('YEAR(created_at) as year')
+            ->distinct()
+            ->pluck('year');
+            
+        $assignedYears = AssignedItem::selectRaw('YEAR(updated_at) as year')
+            ->distinct()
+            ->pluck('year');
         
-    $assignedYears = AssignedItem::selectRaw('YEAR(updated_at) as year')
-        ->distinct()
-        ->pluck('year');
-    
-    // Combine all years and ensure uniqueness
-    $allYears = $itemYears->merge($employeeYears)
-                         ->merge($assignedYears)
-                         ->unique()
-                         ->sort()
-                         ->values();
-    
-    // Always include current year if not present
-    if (!$allYears->contains($currentYear)) {
-        $allYears->push($currentYear);
-        $allYears = $allYears->sort();
+        // Combine all years and ensure uniqueness
+        $allYears = $itemYears->merge($employeeYears)
+                            ->merge($assignedYears)
+                            ->unique()
+                            ->sort()
+                            ->values();
+        
+        // Always include current year if not present
+        if (!$allYears->contains($currentYear)) {
+            $allYears->push($currentYear);
+            $allYears = $allYears->sort();
+        }
+        
+        $yearlyData = [];
+        foreach ($allYears as $year) {
+            $yearlyData[$year] = [
+                'equipment' => $this->getEquipmentData($year),
+                'users' => $this->getUserData($year),
+                'returned' => $this->getReturnedData($year),
+                'damaged' => $this->getDamagedData($year)
+            ];
+        }
+        
+        // Main counts
+
+        $currentMonthItems = Item::where('quantity', '>', 0)
+                        ->whereYear('date_acquired', Carbon::now()->year)
+                        ->whereMonth('date_acquired', Carbon::now()->month)
+                        ->count();
+
+
+        $count_items = Item::where('quantity', '>', 0)->count();
+        $count_categories = Category::count();
+        $count_returned_items = AssignedItem::where('item_status', 'returned')->count();
+        $count_inStock = Item::where('equipment_status', 0)
+                            ->where('quantity', '>', 0)
+                            ->count();
+
+        // Items calculations
+        $lastMonthItems = Item::where('quantity', '>', 0)
+                            ->whereYear('date_acquired', Carbon::now()->subMonth()->year)
+                            ->whereMonth('date_acquired', Carbon::now()->subMonth()->month)
+                            ->count();
+        $itemsChange = $lastMonthItems > 0 ? round((($currentMonthItems - $lastMonthItems) / $lastMonthItems * 100), 1) : 0;
+
+        // Categories calculations
+        $newCategoriesThisMonth = Category::whereYear('created_at', Carbon::now()->year)
+                                        ->whereMonth('created_at', Carbon::now()->month)
+                                        ->count();
+
+        // Returned items calculations
+        $lastMonthReturns = AssignedItem::where('item_status', 'returned')
+                                    ->whereYear('updated_at', Carbon::now()->subMonth()->year)
+                                    ->whereMonth('updated_at', Carbon::now()->subMonth()->month)
+                                    ->count();
+        $returnsChange = $lastMonthReturns > 0 ? round((($count_returned_items - $lastMonthReturns) / $lastMonthReturns * 100), 1) : 0;
+
+        // Stock calculations
+        $stockPercentage = $count_items > 0 ? round(($count_inStock / $count_items * 100), 1) : 0;
+
+        // For modals
+
+
+        $categoriesWithCount = Category::withCount(['items' => function($query) {
+                                    $query->where('quantity', '>', 0);
+                                }])
+                                ->having('items_count', '>', 0)
+                                ->orderByDesc('items_count')
+                                ->get();
+
+        $largestCategory = $categoriesWithCount->first();
+        $smallestCategory = $categoriesWithCount->last();
+
+        $returnedThisMonth = AssignedItem::where('item_status', 'returned')
+                                    ->whereYear('updated_at', Carbon::now()->year)
+                                    ->whereMonth('updated_at', Carbon::now()->month)
+                                    ->count();
+        $returnRate = $count_items > 0 ? round(($count_returned_items / $count_items * 100), 1) : 0;
+
+        $lowStockThreshold = 5;
+        $lowStockItems = Item::where('equipment_status', 0)
+                            ->where('quantity', '>', 0)
+                            ->where('quantity', '<=', $lowStockThreshold)
+                            ->count();
+        $outOfStockItems = Item::where('equipment_status', 0)
+                            ->where('quantity', 0)
+                            ->count();
+
+        return view('chart', compact(
+            'yearlyData',
+            'currentYear',
+            'lastUpdated',
+            'count_items',
+            'count_categories',
+            'count_returned_items',
+            'count_inStock',
+            'lastMonthItems',
+            'itemsChange',
+            'newCategoriesThisMonth',
+            'returnsChange',
+            'stockPercentage',
+            'currentMonthItems',
+            'categoriesWithCount',
+            'largestCategory',
+            'smallestCategory',
+            'returnedThisMonth',
+            'returnRate',
+            'lowStockItems',
+            'outOfStockItems',
+            'lowStockThreshold'
+        ));
     }
-    
-    $yearlyData = [];
-    foreach ($allYears as $year) {
-        $yearlyData[$year] = [
-            'equipment' => $this->getEquipmentData($year),
-            'users' => $this->getUserData($year),
-            'returned' => $this->getReturnedData($year),
-            'damaged' => $this->getDamagedData($year)
-        ];
-    }
-    
-    // Main counts
-
-    $currentMonthItems = Item::where('quantity', '>', 0)
-                       ->whereYear('date_acquired', Carbon::now()->year)
-                       ->whereMonth('date_acquired', Carbon::now()->month)
-                       ->count();
-
-
-$count_items = Item::where('quantity', '>', 0)->count();
-$count_categories = Category::count();
-$count_returned_items = AssignedItem::where('item_status', 'returned')->count();
-$count_inStock = Item::where('equipment_status', 0)
-                    ->where('quantity', '>', 0)
-                    ->count();
-
-// Items calculations
-$lastMonthItems = Item::where('quantity', '>', 0)
-                     ->whereYear('date_acquired', Carbon::now()->subMonth()->year)
-                     ->whereMonth('date_acquired', Carbon::now()->subMonth()->month)
-                     ->count();
-$itemsChange = $lastMonthItems > 0 ? round((($currentMonthItems - $lastMonthItems) / $lastMonthItems * 100), 1) : 0;
-
-// Categories calculations
-$newCategoriesThisMonth = Category::whereYear('created_at', Carbon::now()->year)
-                                 ->whereMonth('created_at', Carbon::now()->month)
-                                 ->count();
-
-// Returned items calculations
-$lastMonthReturns = AssignedItem::where('item_status', 'returned')
-                              ->whereYear('updated_at', Carbon::now()->subMonth()->year)
-                              ->whereMonth('updated_at', Carbon::now()->subMonth()->month)
-                              ->count();
-$returnsChange = $lastMonthReturns > 0 ? round((($count_returned_items - $lastMonthReturns) / $lastMonthReturns * 100), 1) : 0;
-
-// Stock calculations
-$stockPercentage = $count_items > 0 ? round(($count_inStock / $count_items * 100), 1) : 0;
-
-// For modals
-
-
-$categoriesWithCount = Category::withCount(['items' => function($query) {
-                              $query->where('quantity', '>', 0);
-                          }])
-                          ->having('items_count', '>', 0)
-                          ->orderByDesc('items_count')
-                          ->get();
-
-$largestCategory = $categoriesWithCount->first();
-$smallestCategory = $categoriesWithCount->last();
-
-$returnedThisMonth = AssignedItem::where('item_status', 'returned')
-                               ->whereYear('updated_at', Carbon::now()->year)
-                               ->whereMonth('updated_at', Carbon::now()->month)
-                               ->count();
-$returnRate = $count_items > 0 ? round(($count_returned_items / $count_items * 100), 1) : 0;
-
-$lowStockThreshold = 5;
-$lowStockItems = Item::where('equipment_status', 0)
-                    ->where('quantity', '>', 0)
-                    ->where('quantity', '<=', $lowStockThreshold)
-                    ->count();
-$outOfStockItems = Item::where('equipment_status', 0)
-                     ->where('quantity', 0)
-                     ->count();
-
-return view('chart', compact(
-    'yearlyData',
-    'currentYear',
-    'lastUpdated',
-    'count_items',
-    'count_categories',
-    'count_returned_items',
-    'count_inStock',
-    'lastMonthItems',
-    'itemsChange',
-    'newCategoriesThisMonth',
-    'returnsChange',
-    'stockPercentage',
-    'currentMonthItems',
-    'categoriesWithCount',
-    'largestCategory',
-    'smallestCategory',
-    'returnedThisMonth',
-    'returnRate',
-    'lowStockItems',
-    'outOfStockItems',
-    'lowStockThreshold'
-));
-}
     
     private function getEquipmentData($year)
     {

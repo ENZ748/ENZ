@@ -195,223 +195,185 @@
 </div>
 
 <script>
-    // Store all chart data by year
-    const chartDataByYear = {
-        @foreach($yearlyData as $year => $data)
-            {{ $year }}: {
-                equipment: {
-                    labels: @json($data['equipment']['labels']),
-                    values: @json($data['equipment']['values'])
-                },
-                users: {
-                    labels: @json($data['users']['labels']),
-                    values: @json($data['users']['values'])
-                },
-                returned: {
-                    labels: @json($data['returned']['labels']),
-                    values: @json($data['returned']['values'])
-                },
-                damaged: {
-                    labels: @json($data['damaged']['labels']),
-                    values: @json($data['damaged']['values'])
-                }
-            },
-        @endforeach
-    };
+        // Store all chart data by year
+        const chartDataByYear = @json($yearlyData);
 
-    // Base color palette (used for non-monthly charts)
-    const colors = {
-        blue: { bg: 'rgba(58, 123, 213, 0.7)', border: 'rgba(58, 123, 213, 1)' },
-        red: { bg: 'rgba(255, 107, 107, 0.7)', border: 'rgba(255, 107, 107, 1)' },
-        teal: { bg: 'rgba(78, 205, 196, 0.7)', border: 'rgba(78, 205, 196, 1)' },
-        orange: { bg: 'rgba(255, 165, 2, 0.7)', border: 'rgba(255, 165, 2, 1)' },
-        purple: { bg: 'rgba(136, 84, 208, 0.7)', border: 'rgba(136, 84, 208, 1)' },
-        green: { bg: 'rgba(46, 204, 113, 0.7)', border: 'rgba(46, 204, 113, 1)' }
-    };
+        // Color palette
+        const colors = {
+            blue: { bg: 'rgba(58, 123, 213, 0.7)', border: 'rgba(58, 123, 213, 1)' },
+            red: { bg: 'rgba(255, 107, 107, 0.7)', border: 'rgba(255, 107, 107, 1)' },
+            teal: { bg: 'rgba(78, 205, 196, 0.7)', border: 'rgba(78, 205, 196, 1)' },
+            orange: { bg: 'rgba(255, 165, 2, 0.7)', border: 'rgba(255, 165, 2, 1)' }
+        };
 
-    // Chart configuration
-    const chartOptions = {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                display: false
-            },
-            tooltip: {
-                backgroundColor: '#333',
-                titleFont: { size: 14 },
-                bodyFont: { size: 12 },
-                padding: 12,
-                displayColors: false
-            }
-        },
-        scales: {
-            y: {
-                beginAtZero: true,
-                grid: {
-                    color: 'rgba(0, 0, 0, 0.05)'
-                }
-            },
-            x: {
-                grid: {
+        // Chart configuration
+        const chartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
                     display: false
+                },
+                tooltip: {
+                    backgroundColor: '#333',
+                    titleFont: { size: 14 },
+                    bodyFont: { size: 12 },
+                    padding: 12,
+                    displayColors: false
                 }
-            }
-        }
-    };
-
-    // Chart instances
-    let chart1, chart2, chart3, chart4;
-
-    // Generate unique monthly colors using golden ratio approach
-    function generateUniqueMonthlyColors(month, count) {
-        const colors = [];
-        const goldenRatio = 0.618033988749895;
-        const hueStart = (month * 30) % 360; // 30° per month
-        
-        for (let i = 0; i < count; i++) {
-            // Use golden ratio to distribute hues evenly
-            const hue = (hueStart + (i * goldenRatio * 360)) % 360;
-            // Fixed saturation and lightness for consistency
-            const saturation = 70 + (i % 3) * 5; // 70-80%
-            const lightness = 60 + (i % 2) * 5; // 60-65%
-            
-            colors.push(`hsla(${hue}, ${saturation}%, ${lightness}%, 0.7)`);
-        }
-        
-        return colors;
-    }
-
-    // Initialize all charts
-    function initializeCharts(year) {
-        const dataForYear = chartDataByYear[year];
-        const currentMonth = new Date().getMonth() + 1; // 1-12
-        
-        if (!dataForYear) {
-            console.error(`No data available for year ${year}`);
-            return;
-        }
-        
-        // Equipment Chart (static colors)
-        if (chart1) chart1.destroy();
-        chart1 = new Chart(document.getElementById('chart1'), {
-            type: 'bar',
-            data: {
-                labels: dataForYear.equipment.labels,
-                datasets: [{
-                    label: 'Equipment Count',
-                    data: dataForYear.equipment.values,
-                    backgroundColor: colors.blue.bg,
-                    borderColor: colors.blue.border,
-                    borderWidth: 1,
-                    borderRadius: 4
-                }]
             },
-            options: chartOptions
-        });
-
-        // User Chart (static colors)
-        if (chart2) chart2.destroy();
-        chart2 = new Chart(document.getElementById('chart2'), {
-            type: 'line',
-            data: {
-                labels: dataForYear.users.labels,
-                datasets: [{
-                    label: 'Active Users',
-                    data: dataForYear.users.values,
-                    backgroundColor: colors.red.bg,
-                    borderColor: colors.red.border,
-                    borderWidth: 2,
-                    tension: 0.3,
-                    fill: true
-                }]
-            },
-            options: chartOptions
-        });
-
-        // Returned Items Chart (unique monthly colors)
-        if (chart3) chart3.destroy();
-        const returnedColors = generateUniqueMonthlyColors(
-            currentMonth, 
-            dataForYear.returned.values.length
-        );
-        chart3 = new Chart(document.getElementById('chart3'), {
-            type: 'pie',
-            data: {
-                labels: dataForYear.returned.labels,
-                datasets: [{
-                    label: 'Returned Items',
-                    data: dataForYear.returned.values,
-                    backgroundColor: returnedColors,
-                    borderColor: '#fff',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                ...chartOptions,
-                plugins: {
-                    ...chartOptions.plugins,
-                    legend: {
-                        position: 'right',
-                        labels: {
-                            boxWidth: 12,
-                            padding: 20,
-                            usePointStyle: true,
-                            pointStyle: 'circle'
-                        }
-                    }
-                }
-            }
-        });
-
-        // Damaged Items Chart (unique monthly colors with offset)
-        if (chart4) chart4.destroy();
-        const damagedColors = generateUniqueMonthlyColors(
-            currentMonth + 12, // Different seed than returned items
-            dataForYear.damaged.values.length
-        );
-        chart4 = new Chart(document.getElementById('chart4'), {
-            type: 'doughnut',
-            data: {
-                labels: dataForYear.damaged.labels,
-                datasets: [{
-                    label: 'Damaged Items',
-                    data: dataForYear.damaged.values,
-                    backgroundColor: damagedColors,
-                    borderColor: '#fff',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                ...chartOptions,
-                plugins: {
-                    ...chartOptions.plugins,
-                    legend: {
-                        position: 'right',
-                        labels: {
-                            boxWidth: 12,
-                            padding: 20,
-                            usePointStyle: true,
-                            pointStyle: 'circle'
-                        }
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
                     }
                 },
-                cutout: '70%'
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
             }
-        });
-    }
+        };
 
-    // Initialize charts when DOM is loaded
-    document.addEventListener('DOMContentLoaded', function() {
-        initializeCharts({{ $currentYear }});
-        
-        // Add event listener for year selector
-        document.getElementById('yearSelector').addEventListener('change', function() {
-            const selectedYear = parseInt(this.value);
-            initializeCharts(selectedYear);
+        // Chart instances
+        let chart1, chart2, chart3, chart4;
+
+        // Initialize all charts
+        function initializeCharts(year) {
+            const dataForYear = chartDataByYear[year];
+            
+            if (!dataForYear) {
+                console.error(`No data available for year ${year}`);
+                return;
+            }
+            
+            // Destroy existing charts if they exist
+            if (chart1) chart1.destroy();
+            if (chart2) chart2.destroy();
+            if (chart3) chart3.destroy();
+            if (chart4) chart4.destroy();
+            
+            // Equipment Chart (Bar)
+            chart1 = new Chart(document.getElementById('chart1'), {
+                type: 'bar',
+                data: {
+                    labels: dataForYear.equipment.labels,
+                    datasets: [{
+                        label: 'Equipment Count',
+                        data: dataForYear.equipment.values,
+                        backgroundColor: colors.blue.bg,
+                        borderColor: colors.blue.border,
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: chartOptions
+            });
+
+            // User Chart (Line)
+            chart2 = new Chart(document.getElementById('chart2'), {
+                type: 'line',
+                data: {
+                    labels: dataForYear.users.labels,
+                    datasets: [{
+                        label: 'Active Users',
+                        data: dataForYear.users.values,
+                        backgroundColor: colors.red.bg,
+                        borderColor: colors.red.border,
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: chartOptions
+            });
+
+            // Returned Items Chart (Pie)
+            chart3 = new Chart(document.getElementById('chart3'), {
+                type: 'pie',
+                data: {
+                    labels: dataForYear.returned.labels,
+                    datasets: [{
+                        label: 'Returned Items',
+                        data: dataForYear.returned.values,
+                        backgroundColor: [
+                            '#4ecdc4', '#88d8c0', '#b2e0d8', '#d4f0eb',
+                            '#3a7bd5', '#00d2ff', '#928DAB', '#1FA2FF',
+                            '#12D8FA', '#A6FFCB', '#ff6b6b', '#ffa502'
+                        ],
+                        borderColor: '#fff',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    ...chartOptions,
+                    plugins: {
+                        ...chartOptions.plugins,
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                boxWidth: 12,
+                                padding: 20,
+                                usePointStyle: true,
+                                pointStyle: 'circle'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Damaged Items Chart (Doughnut)
+            chart4 = new Chart(document.getElementById('chart4'), {
+                type: 'doughnut',
+                data: {
+                    labels: dataForYear.damaged.labels,
+                    datasets: [{
+                        label: 'Damaged Items',
+                        data: dataForYear.damaged.values,
+                        backgroundColor: [
+                            '#ffa502', '#ffb732', '#ffc966', '#ffdb99',
+                            '#ffedcc', '#3a7bd5', '#ff6b6b', '#4ecdc4',
+                            '#928DAB', '#1FA2FF', '#12D8FA', '#A6FFCB'
+                        ],
+                        borderColor: '#fff',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    ...chartOptions,
+                    plugins: {
+                        ...chartOptions.plugins,
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                boxWidth: 12,
+                                padding: 20,
+                                usePointStyle: true,
+                                pointStyle: 'circle'
+                            }
+                        }
+                    },
+                    cutout: '70%'
+                }
+            });
+        }
+
+        // Initialize charts when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            const initialYear = Object.keys(chartDataByYear).includes('{{ $currentYear }}') 
+                ? '{{ $currentYear }}' 
+                : Object.keys(chartDataByYear)[0];
+            
+            initializeCharts(initialYear);
+            
+            // Add event listener for year selector
+            document.getElementById('yearSelector').addEventListener('change', function() {
+                initializeCharts(this.value);
+            });
         });
-    });
-</script>
+    </script>
 
   <style>
     /* From Uiverse.io by Lokesh1379 */ 
